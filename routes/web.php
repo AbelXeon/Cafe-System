@@ -33,3 +33,17 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
+
+Route::middleware(['auth'])->prefix('admin')->group(function () {
+    // Only allow if role is admin
+    Route::get('/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+    
+    // Management Pages
+    Route::get('/users', [AdminController::class, 'manageUsers'])->name('admin.users');
+    Route::post('/users/create', [AdminController::class, 'storeUser'])->name('admin.users.store');
+    
+    Route::get('/products', [AdminController::class, 'manageProducts'])->name('admin.products');
+    Route::post('/products/create', [AdminController::class, 'storeProduct'])->name('admin.products.store');
+
+    Route::post('/extras/create', [AdminController::class, 'storeExtra'])->name('admin.extras.store');
+});
