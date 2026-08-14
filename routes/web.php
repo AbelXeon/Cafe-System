@@ -15,35 +15,27 @@ use App\Http\Controllers\AuthController;
 
 
 
+
 Route::middleware('guest')->group(function () {
-    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-    Route::post('/register', [AuthController::class, 'register']);
-    
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
+
+    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+    Route::post('/register', [AuthController::class, 'register']);
 });
 
-
-
-
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
-
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 
-Route::middleware(['auth'])->prefix('admin')->group(function () {
-    // Only allow if role is admin
-    Route::get('/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
-    
-    // Management Pages
-    Route::get('/users', [AdminController::class, 'manageUsers'])->name('admin.users');
-    Route::post('/users/create', [AdminController::class, 'storeUser'])->name('admin.users.store');
-    
-    Route::get('/products', [AdminController::class, 'manageProducts'])->name('admin.products');
-    Route::post('/products/create', [AdminController::class, 'storeProduct'])->name('admin.products.store');
 
-    Route::post('/extras/create', [AdminController::class, 'storeExtra'])->name('admin.extras.store');
+
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+
+    // Staff & delivery user management
+    Route::get('/users', [AdminController::class, 'users'])->name('users.index');
+    Route::post('/users', [AdminController::class, 'storeUser'])->name('users.store');
+    Route::put('/users/{user}', [AdminController::class, 'updateUser'])->name('users.update');
+    Route::delete('/users/{user}', [AdminController::class, 'destroyUser'])->name('users.destroy');
 });

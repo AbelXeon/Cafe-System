@@ -7,6 +7,19 @@ use Illuminate\Database\Eloquent\Model;
 
 class Extras extends Model
 {
-    /** @use HasFactory<\Database\Factories\ExtrasFactory> */
     use HasFactory;
+
+    protected $table = 'extras';
+
+    protected $fillable = ['name', 'price', 'is_available'];
+
+    protected $casts = [
+        'is_available' => 'boolean',
+        'price' => 'decimal:2',
+    ];
+
+    public function products()
+    {
+        return $this->belongsToMany(Products::class, 'product_extras', 'extar_id', 'product_id');
+    }
 }
