@@ -30,12 +30,28 @@ Route::middleware('auth')->group(function () {
 
 
 
+
+
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
 
-    // Staff & delivery user management
-    Route::get('/users', [AdminController::class, 'users'])->name('users.index');
+    // Staff & Delivery users
     Route::post('/users', [AdminController::class, 'storeUser'])->name('users.store');
     Route::put('/users/{user}', [AdminController::class, 'updateUser'])->name('users.update');
     Route::delete('/users/{user}', [AdminController::class, 'destroyUser'])->name('users.destroy');
+
+    // Categories
+    Route::post('/categories', [AdminController::class, 'storeCategory'])->name('categories.store');
+    Route::put('/categories/{category}', [AdminController::class, 'updateCategory'])->name('categories.update');
+    Route::delete('/categories/{category}', [AdminController::class, 'destroyCategory'])->name('categories.destroy');
+
+    // Products
+    Route::post('/products', [AdminController::class, 'storeProduct'])->name('products.store');
+    Route::put('/products/{product}', [AdminController::class, 'updateProduct'])->name('products.update');
+    Route::delete('/products/{product}', [AdminController::class, 'destroyProduct'])->name('products.destroy');
+
+    // Extras
+    Route::post('/extras', [AdminController::class, 'storeExtra'])->name('extras.store');
+    Route::put('/extras/{extra}', [AdminController::class, 'updateExtra'])->name('extras.update');
+    Route::delete('/extras/{extra}', [AdminController::class, 'destroyExtra'])->name('extras.destroy');
 });
