@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\categories;
+use App\Models\category;
 use App\Models\OrderItems;
 
 class Products extends Model

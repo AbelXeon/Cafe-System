@@ -20,6 +20,6 @@ class Extras extends Model
 
     public function products()
     {
-        return $this->belongsToMany(Products::class, 'product_extras', 'extar_id', 'product_id');
+        return $this->belongsToMany(Products::class, 'product_extras', 'extra_id', 'product_id');
     }
 }

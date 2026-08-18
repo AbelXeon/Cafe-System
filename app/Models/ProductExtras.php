@@ -11,7 +11,7 @@ class ProductExtras extends Model
     use HasFactory;
     
 
-    protected $fillable = ['extar_id', 'product_id'];
+    protected $fillable = ['extra_id', 'product_id'];
 
     public function product()
     {
@@ -20,6 +20,6 @@ class ProductExtras extends Model
 
     public function extra()
     {
-        return $this->belongsTo(Extras::class, 'extar_id');
+        return $this->belongsTo(Extras::class, 'extra_id');
     }
 }
