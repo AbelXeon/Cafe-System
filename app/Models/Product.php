@@ -4,10 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\category;
 use App\Models\OrderItems;
 
-class Products extends Model
+class Product extends Model
 {
     use HasFactory;
 
@@ -32,7 +31,7 @@ class Products extends Model
 
     public function extras()
     {
-        return $this->belongsToMany(Extras::class, 'product_extras', 'product_id', 'extra_id');
+        return $this->belongsToMany(Extra::class, 'product_extras', 'product_id', 'extra_id');
     }
 
     public function orderItems()

@@ -30,6 +30,6 @@ class OrderItemExtras extends Model
 
     public function extra()
     {
-        return $this->belongsTo(Extras::class);
+        return $this->belongsTo(Extra::class);
     }
 }

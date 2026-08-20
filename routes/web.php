@@ -15,43 +15,31 @@ use App\Http\Controllers\AuthController;
 
 
 
-
+// Guest / auth
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [AuthController::class, 'login']);
-
-    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 });
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
-Route::middleware('auth')->group(function () {
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-});
-
-
-
-
-
-Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+// Admin area
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
 
-    // Staff & Delivery users
-    Route::post('/users', [AdminController::class, 'storeUser'])->name('users.store');
-    Route::put('/users/{user}', [AdminController::class, 'updateUser'])->name('users.update');
-    Route::delete('/users/{user}', [AdminController::class, 'destroyUser'])->name('users.destroy');
+    Route::get('/staff', [StaffController::class, 'index'])->name('staff.index');
+    Route::post('/staff', [StaffController::class, 'store'])->name('staff.store');
+    Route::delete('/staff/{staff}', [StaffController::class, 'destroy'])->name('staff.destroy');
 
-    // Categories
-    Route::post('/categories', [AdminController::class, 'storeCategory'])->name('categories.store');
-    Route::put('/categories/{category}', [AdminController::class, 'updateCategory'])->name('categories.update');
-    Route::delete('/categories/{category}', [AdminController::class, 'destroyCategory'])->name('categories.destroy');
+    Route::get('/delivery', [DeliveryController::class, 'index'])->name('delivery.index');
+    Route::post('/delivery', [DeliveryController::class, 'store'])->name('delivery.store');
+    Route::delete('/delivery/{delivery}', [DeliveryController::class, 'destroy'])->name('delivery.destroy');
 
-    // Products
-    Route::post('/products', [AdminController::class, 'storeProduct'])->name('products.store');
-    Route::put('/products/{product}', [AdminController::class, 'updateProduct'])->name('products.update');
-    Route::delete('/products/{product}', [AdminController::class, 'destroyProduct'])->name('products.destroy');
+    Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+    Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
+    Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
 
-    // Extras
-    Route::post('/extras', [AdminController::class, 'storeExtra'])->name('extras.store');
-    Route::put('/extras/{extra}', [AdminController::class, 'updateExtra'])->name('extras.update');
-    Route::delete('/extras/{extra}', [AdminController::class, 'destroyExtra'])->name('extras.destroy');
+    Route::get('/products', [ProductsController::class, 'index'])->name('products.index');
+    Route::post('/products', [ProductsController::class, 'store'])->name('products.store');
+    Route::put('/products/{product}', [ProductsController::class, 'update'])->name('products.update');
+    Route::delete('/products/{product}', [ProductsController::class, 'destroy'])->name('products.destroy');
 });
