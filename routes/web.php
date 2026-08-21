@@ -15,31 +15,27 @@ use App\Http\Controllers\AuthController;
 
 
 
-// Guest / auth
-Route::middleware('guest')->group(function () {
-    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
-});
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
+// Auth Routes
+Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login.view');
+Route::post('/login', [AuthController::class, 'login'])->name('login.perform');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Admin area
-Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+// Admin Routes (Protected)
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    
+    // User / Staff / Delivery Management
+    Route::post('/users', [AdminController::class, 'storeUser'])->name('users.store');
+    Route::delete('/users/{id}', [AdminController::class, 'deleteUser'])->name('users.delete');
 
-    Route::get('/staff', [StaffController::class, 'index'])->name('staff.index');
-    Route::post('/staff', [StaffController::class, 'store'])->name('staff.store');
-    Route::delete('/staff/{staff}', [StaffController::class, 'destroy'])->name('staff.destroy');
+    // Category Management
+    Route::post('/categories', [AdminController::class, 'storeCategory'])->name('categories.store');
 
-    Route::get('/delivery', [DeliveryController::class, 'index'])->name('delivery.index');
-    Route::post('/delivery', [DeliveryController::class, 'store'])->name('delivery.store');
-    Route::delete('/delivery/{delivery}', [DeliveryController::class, 'destroy'])->name('delivery.destroy');
+    // Product Management (Food & Drinks)
+    Route::post('/products', [AdminController::class, 'storeProduct'])->name('products.store');
+    Route::delete('/products/{id}', [AdminController::class, 'deleteProduct'])->name('products.delete');
 
-    Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
-    Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
-    Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
-
-    Route::get('/products', [ProductsController::class, 'index'])->name('products.index');
-    Route::post('/products', [ProductsController::class, 'store'])->name('products.store');
-    Route::put('/products/{product}', [ProductsController::class, 'update'])->name('products.update');
-    Route::delete('/products/{product}', [ProductsController::class, 'destroy'])->name('products.destroy');
+    // Extras Management
+    Route::post('/extras', [AdminController::class, 'storeExtra'])->name('extras.store');
 });

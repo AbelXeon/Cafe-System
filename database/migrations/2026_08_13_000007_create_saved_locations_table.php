@@ -11,15 +11,22 @@ return new class extends Migration
      */
     public function up(): void
     {
-       Schema::create('saved_locations', function (Blueprint $table) {
-    $table->id();
-    $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-    $table->string('name'); // e.g., Home, Office
-    $table->string('address');
-    $table->decimal('latitude', 10, 8);
-    $table->decimal('longitude', 11, 8);
-    $table->timestamps();
-});
+      Schema::create('saved_locations', function (Blueprint $table) {
+            $table->id();
+
+            $table->foreignId('user_id')
+                ->constrained('users')
+                ->cascadeOnDelete();
+
+            $table->string('name');
+            $table->text('address');
+            $table->decimal('latitude', 10, 7);
+            $table->decimal('longitude', 10, 7);
+
+            $table->timestamps();
+
+            $table->index('user_id');
+        });
     }
 
     /**

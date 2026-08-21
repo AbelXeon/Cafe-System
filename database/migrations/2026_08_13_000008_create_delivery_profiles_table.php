@@ -11,12 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-       Schema::create('delivery_profiles', function (Blueprint $table) {
-    $table->id();
-    $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-    $table->boolean('is_online')->default(false);
-    $table->timestamps();
-});
+     Schema::create('delivery_profiles', function (Blueprint $table) {
+            $table->id();
+
+            $table->foreignId('user_id')
+                ->unique()
+                ->constrained('users')
+                ->cascadeOnDelete();
+                
+            $table->string('profile_image')->nullable();
+            $table->decimal('current_latitude', 10, 7)->nullable();
+            $table->decimal('current_longitude', 10, 7)->nullable();
+            $table->boolean('is_online')->default(false);
+
+            $table->timestamps();
+        });
     }
 
     /**

@@ -12,16 +12,28 @@ return new class extends Migration
     public function up(): void
     {
        Schema::create('order_deliveries', function (Blueprint $table) {
-    $table->id();
-    $table->foreignId('order_id')->constrained('orders');
-    $table->foreignId('delivery_user_id')->nullable()->constrained('users');
-    $table->string('status')->default('pending');
-    $table->timestamp('assigned_at')->nullable();
-    $table->timestamp('accepted_at')->nullable();
-    $table->timestamp('picked_up_at')->nullable();
-    $table->timestamp('delivered_at')->nullable();
-    $table->timestamps();
-});
+            $table->id();
+
+            $table->foreignId('order_id')
+                ->constrained('orders')
+                ->cascadeOnDelete();
+
+            $table->foreignId('delivery_user_id')
+                ->constrained('users')
+                ->restrictOnDelete();
+
+            $table->string('status')->default('assigned');
+
+            $table->timestamp('assigned_at')->nullable();
+            $table->timestamp('accepted_at')->nullable();
+            $table->timestamp('picked_up_at')->nullable();
+            $table->timestamp('delivered_at')->nullable();
+
+            $table->timestamps();
+
+            $table->index(['delivery_user_id', 'status']);
+            $table->index(['order_id', 'status']);
+        });
     }
 
     /**

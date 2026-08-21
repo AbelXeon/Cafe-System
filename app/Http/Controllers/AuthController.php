@@ -13,34 +13,40 @@ use App\Models\Role;
 
 class AuthController extends Controller
 {
-    public function showLogin()
+       public function showLoginForm()
     {
+        if (Auth::check()) {
+            if (Auth::user()->role && Auth::user()->role->name === 'admin') {
+                return redirect()->route('admin.dashboard');
+            }
+        }
         return view('auth.login');
     }
 
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'username' => ['required', 'string'],
+            'login'    => ['required', 'string'],
             'password' => ['required', 'string'],
         ]);
 
-        if (! Auth::attempt($credentials, $request->boolean('remember'))) {
-            return back()
-                ->withErrors(['username' => 'Those credentials do not match our records.'])
-                ->onlyInput('username');
+        // Allow login via username or email
+        $loginField = filter_var($credentials['login'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+
+        if (Auth::attempt([$loginField => $credentials['login'], 'password' => $credentials['password']])) {
+            $request->session()->regenerate();
+
+            $user = Auth::user();
+            if ($user->role && $user->role->name === 'admin') {
+                return redirect()->route('admin.dashboard')->with('success', 'Welcome back, Admin!');
+            }
+
+            return redirect()->intended('/');
         }
 
-        $request->session()->regenerate();
-
-        $user = Auth::user();
-
-        return match ($user->role->name ?? null) {
-            'admin' => redirect()->route('admin.dashboard'),
-            'staff' => redirect('/staff/dashboard'),      // will build later
-            'delivery' => redirect('/delivery/dashboard'), // will build later
-            default => redirect('/'),
-        };
+        return back()->withErrors([
+            'login' => 'The provided credentials do not match our records.',
+        ])->onlyInput('login');
     }
 
     public function logout(Request $request)
@@ -49,6 +55,7 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login');
+        return redirect()->route('login')->with('success', 'Logged out successfully.');
     }
+
 }

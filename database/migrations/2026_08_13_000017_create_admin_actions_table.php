@@ -13,11 +13,20 @@ return new class extends Migration
     {
         Schema::create('admin_actions', function (Blueprint $table) {
             $table->id();
-            // This links to the users table (the admin who did the action)
-            $table->foreignId('admin_id')->constrained('users'); 
-            $table->string('action'); // e.g., "Deleted User", "Added Product"
+
+            $table->foreignId('admin_id')
+                ->constrained('users')
+                ->restrictOnDelete();
+
+            $table->string('action');
+            $table->string('target_type')->nullable();
+            $table->unsignedBigInteger('target_id')->nullable();
             $table->text('description')->nullable();
+
             $table->timestamps();
+
+            $table->index(['target_type', 'target_id']);
+            $table->index('admin_id');
         });
     }
 

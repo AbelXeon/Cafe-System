@@ -12,14 +12,29 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('delivery_reviews', function (Blueprint $table) {
-    $table->id();
-    $table->foreignId('user_id')->constrained('users');
-    $table->foreignId('order_id')->constrained('orders');
-    $table->foreignId('delivery_user_id')->constrained('users');
-    $table->integer('rating');
-    $table->text('comment')->nullable();
-    $table->timestamps();
-});
+            $table->id();
+
+            $table->foreignId('user_id')
+                ->constrained('users')
+                ->cascadeOnDelete();
+
+            $table->foreignId('order_id')
+                ->constrained('orders')
+                ->cascadeOnDelete();
+
+            $table->foreignId('delivery_user_id')
+                ->constrained('users')
+                ->restrictOnDelete();
+
+            $table->unsignedTinyInteger('rating');
+            $table->text('comment')->nullable();
+
+            $table->timestamps();
+
+            $table->unique(['user_id', 'order_id']);
+
+            $table->index('delivery_user_id');
+        });
     }
 
     /**

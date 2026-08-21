@@ -11,15 +11,30 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('product_reviews', function (Blueprint $table) {
-    $table->id();
-    $table->foreignId('user_id')->constrained('users');
-    $table->foreignId('product_id')->constrained('products');
-    $table->foreignId('order_id')->constrained('orders');
-    $table->integer('rating');
-    $table->text('comment')->nullable();
-    $table->timestamps();
-});
+      Schema::create('product_reviews', function (Blueprint $table) {
+            $table->id();
+
+            $table->foreignId('user_id')
+                ->constrained('users')
+                ->cascadeOnDelete();
+
+            $table->foreignId('product_id')
+                ->constrained('products')
+                ->cascadeOnDelete();
+
+            $table->foreignId('order_id')
+                ->constrained('orders')
+                ->cascadeOnDelete();
+
+            $table->unsignedTinyInteger('rating');
+            $table->text('comment')->nullable();
+
+            $table->timestamps();
+
+            $table->unique(['user_id', 'product_id', 'order_id']);
+
+            $table->index('product_id');
+        });
     }
 
     /**

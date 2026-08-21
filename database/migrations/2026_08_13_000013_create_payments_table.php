@@ -12,15 +12,24 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('payments', function (Blueprint $table) {
-    $table->id();
-    $table->foreignId('order_id')->constrained('orders');
-    $table->decimal('amount', 10, 2);
-    $table->string('method'); // stripe, cash, etc
-    $table->string('status');
-    $table->string('transaction_reference')->nullable();
-    $table->timestamp('paid_at')->nullable();
-    $table->timestamps();
-});
+            $table->id();
+
+            $table->foreignId('order_id')
+                ->constrained('orders')
+                ->cascadeOnDelete();
+
+            $table->decimal('amount', 10, 2);
+
+            $table->string('method');
+            $table->string('status')->default('pending');
+
+            $table->string('transaction_reference')->nullable()->unique();
+            $table->timestamp('paid_at')->nullable();
+
+            $table->timestamps();
+
+            $table->index(['order_id', 'status']);
+        });
     }
 
     /**

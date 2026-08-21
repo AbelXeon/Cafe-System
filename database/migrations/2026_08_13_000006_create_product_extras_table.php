@@ -11,12 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('product_extras', function (Blueprint $table) {
-    $table->id();
-    $table->foreignId('extra_id')->constrained('extras')->onDelete('cascade');
-    $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
-    $table->timestamps();
-});
+       Schema::create('product_extras', function (Blueprint $table) {
+            $table->id();
+
+            $table->foreignId('product_id')
+                ->constrained('products')
+                ->cascadeOnDelete();
+
+            $table->foreignId('extra_id')
+                ->constrained('extras')
+                ->cascadeOnDelete();
+
+            $table->timestamps();
+
+            $table->unique(['product_id', 'extra_id']);
+        });
     }
 
     /**
