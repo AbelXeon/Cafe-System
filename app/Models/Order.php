@@ -7,10 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Order extends Model
 {
-    /** @use HasFactory<\Database\Factories\OrdersFactory> */
-    use HasFactory;
-     protected $table = 'orders';
-
     protected $fillable = [
         'user_id',
         'order_type',
@@ -25,14 +21,17 @@ class Order extends Model
         'longitude',
     ];
 
-    protected $casts = [
-        'subtotal' => 'decimal:2',
-        'extra_total' => 'decimal:2',
-        'delivery_fee' => 'decimal:2',
-        'total_amount' => 'decimal:2',
-        'latitude' => 'decimal:7',
-        'longitude' => 'decimal:7',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'subtotal' => 'decimal:2',
+            'extra_total' => 'decimal:2',
+            'delivery_fee' => 'decimal:2',
+            'total_amount' => 'decimal:2',
+            'latitude' => 'decimal:7',
+            'longitude' => 'decimal:7',
+        ];
+    }
 
     public function user()
     {
@@ -41,31 +40,31 @@ class Order extends Model
 
     public function items()
     {
-        return $this->hasMany(OrderItems::class);
+        return $this->hasMany(OrderItem::class);
     }
 
-    public function delivery()
+    public function deliveries()
     {
-        return $this->hasOne(OrderDeliveries::class);
+        return $this->hasMany(OrderDelivery::class);
     }
 
-    public function payment()
+    public function payments()
     {
-        return $this->hasOne(Payments::class);
+        return $this->hasMany(Payment::class);
+    }
+
+    public function productReviews()
+    {
+        return $this->hasMany(ProductReview::class);
+    }
+
+    public function deliveryReviews()
+    {
+        return $this->hasMany(DeliveryReview::class);
     }
 
     public function statusHistory()
     {
         return $this->hasMany(OrderStatusHistory::class);
-    }
-
-    public function productReviews()
-    {
-        return $this->hasMany(ProductReviews::class);
-    }
-
-    public function deliveryReview()
-    {
-        return $this->hasOne(DeliveryReviews::class);
     }
 }

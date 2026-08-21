@@ -8,14 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Category extends Model
 {
-    use HasFactory;
-
-    protected $table = 'categories'; // matches your existing migration table name
-
-    protected $fillable = ['name', 'type', 'description'];
+    protected $fillable = [
+        'name',
+    ];
 
     public function products()
     {
-        return $this->hasMany(Product::class, 'category_id');
+        return $this->hasMany(Product::class);
     }
 }

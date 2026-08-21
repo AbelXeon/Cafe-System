@@ -5,13 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ProductExtras extends Model
+class ProductExtra extends Model
 {
-    /** @use HasFactory<\Database\Factories\ProductExtrasFactory> */
-    use HasFactory;
-    
-
-    protected $fillable = ['extra_id', 'product_id'];
+    protected $fillable = [
+        'product_id',
+        'extra_id',
+    ];
 
     public function product()
     {
@@ -20,6 +19,6 @@ class ProductExtras extends Model
 
     public function extra()
     {
-        return $this->belongsTo(Extra::class, 'extra_id');
+        return $this->belongsTo(Extra::class);
     }
 }

@@ -8,8 +8,6 @@ use App\Models\OrderItems;
 
 class Product extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
         'category_id',
         'name',
@@ -19,28 +17,34 @@ class Product extends Model
         'is_available',
     ];
 
-    protected $casts = [
-        'is_available' => 'boolean',
-        'price' => 'decimal:2',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'price' => 'decimal:2',
+            'is_available' => 'boolean',
+        ];
+    }
 
     public function category()
     {
-        return $this->belongsTo(Category::class, 'category_id');
+        return $this->belongsTo(Category::class);
     }
 
     public function extras()
     {
-        return $this->belongsToMany(Extra::class, 'product_extras', 'product_id', 'extra_id');
+        return $this->belongsToMany(
+            Extra::class,
+            'product_extras'
+        );
     }
 
     public function orderItems()
     {
-        return $this->hasMany(OrderItems::class);
+        return $this->hasMany(OrderItem::class);
     }
 
     public function reviews()
     {
-        return $this->hasMany(ProductReviews::class);
+        return $this->hasMany(ProductReview::class);
     }
 }

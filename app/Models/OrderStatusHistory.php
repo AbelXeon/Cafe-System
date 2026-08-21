@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class OrderStatusHistory extends Model
 {
-    /** @use HasFactory<\Database\Factories\OrderStatusHistoryFactory> */
-    use HasFactory;
-
-    protected $fillable = ['order_id', 'status', 'changed_by'];
+    protected $fillable = [
+        'order_id',
+        'status',
+        'changed_by_user_id',
+    ];
 
     public function order()
     {
@@ -19,6 +20,9 @@ class OrderStatusHistory extends Model
 
     public function changedBy()
     {
-        return $this->belongsTo(User::class, 'changed_by');
+        return $this->belongsTo(
+            User::class,
+            'changed_by_user_id'
+        );
     }
 }

@@ -5,11 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class OrderDeliveries extends Model
+class OrderDelivery extends Model
 {
-    /** @use HasFactory<\Database\Factories\OrderDeliveriesFactory> */
-    use HasFactory;
-
     protected $fillable = [
         'order_id',
         'delivery_user_id',
@@ -20,12 +17,15 @@ class OrderDeliveries extends Model
         'delivered_at',
     ];
 
-    protected $casts = [
-        'assigned_at' => 'datetime',
-        'accepted_at' => 'datetime',
-        'picked_up_at' => 'datetime',
-        'delivered_at' => 'datetime',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'assigned_at' => 'datetime',
+            'accepted_at' => 'datetime',
+            'picked_up_at' => 'datetime',
+            'delivered_at' => 'datetime',
+        ];
+    }
 
     public function order()
     {
@@ -34,6 +34,9 @@ class OrderDeliveries extends Model
 
     public function deliveryUser()
     {
-        return $this->belongsTo(User::class, 'delivery_user_id');
+        return $this->belongsTo(
+            User::class,
+            'delivery_user_id'
+        );
     }
 }

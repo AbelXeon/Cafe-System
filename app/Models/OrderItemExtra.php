@@ -5,11 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class OrderItemExtras extends Model
+class OrderItemExtra extends Model
 {
-    /** @use HasFactory<\Database\Factories\OrderItemExtrasFactory> */
-    use HasFactory;
-
     protected $fillable = [
         'order_item_id',
         'extra_id',
@@ -18,14 +15,17 @@ class OrderItemExtras extends Model
         'subtotal',
     ];
 
-    protected $casts = [
-        'price' => 'decimal:2',
-        'subtotal' => 'decimal:2',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'price' => 'decimal:2',
+            'subtotal' => 'decimal:2',
+        ];
+    }
 
     public function orderItem()
     {
-        return $this->belongsTo(OrderItems::class);
+        return $this->belongsTo(OrderItem::class);
     }
 
     public function extra()

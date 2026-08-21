@@ -7,19 +7,30 @@ use Illuminate\Database\Eloquent\Model;
 
 class Extra extends Model
 {
-    use HasFactory;
-
-    protected $table = 'extras';
-
-    protected $fillable = ['name', 'price', 'is_available'];
-
-    protected $casts = [
-        'is_available' => 'boolean',
-        'price' => 'decimal:2',
+    protected $fillable = [
+        'name',
+        'price',
+        'is_available',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'price' => 'decimal:2',
+            'is_available' => 'boolean',
+        ];
+    }
 
     public function products()
     {
-        return $this->belongsToMany(Product::class, 'product_extras', 'extra_id', 'product_id');
+        return $this->belongsToMany(
+            Product::class,
+            'product_extras'
+        );
+    }
+
+    public function orderItemExtras()
+    {
+        return $this->hasMany(OrderItemExtra::class);
     }
 }

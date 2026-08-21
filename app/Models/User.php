@@ -6,12 +6,10 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use App\Models\DeliveryReviews;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use Notifiable;
 
     protected $fillable = [
         'role_id',
@@ -30,12 +28,9 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
-
-    // Relationships
 
     public function role()
     {
@@ -49,36 +44,39 @@ class User extends Authenticatable
 
     public function savedLocations()
     {
-        return $this->hasMany(SavedLocations::class);
+        return $this->hasMany(SavedLocation::class);
     }
 
     public function deliveryProfile()
     {
-        return $this->hasOne(DeliveryProfiles::class);
+        return $this->hasOne(DeliveryProfile::class);
     }
 
     public function deliveries()
     {
-        return $this->hasMany(OrderDeliveries::class, 'delivery_user_id');
+        return $this->hasMany(OrderDelivery::class, 'delivery_user_id');
     }
 
     public function productReviews()
     {
-        return $this->hasMany(ProductReviews::class);
+        return $this->hasMany(ProductReview::class);
     }
 
     public function deliveryReviews()
     {
-        return $this->hasMany(DeliveryReviews::class);
+        return $this->hasMany(DeliveryReview::class);
+    }
+
+    public function changedOrderStatuses()
+    {
+        return $this->hasMany(
+            OrderStatusHistory::class,
+            'changed_by_user_id'
+        );
     }
 
     public function adminActions()
     {
         return $this->hasMany(AdminAction::class, 'admin_id');
-    }
-
-    public function statusChanges()
-    {
-        return $this->hasMany(OrderStatusHistory::class, 'changed_by');
     }
 }

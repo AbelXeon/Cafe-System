@@ -5,12 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class DeliveryReviews extends Model
+class DeliveryReview extends Model
 {
-    /** @use HasFactory<\Database\Factories\DeliveryReviewsFactory> */
-    use HasFactory;
-
-     protected $fillable = ['user_id', 'order_id', 'delivery_user_id', 'rating', 'comment'];
+    protected $fillable = [
+        'user_id',
+        'order_id',
+        'delivery_user_id',
+        'rating',
+        'comment',
+    ];
 
     public function user()
     {
@@ -24,6 +27,9 @@ class DeliveryReviews extends Model
 
     public function deliveryUser()
     {
-        return $this->belongsTo(User::class, 'delivery_user_id');
+        return $this->belongsTo(
+            User::class,
+            'delivery_user_id'
+        );
     }
 }
