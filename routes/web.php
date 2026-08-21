@@ -15,27 +15,13 @@ use App\Http\Controllers\AuthController;
 
 
 
-// Auth Routes
-Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
-Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login.view');
-Route::post('/login', [AuthController::class, 'login'])->name('login.perform');
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Admin Routes (Protected)
-Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
-    
-    // User / Staff / Delivery Management
-    Route::post('/users', [AdminController::class, 'storeUser'])->name('users.store');
-    Route::delete('/users/{id}', [AdminController::class, 'deleteUser'])->name('users.delete');
-
-    // Category Management
-    Route::post('/categories', [AdminController::class, 'storeCategory'])->name('categories.store');
-
-    // Product Management (Food & Drinks)
     Route::post('/products', [AdminController::class, 'storeProduct'])->name('products.store');
-    Route::delete('/products/{id}', [AdminController::class, 'deleteProduct'])->name('products.delete');
-
-    // Extras Management
+    Route::post('/staff', [AdminController::class, 'storeStaff'])->name('staff.store');
     Route::post('/extras', [AdminController::class, 'storeExtra'])->name('extras.store');
 });

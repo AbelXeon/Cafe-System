@@ -13,40 +13,29 @@ use App\Models\Role;
 
 class AuthController extends Controller
 {
-       public function showLoginForm()
+     public function showLogin()
     {
         if (Auth::check()) {
-            if (Auth::user()->role && Auth::user()->role->name === 'admin') {
-                return redirect()->route('admin.dashboard');
-            }
+            return $this->redirectByRole();
         }
+
         return view('auth.login');
     }
 
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'login'    => ['required', 'string'],
-            'password' => ['required', 'string'],
+            'username' => 'required|string',
+            'password' => 'required|string',
         ]);
 
-        // Allow login via username or email
-        $loginField = filter_var($credentials['login'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
-
-        if (Auth::attempt([$loginField => $credentials['login'], 'password' => $credentials['password']])) {
-            $request->session()->regenerate();
-
-            $user = Auth::user();
-            if ($user->role && $user->role->name === 'admin') {
-                return redirect()->route('admin.dashboard')->with('success', 'Welcome back, Admin!');
-            }
-
-            return redirect()->intended('/');
+        if (!Auth::attempt($credentials, $request->boolean('remember'))) {
+            return back()->withErrors(['username' => 'Invalid username or password.'])->onlyInput('username');
         }
 
-        return back()->withErrors([
-            'login' => 'The provided credentials do not match our records.',
-        ])->onlyInput('login');
+        $request->session()->regenerate();
+
+        return $this->redirectByRole();
     }
 
     public function logout(Request $request)
@@ -55,7 +44,17 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login')->with('success', 'Logged out successfully.');
+        return redirect()->route('login');
+    }
+
+    private function redirectByRole()
+    {
+        $role = Auth::user()->role->name;
+
+        return match ($role) {
+            'admin' => redirect()->route('admin.dashboard'),
+            default => redirect()->route('login')->withErrors(['username' => 'No dashboard built for this role yet.']),
+        };
     }
 
 }
