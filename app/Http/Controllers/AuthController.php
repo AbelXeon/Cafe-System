@@ -53,8 +53,47 @@ class AuthController extends Controller
 
         return match ($role) {
             'admin' => redirect()->route('admin.dashboard'),
+            'customer' => redirect()->route('user.dashboard'),
             default => redirect()->route('login')->withErrors(['username' => 'No dashboard built for this role yet.']),
         };
     }
+
+
+    public function showRegister()
+{
+    if (Auth::check()) {
+        return $this->redirectByRole();
+    }
+
+    return view('auth.register');
+}
+
+public function register(Request $request)
+{
+    $data = $request->validate([
+        'fullname' => 'required|string|max:255',
+        'username' => 'required|string|max:255|unique:users,username',
+        'email'    => 'nullable|email|unique:users,email',
+        'phone'    => 'nullable|string|max:20',
+        'password' => 'required|string|min:6|confirmed',
+    ]);
+
+    $customerRole = Role::where('name', 'customer')->first();
+
+    if (!$customerRole) {
+        return back()->withErrors(['username' => 'Registration is not available right now.'])->withInput();
+    }
+
+    User::create([
+        'role_id'  => $customerRole->id,
+        'fullname' => $data['fullname'],
+        'username' => $data['username'],
+        'email'    => $data['email'] ?? null,
+        'phone'    => $data['phone'] ?? null,
+        'password' => Hash::make($data['password']),
+    ]);
+
+    return redirect()->route('login')->with('status', 'Account created. Log in to continue.');
+}
 
 }

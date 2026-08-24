@@ -12,6 +12,12 @@
         <h1 class="text-2xl font-bold text-white mb-1">Sign in</h1>
         <p class="text-slate-400 text-sm mb-6">Cafe management system</p>
 
+        @if (session('status'))
+    <div class="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm rounded-lg px-4 py-3 mb-4">
+        {{ session('status') }}
+    </div>
+@endif
+
         @if ($errors->any())
             <div class="bg-red-500/10 border border-red-500/30 text-red-400 text-sm rounded-lg px-4 py-3 mb-4">
                 {{ $errors->first() }}
@@ -39,6 +45,9 @@
                 Sign in
             </button>
         </form>
+        <p class="text-slate-400 text-sm mt-5 text-center">
+    No account? <a href="{{ route('register') }}" class="text-indigo-400 hover:underline">Register</a>
+</p>
     </div>
 </body>
 </html>

@@ -47,6 +47,8 @@ class User extends Authenticatable
         return $this->hasMany(SavedLocation::class);
     }
 
+  
+
     public function deliveryProfile()
     {
         return $this->hasOne(DeliveryProfile::class);
