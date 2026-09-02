@@ -81,7 +81,7 @@
                         <div class="relative">
                             <i data-lucide="mail" class="w-5 h-5 text-stone-600 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
                             <input type="email" name="email" value="{{ old('email') }}"
-                                placeholder="alex@cravedash.com"
+                                placeholder="abebe@example.com"
                                 class="cd-input w-full bg-[#14131a] border border-[#2a2731] rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-stone-600 focus:outline-none transition duration-150">
                         </div>
                     </div>
