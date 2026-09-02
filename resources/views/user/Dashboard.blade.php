@@ -24,29 +24,76 @@
         .cd-input:focus { border-color: #b08d57; box-shadow: 0 0 0 3px rgba(176, 141, 87, 0.18); }
     </style>
 </head>
-<body class="bg-[#0f0e13] text-stone-200 h-screen overflow-hidden selection:bg-[#b08d57] selection:text-[#0f0e13]">
+<body class="bg-[#0f0e13] text-stone-200 h-screen overflow-hidden selection:bg-[#b08d57] selection:text-[#0f0e13]" x-data="{ mobileNavOpen: false, mobileCartOpen: false }">
 
-<div class="flex h-full w-full">
+<!-- Mobile Top Navigation Bar (Visible on screens < lg) -->
+<header class="lg:hidden bg-[#0f0e13] border-b border-[#1e1c25] px-4 py-3 flex items-center justify-between z-30 shrink-0">
+    <div class="flex items-center gap-3">
+        <!-- Hamburger Button -->
+        <button @click="mobileNavOpen = true; $nextTick(() => lucide.createIcons())" class="p-2 -ml-2 rounded-xl text-stone-400 hover:text-white hover:bg-[#1e1c25] transition" aria-label="Open Navigation">
+            <i data-lucide="menu" class="w-6 h-6"></i>
+        </button>
 
-    <aside class="w-64 bg-[#0f0e13] border-r border-[#1e1c25] flex flex-col shrink-0 justify-between z-20">
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-lg bg-[#b08d57] flex items-center justify-center text-[#0f0e13]">
+                <i data-lucide="utensils" class="w-4 h-4 stroke-[2.5]"></i>
+            </div>
+            <span class="text-base font-black tracking-tight text-white">Crave<span class="text-[#b08d57]">Dash</span></span>
+        </div>
+    </div>
+
+    <!-- Mobile Cart Drawer Toggle Button -->
+    <button @click="mobileCartOpen = true; $nextTick(() => lucide.createIcons())" class="relative p-2 rounded-xl text-stone-300 hover:text-white hover:bg-[#1e1c25] transition flex items-center gap-1.5" aria-label="Open Cart">
+        <i data-lucide="shopping-bag" class="w-5 h-5 text-[#b08d57]"></i>
+        <span x-show="$store.cart.count > 0" class="bg-[#b08d57] text-[#0f0e13] text-[11px] font-black rounded-full px-1.5 py-0.2" x-text="$store.cart.count"></span>
+    </button>
+</header>
+
+<div class="flex h-[calc(100vh-57px)] lg:h-full w-full relative">
+
+    <!-- Mobile Sidebar Backdrop -->
+    <div x-show="mobileNavOpen"
+         x-cloak
+         x-transition:enter="transition-opacity ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition-opacity ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         @click="mobileNavOpen = false"
+         class="fixed inset-0 bg-black/80 backdrop-blur-sm z-40 lg:hidden">
+    </div>
+
+    <!-- Sidebar Navigation (Desktop + Mobile Slide-over) -->
+    <aside
+        :class="mobileNavOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
+        class="fixed lg:static top-0 left-0 bottom-0 w-72 lg:w-64 bg-[#0f0e13] border-r border-[#1e1c25] flex flex-col shrink-0 justify-between z-50 lg:z-20 transition-transform duration-300 ease-in-out">
         <div>
-            <!-- Brand Header -->
-            <div class="p-6 border-b border-[#1e1c25] flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-[#b08d57] flex items-center justify-center text-[#0f0e13]">
-                    <i data-lucide="utensils" class="w-5 h-5 stroke-[2.5]"></i>
+            <!-- Brand Header & Close Button (Mobile) -->
+            <div class="p-5 sm:p-6 border-b border-[#1e1c25] flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-[#b08d57] flex items-center justify-center text-[#0f0e13]">
+                        <i data-lucide="utensils" class="w-5 h-5 stroke-[2.5]"></i>
+                    </div>
+                    <div>
+                        <span class="text-lg font-black tracking-tight text-white block">Crave<span class="text-[#b08d57]">Dash</span></span>
+                        <span class="text-xs text-stone-500 font-medium">Customer Portal</span>
+                    </div>
                 </div>
-                <div>
-                    <span class="text-lg font-black tracking-tight text-white block">Crave<span class="text-[#b08d57]">Dash</span></span>
-                    <span class="text-xs text-stone-500 font-medium">Customer Portal</span>
-                </div>
+
+                <!-- X Close Button for Mobile -->
+                <button @click="mobileNavOpen = false" class="lg:hidden p-1.5 rounded-xl text-stone-400 hover:text-white hover:bg-[#1e1c25] transition" aria-label="Close Navigation">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
             </div>
 
+            <!-- Navigation Links -->
             <nav class="p-4 space-y-1.5">
-                <button data-target="menu" class="side-link w-full text-left px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-3">
+                <button data-target="menu" @click="mobileNavOpen = false" class="side-link w-full text-left px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-3">
                     <i data-lucide="layout-grid" class="w-4 h-4"></i>
                     <span>Menu Catalog</span>
                 </button>
-                <button data-target="address" class="side-link w-full text-left px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-3">
+                <button data-target="address" @click="mobileNavOpen = false" class="side-link w-full text-left px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-3">
                     <i data-lucide="map-pin" class="w-4 h-4"></i>
                     <span>My Addresses</span>
                 </button>
@@ -64,14 +111,15 @@
         </div>
     </aside>
 
-    <div id="section-menu" class="page-section flex flex-1 min-h-0 bg-[#14131a]/40">
+    <!-- SECTION: Menu Catalog -->
+    <div id="section-menu" class="page-section flex flex-1 min-h-0 bg-[#14131a]/40 w-full">
 
-        <main class="flex-1 overflow-y-auto p-6 lg:p-8 custom-scroll" x-data="menuApp()" x-init="init()">
+        <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 custom-scroll pb-24 lg:pb-8" x-data="menuApp()" x-init="init()">
 
-            <!-- Header & Category Pills (Underneath) -->
-            <div class="mb-8 space-y-4">
+            <!-- Header & Category Pills -->
+            <div class="mb-6 sm:mb-8 space-y-4">
                 <div>
-                    <h1 class="text-2xl lg:text-3xl font-extrabold text-white tracking-tight">Browse Menu</h1>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Browse Menu</h1>
                 </div>
 
                 <div class="flex flex-wrap gap-2 pt-1">
@@ -79,38 +127,40 @@
                         <button
                             @click="activeCategory = cat"
                             :class="activeCategory === cat
-                                ? 'bg-[#b08d57] text-[#0f0e13] font-bold'
+                                ? 'bg-[#b08d57] text-[#0f0e13] font-bold shadow-md shadow-[#b08d57]/10'
                                 : 'bg-[#14131a] text-stone-400 hover:text-white border border-[#2a2731]'"
-                            class="px-4 py-2 rounded-xl text-xs sm:text-sm whitespace-nowrap transition cursor-pointer"
+                            class="px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm whitespace-nowrap transition cursor-pointer"
                             x-text="cat">
                         </button>
                     </template>
                 </div>
             </div>
 
+            <!-- Active Category Title Banner -->
             <div class="flex items-center justify-between border-b border-[#2a2731] pb-3 mb-6">
                 <div class="flex items-center gap-2">
-                    <h2 class="text-lg font-bold text-white uppercase tracking-wider" x-text="activeCategory"></h2>
-                    <span class="text-xs bg-[#1e1c25] text-stone-400 px-2 py-0.5 rounded-full font-medium" x-text="visibleProducts.length + ' items'"></span>
+                    <h2 class="text-base sm:text-lg font-bold text-white uppercase tracking-wider" x-text="activeCategory"></h2>
+                    <span class="text-xs bg-[#1e1c25] text-stone-400 px-2.5 py-0.5 rounded-full font-medium" x-text="visibleProducts.length + ' items'"></span>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+            <!-- Products Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 sm:gap-6">
                 <template x-for="product in visibleProducts" :key="product.id">
-                    <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl overflow-hidden hover:border-[#b08d57]/60 transition duration-200 flex flex-col justify-between group cursor-pointer"
+                    <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl overflow-hidden hover:border-[#b08d57]/60 transition duration-200 flex flex-col justify-between group cursor-pointer shadow-lg"
                          @click="openModal(product)">
 
-                        <div class="relative w-full h-44 bg-[#0f0e13] overflow-hidden">
+                        <div class="relative w-full h-40 sm:h-44 bg-[#0f0e13] overflow-hidden">
                             <img :src="product.image" :alt="product.name" class="w-full h-full object-cover group-hover:scale-105 transition duration-300 ease-out">
-                            <div class="absolute top-3 right-3 bg-[#0f0e13]/80 backdrop-blur-md px-2.5 py-1 rounded-lg border border-[#2a2731]">
+                            <div class="absolute top-3 right-3 bg-[#0f0e13]/85 backdrop-blur-md px-2.5 py-1 rounded-lg border border-[#2a2731]">
                                 <span class="text-[#b08d57] font-extrabold text-sm" x-text="'$' + product.price.toFixed(2)"></span>
                             </div>
                         </div>
 
-                        <div class="p-5 flex flex-col flex-1 justify-between">
+                        <div class="p-4 sm:p-5 flex flex-col flex-1 justify-between">
                             <div>
-                                <h3 class="text-white font-bold text-base leading-snug group-hover:text-[#b08d57] transition" x-text="product.name"></h3>
-                                <p class="text-stone-500 text-xs mt-2 line-clamp-2 leading-relaxed" x-text="product.description"></p>
+                                <h3 class="text-white font-bold text-sm sm:text-base leading-snug group-hover:text-[#b08d57] transition" x-text="product.name"></h3>
+                                <p class="text-stone-500 text-xs mt-1.5 line-clamp-2 leading-relaxed" x-text="product.description"></p>
                             </div>
 
                             <button
@@ -131,28 +181,29 @@
                 </div>
             </div>
 
+            <!-- Product Details Modal -->
             <div x-show="modalProduct"
                  x-cloak
-                 class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+                 class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto"
                  @click.self="closeModal()">
-                <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl">
+                <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl my-auto">
                     <template x-if="modalProduct">
                         <div>
-                            <div class="relative w-full h-56 bg-[#0f0e13]">
+                            <div class="relative w-full h-48 sm:h-56 bg-[#0f0e13]">
                                 <img :src="modalProduct.image" :alt="modalProduct.name" class="w-full h-full object-cover">
                                 <button @click="closeModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-[#0f0e13]/80 text-stone-400 hover:text-white flex items-center justify-center border border-[#2a2731] transition">
                                     <i data-lucide="x" class="w-4 h-4"></i>
                                 </button>
                             </div>
 
-                            <div class="p-6">
+                            <div class="p-5 sm:p-6">
                                 <div class="flex items-start justify-between gap-4">
-                                    <h3 class="text-xl font-bold text-white tracking-tight" x-text="modalProduct.name"></h3>
-                                    <span class="text-[#b08d57] font-black text-lg" x-text="'$' + modalProduct.price.toFixed(2)"></span>
+                                    <h3 class="text-lg sm:text-xl font-bold text-white tracking-tight" x-text="modalProduct.name"></h3>
+                                    <span class="text-[#b08d57] font-black text-base sm:text-lg" x-text="'$' + modalProduct.price.toFixed(2)"></span>
                                 </div>
-                                <p class="text-stone-500 text-sm mt-2 leading-relaxed" x-text="modalProduct.description"></p>
+                                <p class="text-stone-500 text-xs sm:text-sm mt-2 leading-relaxed" x-text="modalProduct.description"></p>
 
-                                <div class="mt-6 flex items-center justify-between border-t border-[#2a2731] pt-5">
+                                <div class="mt-5 flex items-center justify-between border-t border-[#2a2731] pt-4">
                                     <span class="text-xs uppercase font-semibold text-stone-400 tracking-wider">Quantity</span>
                                     <div class="flex items-center gap-3 bg-[#0f0e13] border border-[#2a2731] rounded-xl p-1">
                                         <button @click="modalQty = Math.max(1, modalQty - 1)"
@@ -185,33 +236,34 @@
                 </div>
             </div>
 
+            <!-- Confirmation Modal -->
             <div x-show="showConfirm"
                  x-cloak
-                 class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+                 class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto"
                  @click.self="showConfirm = false">
-                <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl w-full max-w-lg p-6 sm:p-8 shadow-2xl">
+                <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl w-full max-w-lg p-5 sm:p-8 shadow-2xl my-auto">
                     <div class="flex items-center justify-between pb-4 border-b border-[#2a2731]">
-                        <h3 class="text-xl font-bold text-white tracking-tight">Confirm Order</h3>
+                        <h3 class="text-lg sm:text-xl font-bold text-white tracking-tight">Confirm Order</h3>
                         <button @click="showConfirm = false" class="text-stone-500 hover:text-white transition">
                             <i data-lucide="x" class="w-5 h-5"></i>
                         </button>
                     </div>
 
-                    <div class="space-y-3 max-h-48 overflow-y-auto my-4 pr-1 custom-scroll">
+                    <div class="space-y-3 max-h-40 sm:max-h-48 overflow-y-auto my-4 pr-1 custom-scroll">
                         <template x-for="item in $store.cart.items" :key="item.id + item.note">
                             <div class="flex justify-between items-center text-sm py-1">
                                 <div class="min-w-0 pr-4">
-                                    <span class="text-white font-medium block truncate" x-text="item.qty + 'x ' + item.name"></span>
-                                    <span x-show="item.note" class="text-stone-500 text-xs truncate block" x-text="item.note"></span>
+                                    <span class="text-white font-medium block truncate text-xs sm:text-sm" x-text="item.qty + 'x ' + item.name"></span>
+                                    <span x-show="item.note" class="text-stone-500 text-[11px] truncate block" x-text="item.note"></span>
                                 </div>
-                                <span class="text-stone-300 font-bold whitespace-nowrap" x-text="'$' + (item.price * item.qty).toFixed(2)"></span>
+                                <span class="text-stone-300 font-bold whitespace-nowrap text-xs sm:text-sm" x-text="'$' + (item.price * item.qty).toFixed(2)"></span>
                             </div>
                         </template>
                     </div>
 
-                    <div class="border-t border-[#2a2731] pt-3 flex justify-between items-center mb-6">
+                    <div class="border-t border-[#2a2731] pt-3 flex justify-between items-center mb-5">
                         <span class="text-stone-400 font-semibold text-sm">Total Due</span>
-                        <span class="text-[#b08d57] font-black text-xl" x-text="'$' + $store.cart.total.toFixed(2)"></span>
+                        <span class="text-[#b08d57] font-black text-lg sm:text-xl" x-text="'$' + $store.cart.total.toFixed(2)"></span>
                     </div>
 
                     <div>
@@ -221,8 +273,8 @@
                                 <label class="flex items-center gap-3 bg-[#0f0e13] border border-[#2a2731] rounded-xl p-3 cursor-pointer text-sm hover:border-[#b08d57]/60 transition">
                                     <input type="radio" name="addr" :value="addr.id" x-model.number="$store.addresses.selectedId" class="text-[#b08d57] focus:ring-0">
                                     <div class="min-w-0">
-                                        <span class="text-white font-bold block truncate" x-text="addr.name"></span>
-                                        <span class="text-stone-500 text-xs truncate block" x-text="addr.address || 'No street text'"></span>
+                                        <span class="text-white font-bold block truncate text-xs sm:text-sm" x-text="addr.name"></span>
+                                        <span class="text-stone-500 text-[11px] truncate block" x-text="addr.address || 'No street text'"></span>
                                     </div>
                                 </label>
                             </template>
@@ -246,17 +298,57 @@
                 </div>
             </div>
 
+            <!-- Floating Mobile Cart Bar (When Cart Has Items on Mobile) -->
+            <div x-show="$store.cart.count > 0"
+                 x-cloak
+                 class="fixed bottom-4 left-4 right-4 lg:hidden z-30">
+                <button
+                    @click="mobileCartOpen = true; $nextTick(() => lucide.createIcons())"
+                    class="w-full bg-[#b08d57] hover:bg-[#c9a36b] text-[#0f0e13] font-extrabold rounded-2xl p-4 shadow-2xl flex items-center justify-between transition active:scale-[0.98]">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-7 h-7 rounded-lg bg-[#0f0e13]/20 flex items-center justify-center font-black text-xs" x-text="$store.cart.count"></div>
+                        <span class="text-sm">View Cart</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-sm">
+                        <span x-text="'$' + $store.cart.total.toFixed(2)"></span>
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </div>
+                </button>
+            </div>
+
         </main>
 
-        <aside class="w-80 lg:w-96 bg-[#0f0e13] border-l border-[#1e1c25] flex flex-col shrink-0 justify-between z-10" x-data>
+        <!-- Cart Backdrop for Mobile Drawer -->
+        <div x-show="mobileCartOpen"
+             x-cloak
+             x-transition:enter="transition-opacity ease-out duration-200"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition-opacity ease-in duration-150"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             @click="mobileCartOpen = false"
+             class="fixed inset-0 bg-black/80 backdrop-blur-sm z-40 lg:hidden">
+        </div>
+
+        <!-- Cart Sidebar / Drawer (Desktop Static + Mobile Drawer) -->
+        <aside
+            :class="mobileCartOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'"
+            class="fixed lg:static top-0 right-0 bottom-0 w-80 sm:w-96 lg:w-80 xl:w-96 bg-[#0f0e13] border-l border-[#1e1c25] flex flex-col shrink-0 justify-between z-50 lg:z-10 transition-transform duration-300 ease-in-out">
 
             <!-- Cart Header -->
-            <div class="p-6 border-b border-[#1e1c25] flex items-center justify-between">
+            <div class="p-5 sm:p-6 border-b border-[#1e1c25] flex items-center justify-between">
                 <div class="flex items-center gap-2">
                     <i data-lucide="shopping-bag" class="w-5 h-5 text-[#b08d57]"></i>
                     <h2 class="text-base font-bold text-white">Order Summary</h2>
                 </div>
-                <span class="text-xs bg-[#1e1c25] text-stone-400 px-2.5 py-1 rounded-full font-bold" x-text="$store.cart.count + ' items'"></span>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs bg-[#1e1c25] text-stone-400 px-2.5 py-1 rounded-full font-bold" x-text="$store.cart.count + ' items'"></span>
+                    <!-- Close button for mobile cart drawer -->
+                    <button @click="mobileCartOpen = false" class="lg:hidden p-1.5 rounded-xl text-stone-400 hover:text-white hover:bg-[#1e1c25] transition" aria-label="Close Cart">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
             </div>
 
             <!-- Cart Items Scroll List -->
@@ -294,7 +386,8 @@
                 </div>
             </div>
 
-            <div class="border-t border-[#1e1c25] p-5 bg-[#0f0e13] space-y-3">
+            <!-- Cart Footer -->
+            <div class="border-t border-[#1e1c25] p-4 sm:p-5 bg-[#0f0e13] space-y-3">
                 <div class="space-y-1.5 text-xs">
                     <div class="flex justify-between text-stone-400">
                         <span>Items Total</span>
@@ -311,7 +404,7 @@
                 </div>
 
                 <button
-                    @click="document.dispatchEvent(new CustomEvent('open-confirm'))"
+                    @click="mobileCartOpen = false; document.dispatchEvent(new CustomEvent('open-confirm'))"
                     :disabled="$store.cart.items.length === 0"
                     class="w-full bg-[#b08d57] hover:bg-[#c9a36b] disabled:opacity-30 disabled:cursor-not-allowed text-[#0f0e13] font-bold rounded-xl py-3 transition flex items-center justify-center gap-2">
                     <span>Checkout Now</span>
@@ -321,15 +414,16 @@
         </aside>
     </div>
 
-    <div id="section-address" class="page-section hidden flex-1 overflow-y-auto p-8 lg:p-12 custom-scroll bg-[#14131a]/40" x-data="addressApp()">
-        <div class="max-w-3xl mx-auto">
-            <div class="mb-8">
-                <h1 class="text-2xl lg:text-3xl font-extrabold text-white tracking-tight">Delivery Addresses</h1>
-                <p class="text-stone-500 text-sm mt-1">Manage saved locations for one-click checkout</p>
+    <!-- SECTION: Delivery Addresses -->
+    <div id="section-address" class="page-section hidden flex-1 overflow-y-auto p-4 sm:p-8 lg:p-12 custom-scroll bg-[#14131a]/40 w-full" x-data="addressApp()">
+        <div class="max-w-3xl mx-auto pb-16">
+            <div class="mb-6 sm:mb-8">
+                <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Delivery Addresses</h1>
+                <p class="text-stone-500 text-xs sm:text-sm mt-1">Manage saved locations for one-click checkout</p>
             </div>
 
-            <!-- New Address Form (Not in Card) -->
-            <div class="mb-10 pb-8 border-b border-[#2a2731]">
+            <!-- New Address Form (Clean layout without outer card) -->
+            <div class="mb-8 sm:mb-10 pb-6 sm:pb-8 border-b border-[#2a2731]">
                 <h3 class="text-base font-bold text-white mb-4 flex items-center gap-2">
                     <i data-lucide="plus-circle" class="w-4 h-4 text-[#b08d57]"></i>
                     <span>Add New Address</span>
@@ -373,6 +467,7 @@
                 </div>
             </div>
 
+            <!-- Saved Addresses List -->
             <div>
                 <h3 class="text-sm font-bold uppercase tracking-wider text-stone-400 mb-4">Saved Locations</h3>
 
@@ -513,7 +608,7 @@
         sections.forEach(s => s.classList.add('hidden'));
         document.getElementById('section-' + target).classList.remove('hidden');
         sideLinks.forEach(l => l.classList.remove('active'));
-        document.querySelector(`.side-link[data-target="${target}"]`).classList.add('active');
+        document.querySelectorAll(`.side-link[data-target="${target}"]`).forEach(l => l.classList.add('active'));
         setTimeout(() => lucide.createIcons(), 50);
     }
 
