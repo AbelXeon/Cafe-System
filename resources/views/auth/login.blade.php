@@ -110,7 +110,7 @@
                                 value="{{ old('username') }}"
                                 required
                                 autofocus
-                                placeholder="e.g. alex_chef"
+                                placeholder="e.g. Abebe Bekele"
                                 class="cd-input w-full bg-[#14131a] border border-[#2a2731] rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-stone-600 focus:outline-none transition duration-150"
                             >
                         </div>
