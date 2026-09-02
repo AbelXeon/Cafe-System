@@ -68,12 +68,13 @@
 
         <main class="flex-1 overflow-y-auto p-6 lg:p-8 custom-scroll" x-data="menuApp()" x-init="init()">
 
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+            <!-- Header & Category Pills (Underneath) -->
+            <div class="mb-8 space-y-4">
                 <div>
                     <h1 class="text-2xl lg:text-3xl font-extrabold text-white tracking-tight">Browse Menu</h1>
                 </div>
 
-                <div class="flex gap-2 overflow-x-auto pb-2 sm:pb-0 custom-scroll">
+                <div class="flex flex-wrap gap-2 pt-1">
                     <template x-for="cat in categories" :key="cat">
                         <button
                             @click="activeCategory = cat"
