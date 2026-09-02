@@ -164,9 +164,6 @@
         <section class="hidden lg:flex lg:col-span-6 xl:col-span-7 bg-[#14131a] p-10 xl:p-14 flex-col justify-between relative overflow-hidden">
 
             <div class="max-w-xl">
-                <span class="text-xs font-semibold uppercase tracking-widest text-[#b08d57] border border-[#2a2731] bg-[#1e1c25] px-3 py-1 rounded-full">
-                    Join the network
-                </span>
                 <h2 class="text-3xl xl:text-4xl font-black text-white tracking-tight mt-5">
                     Set up your kitchen and start serving in minutes.
                 </h2>
