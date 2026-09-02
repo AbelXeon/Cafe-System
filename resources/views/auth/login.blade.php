@@ -22,7 +22,7 @@
     <div class="w-full min-h-screen grid grid-cols-1 lg:grid-cols-12 overflow-hidden">
 
         <!-- ================= LEFT SIDE: FORM ================= -->
-        <div class="lg:col-span-5 xl:col-span-4 p-8 sm:p-12 xl:p-16 flex flex-col justify-between bg-slate-900 border-r border-slate-800/80 z-20">
+        <div class="lg:col-span-5 xl:col-span-4 p-8 sm:p-12 xl:p-16 flex flex-col justify-between bg-slate-900 border-r border-slate-800/80 z-20 min-h-screen">
             <div>
                 <!-- Brand / Logo -->
                 <div class="flex items-center gap-3.5 mb-12">
@@ -92,8 +92,8 @@
 
                     <!-- Submit Button -->
                     <button type="submit"
-                        class="w-full mt-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-black rounded-xl py-4 transition duration-200 flex items-center justify-center gap-2 group tracking-wide uppercase text-sm shadow-xl shadow-orange-950/40">
-                        <span>Sign In</span>
+                        class="w-full mt-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-black rounded-xl py-4 transition duration-200 flex items-center justify-center gap-2 group tracking-wide uppercase text-sm shadow-xl shadow-orange-950/40 cursor-pointer">
+                        <span>Sign In to Dashboard</span>
                         <i data-lucide="arrow-right" class="w-5 h-5 transition-transform group-hover:translate-x-1.5"></i>
                     </button>
                 </form>
@@ -109,38 +109,38 @@
         </div>
 
         <!-- ================= RIGHT SIDE: VISUAL SHOWCASE ================= -->
-        <div class="lg:col-span-7 xl:col-span-8 bg-slate-950 p-8 lg:p-16 relative flex items-center justify-center min-h-[450px] lg:min-h-full">
+        <div class="lg:col-span-7 xl:col-span-8 bg-slate-950 p-8 lg:p-16 relative flex items-center justify-center min-h-[500px] lg:min-h-screen">
             
-            <!-- Diagonal Accent Line -->
+            <!-- Structural Accent Layer -->
             <div class="absolute inset-0 bg-gradient-to-tr from-orange-950/20 via-slate-950 to-amber-950/10 pointer-events-none"></div>
 
-            <!-- Static Food Grid Collages -->
-            <div class="relative w-full max-w-xl grid grid-cols-12 gap-4 items-center">
+            <!-- Static Asymmetric Food Showcase -->
+            <div class="relative w-full max-w-2xl grid grid-cols-12 gap-6 items-center">
 
-                <!-- Main Large Burger Box -->
-                <div class="col-span-8 relative z-20">
-                    <div class="p-2 bg-slate-900/90 border-2 border-amber-500/30 rounded-3xl shadow-2xl">
+                <!-- Main Large Burger Container -->
+                <div class="col-span-7 sm:col-span-8 relative z-20">
+                    <div class="p-3 bg-slate-900 border-2 border-slate-800 rounded-3xl shadow-2xl">
                         <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=800&q=80" 
                              alt="Gourmet Burger" 
-                             class="w-full h-72 sm:h-80 object-cover rounded-2xl">
+                             class="w-full h-80 sm:h-96 object-cover rounded-2xl">
                     </div>
                 </div>
 
                 <!-- Secondary Side Stack (Pizza & Drink) -->
-                <div class="col-span-4 space-y-4 relative z-10 -ml-8 sm:-ml-12">
+                <div class="col-span-5 sm:col-span-4 space-y-6 relative z-10 -ml-6 sm:-ml-10">
                     
-                    <!-- Top Image (Pizza) -->
-                    <div class="p-2 bg-slate-900/90 border-2 border-orange-500/30 rounded-2xl shadow-xl">
+                    <!-- Pizza Image Card -->
+                    <div class="p-2.5 bg-slate-900 border-2 border-slate-800 rounded-2xl shadow-xl">
                         <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=400&q=80" 
                              alt="Delicious Pizza" 
-                             class="w-full h-32 sm:h-36 object-cover rounded-xl">
+                             class="w-full h-36 sm:h-40 object-cover rounded-xl">
                     </div>
 
-                    <!-- Bottom Image (Drink) -->
-                    <div class="p-2 bg-slate-900/90 border-2 border-amber-500/30 rounded-2xl shadow-xl">
+                    <!-- Drink Image Card -->
+                    <div class="p-2.5 bg-slate-900 border-2 border-slate-800 rounded-2xl shadow-xl">
                         <img src="https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=400&q=80" 
                              alt="Refreshing Drink" 
-                             class="w-full h-32 sm:h-36 object-cover rounded-xl">
+                             class="w-full h-36 sm:h-40 object-cover rounded-xl">
                     </div>
 
                 </div>
