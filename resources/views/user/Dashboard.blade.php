@@ -79,7 +79,6 @@
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                 <div>
                     <h1 class="text-2xl lg:text-3xl font-extrabold text-white tracking-tight">Browse Menu</h1>
-                    <p class="text-stone-500 text-xs sm:text-sm mt-1">Select from our freshly prepared meals &amp; drinks</p>
                 </div>
 
                 <!-- Category Filters -->
