@@ -178,9 +178,7 @@
         <section class="hidden lg:flex lg:col-span-7 xl:col-span-8 bg-[#14131a] p-12 xl:p-16 flex-col justify-between relative overflow-hidden">
 
             <div class="max-w-xl">
-                <span class="text-xs font-semibold uppercase tracking-widest text-[#b08d57] border border-[#2a2731] bg-[#1e1c25] px-3 py-1 rounded-full">
-                    Operations &amp; Management
-                </span>
+                
                 <h2 class="text-3xl xl:text-4xl font-black text-white tracking-tight mt-5">
                     Fast, synchronized food orders and kitchen delivery control.
                 </h2>
