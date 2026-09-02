@@ -5,9 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Sign in | CraveDash Delivery</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Font & Lucide Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -18,13 +16,10 @@
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen selection:bg-amber-500 selection:text-slate-950">
 
-    <!-- Full Screen Edge-to-Edge Grid -->
     <main class="min-h-screen w-full grid grid-cols-1 lg:grid-cols-12">
 
-        <!-- ================= LEFT SIDE: FORM SECTION ================= -->
         <section class="lg:col-span-5 xl:col-span-4 bg-slate-950 p-8 sm:p-12 lg:p-14 flex flex-col justify-between border-r border-slate-900 z-10">
             
-            <!-- Brand / Logo -->
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center text-slate-950">
                     <i data-lucide="utensils" class="w-5 h-5 stroke-[2.5]"></i>
@@ -35,14 +30,12 @@
                 </div>
             </div>
 
-            <!-- Main Form Block -->
             <div class="w-full my-auto py-8 max-w-sm mx-auto">
                 <div class="mb-8">
                     <h1 class="text-3xl font-extrabold text-white tracking-tight">Sign in</h1>
                     <p class="text-slate-400 text-sm mt-1.5">Enter your credentials to access your account</p>
                 </div>
 
-                <!-- Session Alert Messages -->
                 @if (session('status'))
                     <div class="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm rounded-xl px-4 py-3 mb-5 flex items-center gap-3">
                         <i data-lucide="check-circle-2" class="w-4 h-4 flex-shrink-0"></i>
@@ -57,11 +50,9 @@
                     </div>
                 @endif
 
-                <!-- Login Form -->
                 <form method="POST" action="{{ route('login.submit') }}" class="space-y-4">
                     @csrf
 
-                    <!-- Username Input -->
                     <div>
                         <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">Username</label>
                         <div class="relative">
@@ -78,7 +69,6 @@
                         </div>
                     </div>
 
-                    <!-- Password Input -->
                     <div>
                         <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">Password</label>
                         <div class="relative">
@@ -100,7 +90,6 @@
                         </div>
                     </div>
 
-                    <!-- Remember Me Option -->
                     <div class="flex items-center justify-between py-1">
                         <label class="flex items-center gap-2.5 text-sm text-slate-300 cursor-pointer select-none">
                             <input 
@@ -128,7 +117,6 @@
                 </p>
             </div>
 
-            <!-- Copyright Line -->
             <div class="text-xs text-slate-600 text-center sm:text-left">
                 &copy; {{ date('Y') }} CraveDash System. All rights reserved.
             </div>
