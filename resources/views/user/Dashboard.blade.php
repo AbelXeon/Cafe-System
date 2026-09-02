@@ -4,104 +4,197 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Menu</title>
+    <title>CraveDash | Dashboard & Menu</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.5/dist/cdn.min.js"></script>
+    <!-- Google Fonts & Lucide Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        [x-cloak] { display: none !important; }
+        .custom-scroll::-webkit-scrollbar { width: 5px; height: 5px; }
+        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 9999px; }
+        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #475569; }
+        .side-link { color: #94a3b8; transition: all 0.15s ease-in-out; }
+        .side-link:hover { color: #f8fafc; background: #1e293b; }
+        .side-link.active { background: #f59e0b; color: #020617; font-weight: 700; }
+    </style>
 </head>
-<body class="bg-slate-950 text-slate-200 h-screen overflow-hidden">
+<body class="bg-slate-950 text-slate-100 h-screen overflow-hidden selection:bg-amber-500 selection:text-slate-950">
 
-<div class="flex h-full">
+<div class="flex h-full w-full">
 
-    {{-- LEFT SIDEBAR --}}
-    <aside class="w-56 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
-        <div class="px-6 py-5 border-b border-slate-800">
-            <h1 class="text-white font-bold text-lg">Cafe</h1>
-        </div>
-        <nav class="flex-1 px-3 py-4 space-y-1">
-            <button data-target="menu" class="side-link w-full text-left px-3 py-2 rounded-lg text-sm font-medium">Menu</button>
-            <button data-target="address" class="side-link w-full text-left px-3 py-2 rounded-lg text-sm font-medium">My Address</button>
-        </nav>
-        <form method="POST" action="{{ route('logout') }}" class="p-3 border-t border-slate-800">
-            @csrf
-            <button class="w-full text-left px-3 py-2 rounded-lg text-sm text-red-400 hover:bg-red-500/10">Logout</button>
-        </form>
-    </aside>
-
-    {{-- MENU SECTION --}}
-    <div id="section-menu" class="page-section flex flex-1 min-h-0">
-
-        <main class="flex-1 overflow-y-auto p-8" x-data="menuApp()" x-init="init()">
-
-            {{-- category tabs --}}
-            <div class="flex gap-2 mb-6 flex-wrap">
-                <template x-for="cat in categories" :key="cat">
-                    <button
-                        @click="activeCategory = cat"
-                        :class="activeCategory === cat ? 'bg-indigo-600 text-white' : 'bg-slate-900 text-slate-300 border border-slate-800'"
-                        class="px-4 py-2 rounded-full text-sm font-medium transition"
-                        x-text="cat">
-                    </button>
-                </template>
+    {{-- LEFT SIDEBAR NAVIGATION --}}
+    <aside class="w-64 bg-slate-950 border-r border-slate-900 flex flex-col shrink-0 justify-between z-20">
+        <div>
+            <!-- Brand Header -->
+            <div class="p-6 border-b border-slate-900 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center text-slate-950 shadow">
+                    <i data-lucide="utensils" class="w-5 h-5 stroke-[2.5]"></i>
+                </div>
+                <div>
+                    <span class="text-lg font-black tracking-tight text-white block">Crave<span class="text-amber-500">Dash</span></span>
+                    <span class="text-xs text-slate-500 font-medium">Customer Portal</span>
+                </div>
             </div>
 
-            <h2 class="text-lg font-bold text-white mb-4" x-text="activeCategory + ' menu'"></h2>
+            <!-- Nav Links -->
+            <nav class="p-4 space-y-1.5">
+                <button data-target="menu" class="side-link w-full text-left px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-3">
+                    <i data-lucide="layout-grid" class="w-4 h-4"></i>
+                    <span>Menu Catalog</span>
+                </button>
+                <button data-target="address" class="side-link w-full text-left px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-3">
+                    <i data-lucide="map-pin" class="w-4 h-4"></i>
+                    <span>My Addresses</span>
+                </button>
+            </nav>
+        </div>
 
-            {{-- product grid --}}
-            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+        <!-- Sidebar Bottom: Logout -->
+        <div class="p-4 border-t border-slate-900">
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button class="w-full text-left px-4 py-3 rounded-xl text-sm font-semibold text-rose-400 hover:bg-rose-500/10 transition flex items-center gap-3">
+                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                    <span>Sign Out</span>
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    {{-- ================= MENU SECTION ================= --}}
+    <div id="section-menu" class="page-section flex flex-1 min-h-0 bg-slate-900/50">
+
+        <main class="flex-1 overflow-y-auto p-6 lg:p-8 custom-scroll" x-data="menuApp()" x-init="init()">
+            
+            <!-- Top Bar: Category Pill Selector & Item Counter -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+                <div>
+                    <h1 class="text-2xl lg:text-3xl font-extrabold text-white tracking-tight">Browse Menu</h1>
+                    <p class="text-slate-400 text-xs sm:text-sm mt-1">Select from our freshly prepared meals & drinks</p>
+                </div>
+
+                <!-- Category Filters -->
+                <div class="flex gap-2 overflow-x-auto pb-2 sm:pb-0 custom-scroll">
+                    <template x-for="cat in categories" :key="cat">
+                        <button
+                            @click="activeCategory = cat"
+                            :class="activeCategory === cat 
+                                ? 'bg-amber-500 text-slate-950 font-bold shadow-sm' 
+                                : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'"
+                            class="px-4 py-2 rounded-xl text-xs sm:text-sm whitespace-nowrap transition cursor-pointer"
+                            x-text="cat">
+                        </button>
+                    </template>
+                </div>
+            </div>
+
+            <!-- Current Category Title Bar -->
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-6">
+                <div class="flex items-center gap-2">
+                    <h2 class="text-lg font-bold text-white uppercase tracking-wider" x-text="activeCategory"></h2>
+                    <span class="text-xs bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full font-medium" x-text="visibleProducts.length + ' items'"></span>
+                </div>
+            </div>
+
+            {{-- PRODUCT GRID --}}
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
                 <template x-for="product in visibleProducts" :key="product.id">
-                    <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden hover:border-indigo-500/50 transition cursor-pointer"
+                    <div class="bg-slate-900 border border-slate-800/90 rounded-2xl overflow-hidden hover:border-slate-700 transition duration-200 flex flex-col justify-between group cursor-pointer"
                          @click="openModal(product)">
-                        <img :src="product.image" :alt="product.name" class="w-full h-36 object-cover">
-                        <div class="p-4">
-                            <div class="flex items-center justify-between">
-                                <h3 class="text-white font-semibold" x-text="product.name"></h3>
-                                <span class="text-indigo-400 font-bold text-sm" x-text="'$' + product.price.toFixed(2)"></span>
+                        
+                        <!-- Product Image Box -->
+                        <div class="relative w-full h-44 bg-slate-950 overflow-hidden">
+                            <img :src="product.image" :alt="product.name" class="w-full h-full object-cover group-hover:scale-105 transition duration-300 ease-out">
+                            <div class="absolute top-3 right-3 bg-slate-950/80 backdrop-blur-md px-2.5 py-1 rounded-lg border border-slate-800">
+                                <span class="text-amber-400 font-extrabold text-sm" x-text="'$' + product.price.toFixed(2)"></span>
                             </div>
-                            <p class="text-slate-400 text-sm mt-1 line-clamp-2" x-text="product.description"></p>
+                        </div>
+
+                        <!-- Product Content & Add Button -->
+                        <div class="p-5 flex flex-col flex-1 justify-between">
+                            <div>
+                                <h3 class="text-white font-bold text-base leading-snug group-hover:text-amber-400 transition" x-text="product.name"></h3>
+                                <p class="text-slate-400 text-xs mt-2 line-clamp-2 leading-relaxed" x-text="product.description"></p>
+                            </div>
+
                             <button
                                 @click.stop="$store.cart.add(product, 1, '')"
-                                class="w-full mt-3 bg-slate-800 hover:bg-indigo-600 text-white text-sm font-medium rounded-lg py-2 transition">
-                                Add to Cart
+                                class="w-full mt-4 bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-slate-200 text-xs font-bold rounded-xl py-2.5 transition flex items-center justify-center gap-2">
+                                <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                                <span>Add to Cart</span>
                             </button>
                         </div>
                     </div>
                 </template>
 
-                <p x-show="visibleProducts.length === 0" class="text-slate-500 col-span-full">No items in this category yet.</p>
+                <!-- Empty State -->
+                <div x-show="visibleProducts.length === 0" class="col-span-full py-16 text-center">
+                    <div class="w-12 h-12 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center mx-auto text-slate-500 mb-3">
+                        <i data-lucide="package-open" class="w-6 h-6"></i>
+                    </div>
+                    <p class="text-slate-400 font-medium text-sm">No food items found in this category yet.</p>
+                </div>
             </div>
 
-            {{-- PRODUCT MODAL --}}
+            {{-- ================= PRODUCT DETAIL MODAL ================= --}}
             <div x-show="modalProduct"
                  x-cloak
-                 class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-40 px-4"
+                 class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
                  @click.self="closeModal()">
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md overflow-hidden">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl">
                     <template x-if="modalProduct">
                         <div>
-                            <img :src="modalProduct.image" :alt="modalProduct.name" class="w-full h-48 object-cover">
+                            <div class="relative w-full h-56 bg-slate-950">
+                                <img :src="modalProduct.image" :alt="modalProduct.name" class="w-full h-full object-cover">
+                                <button @click="closeModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-950/80 text-slate-400 hover:text-white flex items-center justify-center border border-slate-800 transition">
+                                    <i data-lucide="x" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+
                             <div class="p-6">
-                                <div class="flex items-start justify-between">
-                                    <h3 class="text-xl font-bold text-white" x-text="modalProduct.name"></h3>
-                                    <span class="text-indigo-400 font-bold" x-text="'$' + modalProduct.price.toFixed(2)"></span>
+                                <div class="flex items-start justify-between gap-4">
+                                    <h3 class="text-xl font-bold text-white tracking-tight" x-text="modalProduct.name"></h3>
+                                    <span class="text-amber-400 font-black text-lg" x-text="'$' + modalProduct.price.toFixed(2)"></span>
                                 </div>
-                                <p class="text-slate-400 text-sm mt-2" x-text="modalProduct.description"></p>
+                                <p class="text-slate-400 text-sm mt-2 leading-relaxed" x-text="modalProduct.description"></p>
 
-                                <div class="flex items-center gap-3 mt-5">
-                                    <button @click="modalQty = Math.max(1, modalQty - 1)"
-                                        class="w-8 h-8 rounded-full bg-slate-800 text-white">-</button>
-                                    <span class="text-white font-medium w-6 text-center" x-text="modalQty"></span>
-                                    <button @click="modalQty++"
-                                        class="w-8 h-8 rounded-full bg-slate-800 text-white">+</button>
+                                <!-- Quantity Controls -->
+                                <div class="mt-6 flex items-center justify-between border-t border-slate-800 pt-5">
+                                    <span class="text-xs uppercase font-semibold text-slate-400 tracking-wider">Quantity</span>
+                                    <div class="flex items-center gap-3 bg-slate-950 border border-slate-800 rounded-xl p-1">
+                                        <button @click="modalQty = Math.max(1, modalQty - 1)"
+                                            class="w-8 h-8 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-bold flex items-center justify-center transition">-</button>
+                                        <span class="text-white font-bold w-8 text-center text-sm" x-text="modalQty"></span>
+                                        <button @click="modalQty++"
+                                            class="w-8 h-8 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-bold flex items-center justify-center transition">+</button>
+                                    </div>
                                 </div>
 
-                                <textarea x-model="modalNote" placeholder="Special note (optional)" rows="2"
-                                    class="w-full mt-4 bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white placeholder:text-slate-500"></textarea>
+                                <!-- Note Textarea -->
+                                <div class="mt-4">
+                                    <label class="block text-xs uppercase font-semibold text-slate-400 tracking-wider mb-2">Special Instructions</label>
+                                    <textarea x-model="modalNote" placeholder="e.g. No onions, sauce on the side..." rows="2"
+                                        class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-amber-500 transition"></textarea>
+                                </div>
 
-                                <div class="flex gap-2 mt-5">
+                                <!-- Action Buttons -->
+                                <div class="flex gap-3 mt-6">
                                     <button @click="closeModal()"
-                                        class="flex-1 bg-slate-800 text-white text-sm font-medium rounded-lg py-2">Cancel</button>
+                                        class="w-1/3 bg-slate-800 hover:bg-slate-700 text-white text-sm font-semibold rounded-xl py-3 transition">Cancel</button>
                                     <button @click="addToCartFromModal()"
-                                        class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-lg py-2">Add to Cart</button>
+                                        class="w-2/3 bg-amber-500 hover:bg-amber-400 text-slate-950 text-sm font-bold rounded-xl py-3 transition flex items-center justify-center gap-2">
+                                        <span>Add to Cart</span>
+                                        <span class="font-normal opacity-70">|</span>
+                                        <span x-text="'$' + (modalProduct.price * modalQty).toFixed(2)"></span>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -109,51 +202,67 @@
                 </div>
             </div>
 
-            {{-- ORDER CONFIRM MODAL --}}
+            {{-- ================= ORDER CONFIRM MODAL ================= --}}
             <div x-show="showConfirm"
                  x-cloak
-                 class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-40 px-4"
+                 class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
                  @click.self="showConfirm = false">
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md p-6">
-                    <h3 class="text-xl font-bold text-white mb-4">Confirm order</h3>
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg p-6 sm:p-8 shadow-2xl">
+                    <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+                        <h3 class="text-xl font-bold text-white tracking-tight">Confirm Order</h3>
+                        <button @click="showConfirm = false" class="text-slate-500 hover:text-white transition">
+                            <i data-lucide="x" class="w-5 h-5"></i>
+                        </button>
+                    </div>
 
-                    <div class="space-y-3 max-h-52 overflow-y-auto">
+                    <!-- Items Summary -->
+                    <div class="space-y-3 max-h-48 overflow-y-auto my-4 pr-1 custom-scroll">
                         <template x-for="item in $store.cart.items" :key="item.id + item.note">
-                            <div class="flex justify-between text-sm">
-                                <span class="text-slate-300" x-text="item.qty + '× ' + item.name"></span>
-                                <span class="text-white font-medium" x-text="'$' + (item.price * item.qty).toFixed(2)"></span>
+                            <div class="flex justify-between items-center text-sm py-1">
+                                <div class="min-w-0 pr-4">
+                                    <span class="text-white font-medium block truncate" x-text="item.qty + 'x ' + item.name"></span>
+                                    <span x-show="item.note" class="text-slate-500 text-xs truncate block" x-text="item.note"></span>
+                                </div>
+                                <span class="text-slate-300 font-bold whitespace-nowrap" x-text="'$' + (item.price * item.qty).toFixed(2)"></span>
                             </div>
                         </template>
                     </div>
 
-                    <div class="border-t border-slate-800 mt-4 pt-4 flex justify-between mb-4">
-                        <span class="text-slate-300 font-medium">Total</span>
-                        <span class="text-indigo-400 font-bold" x-text="'$' + $store.cart.total.toFixed(2)"></span>
+                    <div class="border-t border-slate-800 pt-3 flex justify-between items-center mb-6">
+                        <span class="text-slate-400 font-semibold text-sm">Total Due</span>
+                        <span class="text-amber-400 font-black text-xl" x-text="'$' + $store.cart.total.toFixed(2)"></span>
                     </div>
 
-                    <label class="block text-sm text-slate-300 mb-2">Deliver to</label>
-                    <div class="space-y-2 max-h-32 overflow-y-auto mb-2">
-                        <template x-for="addr in $store.addresses.list" :key="addr.id">
-                            <label class="flex items-center gap-2 bg-slate-800/60 rounded-lg px-3 py-2 cursor-pointer text-sm">
-                                <input type="radio" name="addr" :value="addr.id" x-model.number="$store.addresses.selectedId">
-                                <span class="text-white" x-text="addr.name"></span>
-                                <span class="text-slate-500 text-xs truncate" x-text="addr.address || ''"></span>
-                            </label>
-                        </template>
-                        <p x-show="$store.addresses.list.length === 0" class="text-slate-500 text-xs">
-                            No saved addresses — add one under "My Address", or leave blank for dine-in.
-                        </p>
+                    <!-- Deliver To Selector -->
+                    <div>
+                        <label class="block text-xs uppercase font-semibold text-slate-400 tracking-wider mb-2">Delivery Destination</label>
+                        <div class="space-y-2 max-h-36 overflow-y-auto pr-1 custom-scroll mb-2">
+                            <template x-for="addr in $store.addresses.list" :key="addr.id">
+                                <label class="flex items-center gap-3 bg-slate-950 border border-slate-800 rounded-xl p-3 cursor-pointer text-sm hover:border-slate-700 transition">
+                                    <input type="radio" name="addr" :value="addr.id" x-model.number="$store.addresses.selectedId" class="text-amber-500 focus:ring-0">
+                                    <div class="min-w-0">
+                                        <span class="text-white font-bold block truncate" x-text="addr.name"></span>
+                                        <span class="text-slate-500 text-xs truncate block" x-text="addr.address || 'No street text'"></span>
+                                    </div>
+                                </label>
+                            </template>
+                            <p x-show="$store.addresses.list.length === 0" class="text-slate-500 text-xs p-2 bg-slate-950 rounded-lg">
+                                No saved addresses. Add one under "My Addresses" tab or continue for Dine-In.
+                            </p>
+                        </div>
                     </div>
 
-                    <p x-show="orderError" x-text="orderError" class="text-red-400 text-sm mt-2"></p>
+                    <!-- Error line -->
+                    <p x-show="orderError" x-text="orderError" class="text-rose-400 text-xs mt-3 bg-rose-500/10 border border-rose-500/20 p-2.5 rounded-xl"></p>
 
-                    <div class="flex gap-2 mt-5">
+                    <!-- Buttons -->
+                    <div class="flex gap-3 mt-6">
                         <button @click="showConfirm = false" :disabled="placingOrder"
-                            class="flex-1 bg-slate-800 text-white text-sm font-medium rounded-lg py-2">Back</button>
+                            class="w-1/3 bg-slate-800 hover:bg-slate-700 text-white text-sm font-semibold rounded-xl py-3 transition">Back</button>
                         <button @click="placeOrder()" :disabled="placingOrder"
-                            class="flex-1 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white text-sm font-medium rounded-lg py-2">
-                            <span x-show="!placingOrder">Confirm & Place</span>
-                            <span x-show="placingOrder">Placing...</span>
+                            class="w-2/3 bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-slate-950 text-sm font-bold rounded-xl py-3 transition flex items-center justify-center gap-2">
+                            <span x-show="!placingOrder">Place Order Now</span>
+                            <span x-show="placingOrder">Submitting...</span>
                         </button>
                     </div>
                 </div>
@@ -161,114 +270,172 @@
 
         </main>
 
-        {{-- RIGHT CART PANEL --}}
-        <aside class="w-80 bg-slate-900 border-l border-slate-800 flex flex-col shrink-0" x-data>
-            <div class="px-6 py-5 border-b border-slate-800">
-                <h2 class="text-white font-bold">Cart</h2>
+        {{-- ================= RIGHT CART PANEL ================= --}}
+        <aside class="w-80 lg:w-96 bg-slate-950 border-l border-slate-900 flex flex-col shrink-0 justify-between z-10" x-data>
+            
+            <!-- Cart Header -->
+            <div class="p-6 border-b border-slate-900 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="shopping-bag" class="w-5 h-5 text-amber-500"></i>
+                    <h2 class="text-base font-bold text-white">Order Summary</h2>
+                </div>
+                <span class="text-xs bg-slate-900 text-slate-400 px-2.5 py-1 rounded-full font-bold" x-text="$store.cart.count + ' items'"></span>
             </div>
 
-            <div class="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+            <!-- Cart Items Scroll List -->
+            <div class="flex-1 overflow-y-auto p-4 space-y-3 custom-scroll">
                 <template x-for="item in $store.cart.items" :key="item.id + item.note">
-                    <div class="bg-slate-800/60 rounded-xl p-3 flex gap-3">
-                        <img :src="item.image" class="w-14 h-14 object-cover rounded-lg">
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 flex gap-3 items-center">
+                        <img :src="item.image" class="w-14 h-14 object-cover rounded-lg bg-slate-950 shrink-0">
                         <div class="flex-1 min-w-0">
-                            <div class="flex items-start justify-between gap-2">
-                                <p class="text-white text-sm font-medium truncate" x-text="item.name"></p>
-                                <button @click="$store.cart.remove(item)" class="text-slate-500 hover:text-red-400 text-sm shrink-0">✕</button>
+                            <div class="flex items-start justify-between gap-1">
+                                <p class="text-white text-xs font-bold truncate" x-text="item.name"></p>
+                                <button @click="$store.cart.remove(item)" class="text-slate-500 hover:text-rose-400 transition text-xs shrink-0">
+                                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                </button>
                             </div>
-                            <p x-show="item.note" class="text-slate-500 text-xs truncate" x-text="item.note"></p>
-                            <div class="flex items-center justify-between mt-2">
-                                <div class="flex items-center gap-2">
-                                    <button @click="$store.cart.decrement(item)" class="w-6 h-6 rounded-full bg-slate-700 text-white text-xs">-</button>
-                                    <span class="text-white text-sm" x-text="item.qty"></span>
-                                    <button @click="$store.cart.increment(item)" class="w-6 h-6 rounded-full bg-slate-700 text-white text-xs">+</button>
+                            <p x-show="item.note" class="text-slate-500 text-[11px] truncate mt-0.5" x-text="item.note"></p>
+                            
+                            <div class="flex items-center justify-between mt-2.5">
+                                <div class="flex items-center gap-1.5 bg-slate-950 border border-slate-800 rounded-lg px-1.5 py-0.5">
+                                    <button @click="$store.cart.decrement(item)" class="text-slate-400 hover:text-white text-xs px-1">-</button>
+                                    <span class="text-white text-xs font-bold px-1" x-text="item.qty"></span>
+                                    <button @click="$store.cart.increment(item)" class="text-slate-400 hover:text-white text-xs px-1">+</button>
                                 </div>
-                                <span class="text-indigo-400 text-sm font-semibold" x-text="'$' + (item.price * item.qty).toFixed(2)"></span>
+                                <span class="text-amber-400 text-xs font-bold" x-text="'$' + (item.price * item.qty).toFixed(2)"></span>
                             </div>
                         </div>
                     </div>
                 </template>
 
-                <p x-show="$store.cart.items.length === 0" class="text-slate-500 text-sm text-center mt-10">Cart is empty</p>
+                <!-- Empty Cart Notice -->
+                <div x-show="$store.cart.items.length === 0" class="h-64 flex flex-col items-center justify-center text-center p-4">
+                    <div class="w-12 h-12 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-600 mb-3">
+                        <i data-lucide="shopping-basket" class="w-6 h-6"></i>
+                    </div>
+                    <p class="text-slate-400 text-sm font-medium">Your basket is empty</p>
+                    <p class="text-slate-600 text-xs mt-1">Select meals from the menu to start ordering</p>
+                </div>
             </div>
 
-            <div class="border-t border-slate-800 p-4">
-                <div class="flex justify-between text-sm mb-1">
-                    <span class="text-slate-400">Items</span>
-                    <span class="text-white" x-text="$store.cart.count"></span>
+            <!-- Cart Footer Checkout Bar -->
+            <div class="border-t border-slate-900 p-5 bg-slate-950 space-y-3">
+                <div class="space-y-1.5 text-xs">
+                    <div class="flex justify-between text-slate-400">
+                        <span>Items Total</span>
+                        <span class="text-slate-200 font-medium" x-text="'$' + $store.cart.total.toFixed(2)"></span>
+                    </div>
+                    <div class="flex justify-between text-slate-400">
+                        <span>Tax & Fees</span>
+                        <span class="text-slate-200 font-medium">$0.00</span>
+                    </div>
+                    <div class="flex justify-between text-sm pt-2 border-t border-slate-900 font-bold">
+                        <span class="text-white">Estimated Total</span>
+                        <span class="text-amber-400 text-base" x-text="'$' + $store.cart.total.toFixed(2)"></span>
+                    </div>
                 </div>
-                <div class="flex justify-between mb-4">
-                    <span class="text-slate-300 font-medium">Total</span>
-                    <span class="text-white font-bold" x-text="'$' + $store.cart.total.toFixed(2)"></span>
-                </div>
+
                 <button
                     @click="document.dispatchEvent(new CustomEvent('open-confirm'))"
                     :disabled="$store.cart.items.length === 0"
-                    class="w-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-medium rounded-lg py-3">
-                    Place an order
+                    class="w-full bg-amber-500 hover:bg-amber-400 disabled:opacity-30 disabled:cursor-not-allowed text-slate-950 font-bold rounded-xl py-3 shadow transition flex items-center justify-center gap-2">
+                    <span>Checkout Now</span>
+                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
                 </button>
             </div>
         </aside>
     </div>
 
-    {{-- ADDRESS SECTION --}}
-    <div id="section-address" class="page-section hidden flex-1 overflow-y-auto p-8" x-data="addressApp()">
-        <h2 class="text-lg font-bold text-white mb-6">My Address</h2>
-
-        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 mb-8 max-w-lg">
-            <div class="mb-4">
-                <label class="block text-sm text-slate-300 mb-1">Label</label>
-                <input type="text" x-model="form.name" placeholder="Home, Work, ..."
-                    class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white">
-            </div>
-            <div class="mb-4">
-                <label class="block text-sm text-slate-300 mb-1">Address (optional if using current location)</label>
-                <input type="text" x-model="form.address" placeholder="Street, area, landmark..."
-                    class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white">
+    {{-- ================= ADDRESS SECTION ================= --}}
+    <div id="section-address" class="page-section hidden flex-1 overflow-y-auto p-8 lg:p-12 custom-scroll bg-slate-900/50" x-data="addressApp()">
+        <div class="max-w-3xl mx-auto">
+            <div class="mb-8">
+                <h1 class="text-2xl lg:text-3xl font-extrabold text-white tracking-tight">Delivery Addresses</h1>
+                <p class="text-slate-400 text-sm mt-1">Manage saved locations for one-click checkout</p>
             </div>
 
-            <button @click="useCurrentLocation()" :disabled="capturing"
-                class="text-sm text-indigo-400 hover:underline mb-1 disabled:opacity-50">
-                <span x-show="!capturing">Use my current location</span>
-                <span x-show="capturing">Getting location...</span>
-            </button>
-            <p x-show="form.latitude" class="text-xs text-slate-500 mb-4">
-                Captured: <span x-text="form.latitude?.toFixed(5)"></span>, <span x-text="form.longitude?.toFixed(5)"></span>
-            </p>
+            <!-- New Address Form Card -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 mb-10 shadow-xl">
+                <h3 class="text-base font-bold text-white mb-4 flex items-center gap-2">
+                    <i data-lucide="plus-circle" class="w-4 h-4 text-amber-500"></i>
+                    <span>Add New Address</span>
+                </h3>
 
-            <p x-show="error" x-text="error" class="text-red-400 text-sm mb-3"></p>
-
-            <button @click="save()" :disabled="saving"
-                class="bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white text-sm font-medium rounded-lg px-5 py-2">
-                <span x-show="!saving">Save address</span>
-                <span x-show="saving">Saving...</span>
-            </button>
-        </div>
-
-        <div class="space-y-3 max-w-lg">
-            <template x-for="addr in $store.addresses.list" :key="addr.id">
-                <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex items-start justify-between">
+                <div class="space-y-4">
                     <div>
-                        <p class="text-white font-medium" x-text="addr.name"></p>
-                        <p class="text-slate-400 text-sm" x-text="addr.address || 'No text address'"></p>
-                        <p x-show="addr.latitude" class="text-slate-600 text-xs">
-                            <span x-text="Number(addr.latitude).toFixed(5)"></span>, <span x-text="Number(addr.longitude).toFixed(5)"></span>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">Address Label</label>
+                        <input type="text" x-model="form.name" placeholder="e.g. Home, Office, Dorm"
+                            class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-amber-500 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">Street Address / Landmark</label>
+                        <input type="text" x-model="form.address" placeholder="Street name, apartment, building no."
+                            class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-amber-500 transition">
+                    </div>
+
+                    <!-- Geolocation Capture -->
+                    <div class="pt-2">
+                        <button @click="useCurrentLocation()" :disabled="capturing"
+                            type="button"
+                            class="inline-flex items-center gap-2 text-xs font-semibold text-amber-400 hover:text-amber-300 disabled:opacity-50 transition">
+                            <i data-lucide="crosshair" class="w-4 h-4"></i>
+                            <span x-show="!capturing">Detect Current GPS Location</span>
+                            <span x-show="capturing">Acquiring coordinates...</span>
+                        </button>
+                        <p x-show="form.latitude" class="text-xs text-slate-400 mt-1">
+                            Coordinates captured: <span class="text-slate-200 font-mono" x-text="form.latitude?.toFixed(5) + ', ' + form.longitude?.toFixed(5)"></span>
                         </p>
                     </div>
-                    <button @click="remove(addr.id)" class="text-red-400 hover:underline text-sm shrink-0">Remove</button>
+
+                    <!-- Form Error -->
+                    <p x-show="error" x-text="error" class="text-rose-400 text-xs bg-rose-500/10 border border-rose-500/20 p-2.5 rounded-xl"></p>
+
+                    <div class="pt-2">
+                        <button @click="save()" :disabled="saving"
+                            class="bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-slate-950 text-sm font-bold rounded-xl px-6 py-2.5 transition">
+                            <span x-show="!saving">Save Address</span>
+                            <span x-show="saving">Saving...</span>
+                        </button>
+                    </div>
                 </div>
-            </template>
-            <p x-show="$store.addresses.list.length === 0" class="text-slate-500 text-sm">No saved addresses yet.</p>
+            </div>
+
+            <!-- Saved Addresses List -->
+            <div>
+                <h3 class="text-sm font-bold uppercase tracking-wider text-slate-400 mb-4">Saved Locations</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <template x-for="addr in $store.addresses.list" :key="addr.id">
+                        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between">
+                                    <h4 class="text-white font-bold text-base" x-text="addr.name"></h4>
+                                    <span class="text-[10px] bg-slate-800 text-slate-400 uppercase font-bold px-2 py-0.5 rounded">Saved</span>
+                                </div>
+                                <p class="text-slate-400 text-sm mt-1" x-text="addr.address || 'No street text provided'"></p>
+                                <p x-show="addr.latitude" class="text-slate-500 font-mono text-xs mt-2">
+                                    GPS: <span x-text="Number(addr.latitude).toFixed(4)"></span>, <span x-text="Number(addr.longitude).toFixed(4)"></span>
+                                </p>
+                            </div>
+                            <div class="mt-4 pt-4 border-t border-slate-800/80 flex justify-end">
+                                <button @click="remove(addr.id)" class="text-rose-400 hover:text-rose-300 text-xs font-semibold transition flex items-center gap-1">
+                                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                    <span>Delete</span>
+                                </button>
+                            </div>
+                        </div>
+                    </template>
+
+                    <!-- Empty Locations State -->
+                    <div x-show="$store.addresses.list.length === 0" class="col-span-full py-10 text-center bg-slate-900/40 border border-slate-800/50 rounded-2xl">
+                        <p class="text-slate-500 text-sm">No saved locations found. Add your first address above.</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
 </div>
-
-<style>
-    [x-cloak] { display: none !important; }
-    .side-link { color: #94a3b8; }
-    .side-link.active { background: #4f46e5; color: #fff; }
-</style>
 
 <script>
     window.MENU_DATA = @json($menuData);
@@ -290,8 +457,12 @@
                     this.items.push({ id: product.id, name: product.name, price: product.price, image: product.image, qty, note });
                 }
                 this.persist();
+                this.refreshIcons();
             },
-            increment(item) { item.qty++; this.persist(); },
+            increment(item) { 
+                item.qty++; 
+                this.persist(); 
+            },
             decrement(item) {
                 item.qty--;
                 if (item.qty <= 0) {
@@ -303,13 +474,18 @@
             remove(item) {
                 this.items = this.items.filter(i => i !== item);
                 this.persist();
+                this.refreshIcons();
             },
             clear() {
                 this.items = [];
                 this.persist();
+                this.refreshIcons();
             },
             persist() {
                 localStorage.setItem('cafe_cart', JSON.stringify(this.items));
+            },
+            refreshIcons() {
+                setTimeout(() => lucide.createIcons(), 50);
             },
             get total() {
                 return this.items.reduce((sum, i) => sum + i.price * i.qty, 0);
@@ -336,6 +512,7 @@
                 const data = await res.json();
                 if (res.ok) {
                     this.list.push(data.location);
+                    setTimeout(() => lucide.createIcons(), 50);
                 }
                 return { ok: res.ok, data };
             },
@@ -351,12 +528,13 @@
                 if (res.ok) {
                     this.list = this.list.filter(l => l.id !== id);
                     if (this.selectedId === id) this.selectedId = null;
+                    setTimeout(() => lucide.createIcons(), 50);
                 }
             },
         });
     });
 
-    // sidebar section switching, no navigation
+    // Navigation switching
     const sideLinks = document.querySelectorAll('.side-link');
     const sections = document.querySelectorAll('.page-section');
 
@@ -365,6 +543,7 @@
         document.getElementById('section-' + target).classList.remove('hidden');
         sideLinks.forEach(l => l.classList.remove('active'));
         document.querySelector(`.side-link[data-target="${target}"]`).classList.add('active');
+        setTimeout(() => lucide.createIcons(), 50);
     }
 
     sideLinks.forEach(link => {
@@ -392,6 +571,10 @@
                 }
                 document.addEventListener('open-confirm', () => {
                     this.showConfirm = true;
+                    setTimeout(() => lucide.createIcons(), 50);
+                });
+                this.$watch('activeCategory', () => {
+                    setTimeout(() => lucide.createIcons(), 50);
                 });
             },
 
@@ -403,6 +586,7 @@
                 this.modalProduct = product;
                 this.modalQty = 1;
                 this.modalNote = '';
+                setTimeout(() => lucide.createIcons(), 50);
             },
             closeModal() {
                 this.modalProduct = null;
@@ -443,7 +627,7 @@
                     this.$store.cart.clear();
                     this.showConfirm = false;
                     this.placingOrder = false;
-                    alert('Order placed — #' + data.order.id);
+                    alert('Order placed successfully — #' + data.order.id);
                 } catch (e) {
                     this.orderError = 'Network error. Try again.';
                     this.placingOrder = false;
@@ -500,6 +684,11 @@
             },
         };
     }
+
+    // Initialize icons on mount
+    document.addEventListener('DOMContentLoaded', () => {
+        lucide.createIcons();
+    });
 </script>
 
 </body>
