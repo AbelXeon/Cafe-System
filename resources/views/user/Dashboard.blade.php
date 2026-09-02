@@ -195,7 +195,6 @@
                 </div>
             </div>
 
-            {{-- ================= ORDER CONFIRM MODAL ================= --}}
             <div x-show="showConfirm"
                  x-cloak
                  class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
