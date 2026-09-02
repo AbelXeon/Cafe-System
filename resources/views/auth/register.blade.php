@@ -59,7 +59,7 @@
                         <div class="relative">
                             <i data-lucide="user" class="w-5 h-5 text-stone-600 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
                             <input type="text" name="fullname" value="{{ old('fullname') }}" required autofocus
-                                placeholder="Alex Carter"
+                                placeholder="Abebe Bekele"
                                 class="cd-input w-full bg-[#14131a] border border-[#2a2731] rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-stone-600 focus:outline-none transition duration-150">
                         </div>
                     </div>
