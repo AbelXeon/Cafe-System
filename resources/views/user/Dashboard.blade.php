@@ -7,9 +7,9 @@
     <title>CraveDash | Dashboard & Menu</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.5/dist/cdn.min.js"></script>
-    <link rel="preconnect" href__="https://fonts.googleapis.com">
-    <link rel="preconnect" href__="https://fonts.gstatic.com" crossorigin>
-    <link href__="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -68,13 +68,11 @@
 
         <main class="flex-1 overflow-y-auto p-6 lg:p-8 custom-scroll" x-data="menuApp()" x-init="init()">
 
-            <!-- Top Bar -->
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                 <div>
                     <h1 class="text-2xl lg:text-3xl font-extrabold text-white tracking-tight">Browse Menu</h1>
                 </div>
 
-                <!-- Category Filters -->
                 <div class="flex gap-2 overflow-x-auto pb-2 sm:pb-0 custom-scroll">
                     <template x-for="cat in categories" :key="cat">
                         <button
@@ -89,7 +87,6 @@
                 </div>
             </div>
 
-            <!-- Current Category Title Bar -->
             <div class="flex items-center justify-between border-b border-[#2a2731] pb-3 mb-6">
                 <div class="flex items-center gap-2">
                     <h2 class="text-lg font-bold text-white uppercase tracking-wider" x-text="activeCategory"></h2>
@@ -97,13 +94,11 @@
                 </div>
             </div>
 
-            {{-- PRODUCT GRID --}}
             <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
                 <template x-for="product in visibleProducts" :key="product.id">
                     <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl overflow-hidden hover:border-[#b08d57]/60 transition duration-200 flex flex-col justify-between group cursor-pointer"
                          @click="openModal(product)">
 
-                        <!-- Product Image Box -->
                         <div class="relative w-full h-44 bg-[#0f0e13] overflow-hidden">
                             <img :src="product.image" :alt="product.name" class="w-full h-full object-cover group-hover:scale-105 transition duration-300 ease-out">
                             <div class="absolute top-3 right-3 bg-[#0f0e13]/80 backdrop-blur-md px-2.5 py-1 rounded-lg border border-[#2a2731]">
@@ -111,7 +106,6 @@
                             </div>
                         </div>
 
-                        <!-- Product Content & Add Button -->
                         <div class="p-5 flex flex-col flex-1 justify-between">
                             <div>
                                 <h3 class="text-white font-bold text-base leading-snug group-hover:text-[#b08d57] transition" x-text="product.name"></h3>
@@ -128,7 +122,6 @@
                     </div>
                 </template>
 
-                <!-- Empty State -->
                 <div x-show="visibleProducts.length === 0" class="col-span-full py-16 text-center">
                     <div class="w-12 h-12 rounded-full bg-[#14131a] border border-[#2a2731] flex items-center justify-center mx-auto text-stone-500 mb-3">
                         <i data-lucide="package-open" class="w-6 h-6"></i>
@@ -137,7 +130,6 @@
                 </div>
             </div>
 
-            {{-- ================= PRODUCT DETAIL MODAL ================= --}}
             <div x-show="modalProduct"
                  x-cloak
                  class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
@@ -159,7 +151,6 @@
                                 </div>
                                 <p class="text-stone-500 text-sm mt-2 leading-relaxed" x-text="modalProduct.description"></p>
 
-                                <!-- Quantity Controls -->
                                 <div class="mt-6 flex items-center justify-between border-t border-[#2a2731] pt-5">
                                     <span class="text-xs uppercase font-semibold text-stone-400 tracking-wider">Quantity</span>
                                     <div class="flex items-center gap-3 bg-[#0f0e13] border border-[#2a2731] rounded-xl p-1">
@@ -171,14 +162,12 @@
                                     </div>
                                 </div>
 
-                                <!-- Note Textarea -->
                                 <div class="mt-4">
                                     <label class="block text-xs uppercase font-semibold text-stone-400 tracking-wider mb-2">Special Instructions</label>
                                     <textarea x-model="modalNote" placeholder="e.g. No onions, sauce on the side..." rows="2"
                                         class="cd-input w-full bg-[#0f0e13] border border-[#2a2731] rounded-xl px-3.5 py-2.5 text-sm text-white placeholder:text-stone-600 focus:outline-none transition"></textarea>
                                 </div>
 
-                                <!-- Action Buttons -->
                                 <div class="flex gap-3 mt-6">
                                     <button @click="closeModal()"
                                         class="w-1/3 bg-[#1e1c25] hover:bg-[#2a2731] text-white text-sm font-semibold rounded-xl py-3 transition">Cancel</button>
@@ -207,7 +196,6 @@
                         </button>
                     </div>
 
-                    <!-- Items Summary -->
                     <div class="space-y-3 max-h-48 overflow-y-auto my-4 pr-1 custom-scroll">
                         <template x-for="item in $store.cart.items" :key="item.id + item.note">
                             <div class="flex justify-between items-center text-sm py-1">
@@ -225,7 +213,6 @@
                         <span class="text-[#b08d57] font-black text-xl" x-text="'$' + $store.cart.total.toFixed(2)"></span>
                     </div>
 
-                    <!-- Deliver To Selector -->
                     <div>
                         <label class="block text-xs uppercase font-semibold text-stone-400 tracking-wider mb-2">Delivery Destination</label>
                         <div class="space-y-2 max-h-36 overflow-y-auto pr-1 custom-scroll mb-2">
@@ -244,10 +231,8 @@
                         </div>
                     </div>
 
-                    <!-- Error line -->
                     <p x-show="orderError" x-text="orderError" class="text-rose-400 text-xs mt-3 bg-rose-500/10 border border-rose-500/20 p-2.5 rounded-xl"></p>
 
-                    <!-- Buttons -->
                     <div class="flex gap-3 mt-6">
                         <button @click="showConfirm = false" :disabled="placingOrder"
                             class="w-1/3 bg-[#1e1c25] hover:bg-[#2a2731] text-white text-sm font-semibold rounded-xl py-3 transition">Back</button>
@@ -262,7 +247,6 @@
 
         </main>
 
-        {{-- ================= RIGHT CART PANEL ================= --}}
         <aside class="w-80 lg:w-96 bg-[#0f0e13] border-l border-[#1e1c25] flex flex-col shrink-0 justify-between z-10" x-data>
 
             <!-- Cart Header -->
@@ -300,7 +284,6 @@
                     </div>
                 </template>
 
-                <!-- Empty Cart Notice -->
                 <div x-show="$store.cart.items.length === 0" class="h-64 flex flex-col items-center justify-center text-center p-4">
                     <div class="w-12 h-12 rounded-full bg-[#14131a] border border-[#2a2731] flex items-center justify-center text-stone-600 mb-3">
                         <i data-lucide="shopping-basket" class="w-6 h-6"></i>
@@ -310,7 +293,6 @@
                 </div>
             </div>
 
-            <!-- Cart Footer Checkout Bar -->
             <div class="border-t border-[#1e1c25] p-5 bg-[#0f0e13] space-y-3">
                 <div class="space-y-1.5 text-xs">
                     <div class="flex justify-between text-stone-400">
@@ -338,7 +320,6 @@
         </aside>
     </div>
 
-    {{-- ================= ADDRESS SECTION ================= --}}
     <div id="section-address" class="page-section hidden flex-1 overflow-y-auto p-8 lg:p-12 custom-scroll bg-[#14131a]/40" x-data="addressApp()">
         <div class="max-w-3xl mx-auto">
             <div class="mb-8">
@@ -346,8 +327,8 @@
                 <p class="text-stone-500 text-sm mt-1">Manage saved locations for one-click checkout</p>
             </div>
 
-            <!-- New Address Form Card -->
-            <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl p-6 sm:p-8 mb-10 shadow-xl">
+            <!-- New Address Form (Not in Card) -->
+            <div class="mb-10 pb-8 border-b border-[#2a2731]">
                 <h3 class="text-base font-bold text-white mb-4 flex items-center gap-2">
                     <i data-lucide="plus-circle" class="w-4 h-4 text-[#b08d57]"></i>
                     <span>Add New Address</span>
@@ -365,8 +346,7 @@
                             class="cd-input w-full bg-[#0f0e13] border border-[#2a2731] rounded-xl px-4 py-2.5 text-sm text-white placeholder-stone-600 focus:outline-none transition">
                     </div>
 
-                    <!-- Geolocation Capture -->
-                    <div class="pt-2">
+                    <div class="pt-1">
                         <button @click="useCurrentLocation()" :disabled="capturing"
                             type="button"
                             class="inline-flex items-center gap-2 text-xs font-semibold text-[#b08d57] hover:text-[#c9a36b] disabled:opacity-50 transition">
@@ -392,7 +372,6 @@
                 </div>
             </div>
 
-            <!-- Saved Addresses List -->
             <div>
                 <h3 class="text-sm font-bold uppercase tracking-wider text-stone-400 mb-4">Saved Locations</h3>
 
@@ -418,7 +397,6 @@
                         </div>
                     </template>
 
-                    <!-- Empty Locations State -->
                     <div x-show="$store.addresses.list.length === 0" class="col-span-full py-10 text-center bg-[#14131a]/40 border border-[#2a2731]/50 rounded-2xl">
                         <p class="text-stone-500 text-sm">No saved locations found. Add your first address above.</p>
                     </div>
