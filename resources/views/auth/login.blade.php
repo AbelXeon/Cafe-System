@@ -112,7 +112,6 @@
                         </label>
                     </div>
 
-                    <!-- Submit Button -->
                     <button 
                         type="submit"
                         class="w-full mt-2 bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-slate-950 font-bold rounded-xl py-3 shadow transition duration-150 flex items-center justify-center gap-2">
@@ -121,7 +120,6 @@
                     </button>
                 </form>
 
-                <!-- Footer / Register Link -->
                 <p class="text-slate-400 text-sm mt-6 text-center">
                     Don't have an account? 
                     <a href="{{ route('register') }}" class="text-amber-400 font-semibold hover:text-amber-300 hover:underline transition">
@@ -136,7 +134,6 @@
             </div>
         </section>
 
-        <!-- ================= RIGHT SIDE: FULL-PAGE FOOD PRESENTATION ================= -->
         <section class="hidden lg:flex lg:col-span-7 xl:col-span-8 bg-slate-900 p-12 xl:p-16 flex-col justify-between relative overflow-hidden">
             
             <div class="max-w-xl">
