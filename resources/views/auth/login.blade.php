@@ -165,7 +165,6 @@
                     </div>
                 </div>
 
-                <!-- 2. Pizza Card -->
                 <div class="group relative rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 h-80 flex flex-col justify-end p-5">
                     <img 
                         src="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=600&q=80" 
@@ -179,7 +178,6 @@
                     </div>
                 </div>
 
-                <!-- 3. Cold Beverage Card -->
                 <div class="group relative rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 h-80 flex flex-col justify-end p-5">
                     <img 
                         src="https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=600&q=80" 
@@ -195,7 +193,6 @@
 
             </div>
 
-            <!-- Bottom Information Line -->
             <div class="flex items-center justify-between border-t border-slate-800/80 pt-6 text-slate-400 text-xs font-medium">
                 <span>Real-Time Kitchen Dispatch</span>
                 <span class="flex items-center gap-1.5 text-slate-300">
@@ -207,7 +204,6 @@
 
     </main>
 
-    <!-- Script for Icons & Password Visibility Toggle -->
     <script>
         lucide.createIcons();
 
