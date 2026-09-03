@@ -27,7 +27,13 @@
         .side-link:hover { color: #f5f5f4; background: #1e1c25; }
         .side-link.active { background: #b08d57; color: #0f0e13; font-weight: 700; }
         .cd-input:focus { border-color: #b08d57; box-shadow: 0 0 0 3px rgba(176, 141, 87, 0.18); }
+        
+        /* Clean Dark-Mode Map Filter (Zero API Key & Zero Watermarks) */
         .leaflet-container { background: #0f0e13 !important; }
+        .leaflet-tile {
+            filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.75) !important;
+        }
+        .leaflet-control-attribution { display: none !important; }
     </style>
 </head>
 <body class="bg-[#0f0e13] text-stone-200 h-screen overflow-hidden selection:bg-[#b08d57] selection:text-[#0f0e13]" x-data="{ mobileNavOpen: false, mobileCartOpen: false }">
@@ -788,7 +794,6 @@
         sideLinks.forEach(l => l.classList.remove('active'));
         document.querySelectorAll(`.side-link[data-target="${target}"]`).forEach(l => l.classList.add('active'));
         
-        // Refresh leaflet maps size when address tab opens
         if (target === 'address') {
             setTimeout(() => {
                 window.dispatchEvent(new Event('resize'));
@@ -973,13 +978,14 @@
                             attributionControl: false
                         }).setView([lat, lng], 16);
 
-                        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                        // Free OpenStreetMap Tiles with Dark CSS Filter (No API Key Required)
+                        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
                             maxZoom: 19
                         }).addTo(this.detectMap);
 
                         const goldIcon = L.divIcon({
                             className: 'custom-gold-marker',
-                            html: `<div style="background-color:#b08d57; width:16px; height:16px; border-radius:50%; border:3px solid #0f0e13; box-shadow:0 0 14px rgba(176,141,87,0.9);"></div>`,
+                            html: `<div style="background-color:#b08d57; width:16px; height:16px; border-radius:50%; border:3px solid #0f0e13; box-shadow:0 0 14px rgba(176,141,87,1);"></div>`,
                             iconSize: [16, 16],
                             iconAnchor: [8, 8]
                         });
@@ -1008,7 +1014,6 @@
                         this.form.latitude = lat;
                         this.form.longitude = lng;
 
-                        // Try reverse geocoding to automatically populate human-readable address
                         try {
                             const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`, {
                                 headers: { 'Accept': 'application/json' }
@@ -1017,11 +1022,8 @@
                             if (data && data.display_name && !this.form.address) {
                                 this.form.address = data.display_name.split(',').slice(0, 3).join(',').trim();
                             }
-                        } catch (err) {
-                            // Fallback if network is slow/offline
-                        }
+                        } catch (err) {}
 
-                        // If address input is still empty, provide clean coordinates placeholder
                         if (!this.form.address) {
                             this.form.address = `GPS (${lat.toFixed(5)}, ${lng.toFixed(5)})`;
                         }
@@ -1044,7 +1046,6 @@
                     return;
                 }
 
-                // Fix SQLite NOT NULL violation: Fallback address if empty
                 let addressText = this.form.address ? this.form.address.trim() : '';
                 if (!addressText) {
                     if (this.form.latitude && this.form.longitude) {
@@ -1072,7 +1073,6 @@
                     return;
                 }
 
-                // Reset form & state
                 this.form = { name: '', address: '', latitude: null, longitude: null };
                 if (this.detectMap) {
                     this.detectMap.remove();
@@ -1101,13 +1101,14 @@
                         touchZoom: false
                     }).setView([lat, lng], 15);
 
-                    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                    // Free OpenStreetMap Tiles with Dark CSS Filter (No API Key Required)
+                    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
                         maxZoom: 19
                     }).addTo(miniMap);
 
                     const goldIcon = L.divIcon({
                         className: 'custom-gold-pin',
-                        html: `<div style="background-color:#b08d57; width:12px; height:12px; border-radius:50%; border:2px solid #0f0e13; box-shadow:0 0 10px rgba(176,141,87,0.9);"></div>`,
+                        html: `<div style="background-color:#b08d57; width:12px; height:12px; border-radius:50%; border:2px solid #0f0e13; box-shadow:0 0 10px rgba(176,141,87,1);"></div>`,
                         iconSize: [12, 12],
                         iconAnchor: [6, 6]
                     });
