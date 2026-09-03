@@ -11,6 +11,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
         .custom-scroll::-webkit-scrollbar { width: 5px; height: 5px; }
@@ -30,7 +32,6 @@
 <!-- Mobile Top Navigation Bar (Visible on mobile/tablet < lg) -->
 <header class="lg:hidden bg-[#0f0e13] border-b border-[#1e1c25] px-4 py-3.5 flex items-center justify-between z-30 shrink-0">
     <div class="flex items-center gap-3">
-        <!-- Hamburger Menu Button -->
         <button id="open-sidebar-btn" type="button" class="p-2 -ml-2 rounded-xl text-stone-400 hover:text-white hover:bg-[#1e1c25] transition" aria-label="Open Menu">
             <i data-lucide="menu" class="w-6 h-6"></i>
         </button>
@@ -51,10 +52,9 @@
     <!-- Mobile Backdrop Overlay -->
     <div id="sidebar-backdrop" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-40 hidden lg:hidden transition-opacity"></div>
 
-    {{-- Sidebar (Desktop static + Mobile slide-out) --}}
+    {{-- Sidebar --}}
     <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-50 w-64 lg:w-60 bg-[#0f0e13] border-r border-[#1e1c25] flex flex-col shrink-0 -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
         
-        <!-- Sidebar Header with Close 'X' Button on Mobile -->
         <div class="px-5 py-4 sm:px-6 sm:py-5 border-b border-[#1e1c25] flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 rounded-xl bg-[#b08d57] flex items-center justify-center text-[#0f0e13]">
@@ -66,7 +66,6 @@
                 </div>
             </div>
 
-            <!-- X Close Button for Mobile -->
             <button id="close-sidebar-btn" type="button" class="lg:hidden p-1.5 rounded-xl text-stone-400 hover:text-white hover:bg-[#1e1c25] transition" aria-label="Close Menu">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
@@ -98,38 +97,205 @@
     {{-- Main Content Area --}}
     <main class="flex-1 p-4 sm:p-6 lg:p-10 overflow-y-auto custom-scroll">
 
-        {{-- OVERVIEW --}}
+        {{-- ================= OVERVIEW SECTION ================= --}}
         <section id="section-overview" class="page-section">
-            <div class="mb-6 sm:mb-8">
-                <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Overview</h2>
-                <p class="text-stone-500 text-xs sm:text-sm mt-1">A quick snapshot of your store</p>
+            <div class="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Store Overview &amp; Analytics</h2>
+                    <p class="text-stone-500 text-xs sm:text-sm mt-1">Live performance, sales volume, and key business metrics</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        Live Store Status
+                    </span>
+                </div>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
-                <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl p-5 sm:p-6 shadow-lg">
-                    <div class="w-10 h-10 rounded-xl bg-[#1e1c25] flex items-center justify-center text-[#b08d57] mb-4">
-                        <i data-lucide="package" class="w-5 h-5"></i>
+
+            <!-- Top Metric KPI Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-8">
+                <!-- Total Revenue -->
+                <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl p-5 shadow-lg relative overflow-hidden group hover:border-[#b08d57]/50 transition duration-300">
+                    <div class="flex items-center justify-between">
+                        <span class="text-stone-500 text-xs uppercase tracking-wider font-bold">Total Revenue</span>
+                        <div class="w-9 h-9 rounded-xl bg-[#b08d57]/10 text-[#b08d57] flex items-center justify-center">
+                            <i data-lucide="dollar-sign" class="w-5 h-5"></i>
+                        </div>
                     </div>
-                    <p class="text-stone-500 text-xs uppercase tracking-wider font-semibold">Products</p>
-                    <p class="text-2xl sm:text-3xl font-black text-white mt-1">{{ $products->count() }}</p>
+                    <p class="text-2xl sm:text-3xl font-black text-white mt-2">${{ number_format($totalRevenue, 2) }}</p>
+                    <div class="flex items-center gap-1.5 mt-2 text-[11px] text-emerald-400">
+                        <i data-lucide="trending-up" class="w-3.5 h-3.5"></i>
+                        <span>+14.2% from last week</span>
+                    </div>
                 </div>
-                <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl p-5 sm:p-6 shadow-lg">
-                    <div class="w-10 h-10 rounded-xl bg-[#1e1c25] flex items-center justify-center text-[#b08d57] mb-4">
-                        <i data-lucide="users" class="w-5 h-5"></i>
+
+                <!-- Total Orders -->
+                <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl p-5 shadow-lg relative overflow-hidden group hover:border-[#b08d57]/50 transition duration-300">
+                    <div class="flex items-center justify-between">
+                        <span class="text-stone-500 text-xs uppercase tracking-wider font-bold">Total Orders</span>
+                        <div class="w-9 h-9 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center">
+                            <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+                        </div>
                     </div>
-                    <p class="text-stone-500 text-xs uppercase tracking-wider font-semibold">Staff / Delivery</p>
-                    <p class="text-2xl sm:text-3xl font-black text-white mt-1">{{ $staff->count() }}</p>
+                    <p class="text-2xl sm:text-3xl font-black text-white mt-2">{{ $totalOrders }}</p>
+                    <div class="flex items-center gap-1.5 mt-2 text-[11px] text-stone-400">
+                        <i data-lucide="activity" class="w-3.5 h-3.5 text-stone-500"></i>
+                        <span>Active orders tracked</span>
+                    </div>
                 </div>
-                <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl p-5 sm:p-6 shadow-lg sm:col-span-2 lg:col-span-1">
-                    <div class="w-10 h-10 rounded-xl bg-[#1e1c25] flex items-center justify-center text-[#b08d57] mb-4">
-                        <i data-lucide="sparkles" class="w-5 h-5"></i>
+
+                <!-- Total Customers -->
+                <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl p-5 shadow-lg relative overflow-hidden group hover:border-[#b08d57]/50 transition duration-300">
+                    <div class="flex items-center justify-between">
+                        <span class="text-stone-500 text-xs uppercase tracking-wider font-bold">Customers</span>
+                        <div class="w-9 h-9 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center">
+                            <i data-lucide="users" class="w-5 h-5"></i>
+                        </div>
                     </div>
-                    <p class="text-stone-500 text-xs uppercase tracking-wider font-semibold">Extras</p>
-                    <p class="text-2xl sm:text-3xl font-black text-white mt-1">{{ $extras->count() }}</p>
+                    <p class="text-2xl sm:text-3xl font-black text-white mt-2">{{ $totalCustomers }}</p>
+                    <div class="flex items-center gap-1.5 mt-2 text-[11px] text-emerald-400">
+                        <i data-lucide="user-check" class="w-3.5 h-3.5"></i>
+                        <span>Registered accounts</span>
+                    </div>
+                </div>
+
+                <!-- Active Menu Items -->
+                <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl p-5 shadow-lg relative overflow-hidden group hover:border-[#b08d57]/50 transition duration-300">
+                    <div class="flex items-center justify-between">
+                        <span class="text-stone-500 text-xs uppercase tracking-wider font-bold">Menu Products</span>
+                        <div class="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center">
+                            <i data-lucide="utensils-crossed" class="w-5 h-5"></i>
+                        </div>
+                    </div>
+                    <p class="text-2xl sm:text-3xl font-black text-white mt-2">{{ $products->count() }}</p>
+                    <div class="flex items-center gap-1.5 mt-2 text-[11px] text-stone-400">
+                        <span>{{ $categories->count() }} categories &bull; {{ $extras->count() }} extras</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                <!-- Main Revenue & Sales Line/Bar Chart (2 cols) -->
+                <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl p-5 sm:p-6 shadow-lg lg:col-span-2 flex flex-col justify-between">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                        <div>
+                            <h3 class="text-base font-bold text-white flex items-center gap-2">
+                                <i data-lucide="trending-up" class="w-4 h-4 text-[#b08d57]"></i> Revenue &amp; Orders Trend
+                            </h3>
+                            <p class="text-stone-500 text-xs">Past 7 days financial progression</p>
+                        </div>
+                        <span class="text-[11px] font-semibold text-[#b08d57] bg-[#b08d57]/10 border border-[#b08d57]/20 px-2.5 py-1 rounded-full self-start sm:self-auto">
+                            Daily Breakdown
+                        </span>
+                    </div>
+                    <div class="relative h-64 sm:h-72 w-full">
+                        <canvas id="revenueTrendChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Category Breakdown Donut Chart (1 col) -->
+                <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl p-5 sm:p-6 shadow-lg flex flex-col justify-between">
+                    <div class="mb-3">
+                        <h3 class="text-base font-bold text-white flex items-center gap-2">
+                            <i data-lucide="pie-chart" class="w-4 h-4 text-[#b08d57]"></i> Category Distribution
+                        </h3>
+                        <p class="text-stone-500 text-xs">Menu item density by category</p>
+                    </div>
+                    <div class="relative h-56 sm:h-64 w-full flex items-center justify-center">
+                        <canvas id="categoryDonutChart"></canvas>
+                    </div>
+                    <div class="pt-3 border-t border-[#2a2731]/60 flex items-center justify-between text-xs text-stone-400">
+                        <span>Total Categories</span>
+                        <span class="font-bold text-white">{{ $categories->count() }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Row: Highlights & Recent Actions Feed -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Quick Operations Summary -->
+                <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl p-5 sm:p-6 shadow-lg space-y-4">
+                    <h3 class="text-base font-bold text-white flex items-center gap-2">
+                        <i data-lucide="zap" class="w-4 h-4 text-[#b08d57]"></i> Quick Operations
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between p-3 rounded-xl bg-[#0f0e13] border border-[#2a2731]">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
+                                    <i data-lucide="truck" class="w-4 h-4"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-bold text-white">Delivery Fleet</p>
+                                    <p class="text-[10px] text-stone-500">Drivers on duty</p>
+                                </div>
+                            </div>
+                            <span class="text-sm font-bold text-white">{{ $staff->filter(fn($s) => $s->role->name === 'delivery')->count() }}</span>
+                        </div>
+
+                        <div class="flex items-center justify-between p-3 rounded-xl bg-[#0f0e13] border border-[#2a2731]">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-400 flex items-center justify-center">
+                                    <i data-lucide="shield-check" class="w-4 h-4"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-bold text-white">Kitchen &amp; Staff</p>
+                                    <p class="text-[10px] text-stone-500">Active personnel</p>
+                                </div>
+                            </div>
+                            <span class="text-sm font-bold text-white">{{ $staff->filter(fn($s) => $s->role->name === 'staff')->count() }}</span>
+                        </div>
+
+                        <div class="flex items-center justify-between p-3 rounded-xl bg-[#0f0e13] border border-[#2a2731]">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-[#b08d57]/10 text-[#b08d57] flex items-center justify-center">
+                                    <i data-lucide="sparkles" class="w-4 h-4"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-bold text-white">Add-on Extras</p>
+                                    <p class="text-[10px] text-stone-500">Side options active</p>
+                                </div>
+                            </div>
+                            <span class="text-sm font-bold text-white">{{ $extras->count() }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Admin Activity Stream -->
+                <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl p-5 sm:p-6 shadow-lg lg:col-span-2">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-base font-bold text-white flex items-center gap-2">
+                            <i data-lucide="history" class="w-4 h-4 text-[#b08d57]"></i> Recent Admin Activity
+                        </h3>
+                        <span class="text-xs text-stone-500">Audit trail</span>
+                    </div>
+
+                    <div class="space-y-3 overflow-y-auto max-h-64 custom-scroll pr-1">
+                        @forelse ($recentActions as $action)
+                            <div class="flex items-start justify-between p-3 rounded-xl bg-[#0f0e13] border border-[#2a2731]/70 hover:border-[#b08d57]/40 transition">
+                                <div class="flex items-start gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-[#1e1c25] flex items-center justify-center text-[#b08d57] shrink-0 mt-0.5">
+                                        <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs font-semibold text-white">{{ $action->description }}</p>
+                                        <p class="text-[10px] text-stone-500 mt-0.5">By {{ $action->admin->fullname ?? $action->admin->username ?? 'Admin' }}</p>
+                                    </div>
+                                </div>
+                                <span class="text-[10px] font-medium text-stone-500 whitespace-nowrap ml-2">{{ $action->created_at->diffForHumans() }}</span>
+                            </div>
+                        @empty
+                            <div class="p-6 text-center text-stone-500 text-xs">
+                                <i data-lucide="clock" class="w-6 h-6 mx-auto mb-2 opacity-50"></i>
+                                No recent activity logged yet.
+                            </div>
+                        @endforelse
+                    </div>
                 </div>
             </div>
         </section>
 
-        {{-- PRODUCTS --}}
+        {{-- ================= PRODUCTS SECTION ================= --}}
         <section id="section-products" class="page-section hidden">
             <div class="mb-6 sm:mb-8">
                 <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Products</h2>
@@ -140,7 +306,6 @@
                 <div>
                     <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Category</label>
                     
-                    <!-- Form Category Selector -->
                     <div class="relative custom-select-wrapper" id="product-category-wrapper">
                         <select name="category_id" required class="custom-native-select opacity-0 absolute pointer-events-none h-0 w-0">
                             <option value="">Select category</option>
@@ -181,15 +346,11 @@
                     <input type="number" step="0.01" name="price" required class="cd-input w-full rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none transition">
                 </div>
                 
-                <!-- Interactive Image Picker with Live Preview -->
                 <div>
                     <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Product Image</label>
-                    
                     <input type="file" id="product-image-input" name="image" accept="image/*" required class="hidden">
                     
                     <div id="image-dropzone" class="relative group cursor-pointer border-2 border-dashed border-[#2a2731] hover:border-[#b08d57]/70 bg-[#0f0e13]/80 hover:bg-[#14131a] rounded-xl p-3 sm:p-4 transition flex flex-col items-center justify-center min-h-[105px]">
-                        
-                        <!-- Initial Placeholder State -->
                         <div id="image-placeholder" class="flex flex-col items-center justify-center text-center py-1.5 space-y-1.5 pointer-events-none">
                             <div class="w-9 h-9 rounded-xl bg-[#1e1c25] group-hover:bg-[#b08d57]/20 flex items-center justify-center text-stone-400 group-hover:text-[#b08d57] transition">
                                 <i data-lucide="image-plus" class="w-5 h-5"></i>
@@ -198,11 +359,10 @@
                                 <p class="text-xs font-semibold text-stone-300 group-hover:text-white transition">
                                     <span class="text-[#b08d57]">Click to upload</span> or drag image
                                 </p>
-                                <p class="text-[10px] text-stone-500">PNG, JPG, WEBP up to 5MB</p>
+                                <p class="text-[10px] text-stone-500">PNG, JPG, WEBP up to 4MB</p>
                             </div>
                         </div>
 
-                        <!-- Image Preview State -->
                         <div id="image-preview-container" class="hidden w-full relative flex items-center gap-3">
                             <div class="relative w-16 h-16 rounded-xl overflow-hidden bg-[#0f0e13] border border-[#2a2731] shrink-0 shadow-md">
                                 <img id="image-preview-img" src="" alt="Preview" class="w-full h-full object-cover">
@@ -233,11 +393,8 @@
                 </div>
             </form>
 
-            <!-- Products DataTable Card -->
             <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl overflow-hidden shadow-lg">
-                <!-- Filter & Buffer Search Toolbar -->
                 <div class="p-4 sm:p-5 border-b border-[#2a2731] flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#0f0e13]/40">
-                    <!-- Left: Search Box with Loading Buffer -->
                     <div class="relative flex-1 max-w-md">
                         <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-stone-500">
                             <i data-lucide="search" class="w-4 h-4 search-icon"></i>
@@ -249,9 +406,7 @@
                         </button>
                     </div>
 
-                    <!-- Right: Filters & Total Count -->
                     <div class="flex flex-wrap items-center gap-3">
-                        <!-- Category Filter Dropdown -->
                         <div class="relative custom-select-wrapper min-w-[150px]">
                             <select id="products-filter-category" class="custom-native-select opacity-0 absolute pointer-events-none h-0 w-0">
                                 <option value="all">All Categories</option>
@@ -277,7 +432,6 @@
                             </div>
                         </div>
 
-                        <!-- Availability Filter Dropdown -->
                         <div class="relative custom-select-wrapper min-w-[130px]">
                             <select id="products-filter-status" class="custom-native-select opacity-0 absolute pointer-events-none h-0 w-0">
                                 <option value="all">All Status</option>
@@ -304,7 +458,6 @@
                             </div>
                         </div>
 
-                        <!-- Count Badge -->
                         <span id="products-count-badge" class="px-3 py-1.5 rounded-xl bg-[#1e1c25] border border-[#2a2731] text-xs font-semibold text-stone-300 whitespace-nowrap">
                             Showing {{ $products->count() }} of {{ $products->count() }}
                         </span>
@@ -330,8 +483,8 @@
                                     data-price="{{ $p->price }}" 
                                     data-status="{{ $p->is_available ? 'available' : 'unavailable' }}">
                                     <td class="py-3 px-4 sm:px-5"><img src="{{ asset('storage/' . $p->image) }}" class="w-10 h-10 object-cover rounded-lg bg-[#0f0e13]"></td>
-                                    <td class="px-4 sm:px-5 text-white font-medium whitespace-nowrap product-name-cell">{{ $p->name }}</td>
-                                    <td class="px-4 sm:px-5 text-stone-400 whitespace-nowrap product-cat-cell">{{ $p->category->name }}</td>
+                                    <td class="px-4 sm:px-5 text-white font-medium whitespace-nowrap">{{ $p->name }}</td>
+                                    <td class="px-4 sm:px-5 text-stone-400 whitespace-nowrap">{{ $p->category->name }}</td>
                                     <td class="px-4 sm:px-5 text-[#b08d57] font-bold whitespace-nowrap">${{ number_format($p->price, 2) }}</td>
                                     <td class="px-4 sm:px-5 whitespace-nowrap">
                                         @if ($p->is_available)
@@ -346,7 +499,6 @@
                     </table>
                 </div>
 
-                <!-- Empty State Message -->
                 <div id="products-empty-state" class="hidden p-8 sm:p-12 text-center flex-col items-center justify-center space-y-3">
                     <div class="w-12 h-12 rounded-2xl bg-[#1e1c25] flex items-center justify-center text-stone-500 mx-auto">
                         <i data-lucide="package-search" class="w-6 h-6"></i>
@@ -357,7 +509,7 @@
             </div>
         </section>
 
-        {{-- STAFF --}}
+        {{-- ================= STAFF SECTION ================= --}}
         <section id="section-staff" class="page-section hidden">
             <div class="mb-6 sm:mb-8">
                 <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Staff &amp; Delivery</h2>
@@ -367,8 +519,6 @@
             <form id="staff-form" class="bg-[#14131a] border border-[#2a2731] rounded-2xl p-5 sm:p-6 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 mb-8 shadow-lg">
                 <div>
                     <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Role</label>
-                    
-                    <!-- Form Role Selector -->
                     <div class="relative custom-select-wrapper" id="staff-role-wrapper">
                         <select name="role_id" required class="custom-native-select opacity-0 absolute pointer-events-none h-0 w-0">
                             <option value="">Select role</option>
@@ -428,11 +578,8 @@
                 </div>
             </form>
 
-            <!-- Staff DataTable Card -->
             <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl overflow-hidden shadow-lg">
-                <!-- Filter & Buffer Search Toolbar -->
                 <div class="p-4 sm:p-5 border-b border-[#2a2731] flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#0f0e13]/40">
-                    <!-- Left: Search Box -->
                     <div class="relative flex-1 max-w-md">
                         <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-stone-500">
                             <i data-lucide="search" class="w-4 h-4 search-icon"></i>
@@ -444,7 +591,6 @@
                         </button>
                     </div>
 
-                    <!-- Right: Role Filter & Count -->
                     <div class="flex flex-wrap items-center gap-3">
                         <div class="relative custom-select-wrapper min-w-[150px]">
                             <select id="staff-filter-role" class="custom-native-select opacity-0 absolute pointer-events-none h-0 w-0">
@@ -471,7 +617,6 @@
                             </div>
                         </div>
 
-                        <!-- Count Badge -->
                         <span id="staff-count-badge" class="px-3 py-1.5 rounded-xl bg-[#1e1c25] border border-[#2a2731] text-xs font-semibold text-stone-300 whitespace-nowrap">
                             Showing {{ $staff->count() }} of {{ $staff->count() }}
                         </span>
@@ -495,17 +640,16 @@
                                     data-username="{{ strtolower($s->username) }}"
                                     data-role="{{ strtolower($s->role->name) }}"
                                     data-phone="{{ strtolower($s->phone ?? '') }}">
-                                    <td class="py-3 px-4 sm:px-5 text-white font-medium whitespace-nowrap staff-name-cell">{{ $s->fullname }}</td>
-                                    <td class="px-4 sm:px-5 text-stone-400 whitespace-nowrap staff-username-cell">{{ $s->username }}</td>
-                                    <td class="px-4 sm:px-5 whitespace-nowrap"><span class="inline-flex items-center text-xs font-semibold text-[#b08d57] bg-[#b08d57]/10 border border-[#b08d57]/20 px-2.5 py-1 rounded-full staff-role-cell">{{ ucfirst($s->role->name) }}</span></td>
-                                    <td class="px-4 sm:px-5 text-stone-400 whitespace-nowrap staff-phone-cell">{{ $s->phone }}</td>
+                                    <td class="py-3 px-4 sm:px-5 text-white font-medium whitespace-nowrap">{{ $s->fullname }}</td>
+                                    <td class="px-4 sm:px-5 text-stone-400 whitespace-nowrap">{{ $s->username }}</td>
+                                    <td class="px-4 sm:px-5 whitespace-nowrap"><span class="inline-flex items-center text-xs font-semibold text-[#b08d57] bg-[#b08d57]/10 border border-[#b08d57]/20 px-2.5 py-1 rounded-full">{{ ucfirst($s->role->name) }}</span></td>
+                                    <td class="px-4 sm:px-5 text-stone-400 whitespace-nowrap">{{ $s->phone }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
                 </div>
 
-                <!-- Empty State Message -->
                 <div id="staff-empty-state" class="hidden p-8 sm:p-12 text-center flex-col items-center justify-center space-y-3">
                     <div class="w-12 h-12 rounded-2xl bg-[#1e1c25] flex items-center justify-center text-stone-500 mx-auto">
                         <i data-lucide="user-x" class="w-6 h-6"></i>
@@ -516,7 +660,7 @@
             </div>
         </section>
 
-        {{-- EXTRAS --}}
+        {{-- ================= EXTRAS SECTION ================= --}}
         <section id="section-extras" class="page-section hidden">
             <div class="mb-6 sm:mb-8">
                 <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Extras</h2>
@@ -540,11 +684,8 @@
                 </div>
             </form>
 
-            <!-- Extras DataTable Card -->
             <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl overflow-hidden shadow-lg">
-                <!-- Filter & Buffer Search Toolbar -->
                 <div class="p-4 sm:p-5 border-b border-[#2a2731] flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#0f0e13]/40">
-                    <!-- Left: Search Box -->
                     <div class="relative flex-1 max-w-md">
                         <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-stone-500">
                             <i data-lucide="search" class="w-4 h-4 search-icon"></i>
@@ -556,7 +697,6 @@
                         </button>
                     </div>
 
-                    <!-- Right: Availability Filter & Count -->
                     <div class="flex flex-wrap items-center gap-3">
                         <div class="relative custom-select-wrapper min-w-[140px]">
                             <select id="extras-filter-status" class="custom-native-select opacity-0 absolute pointer-events-none h-0 w-0">
@@ -584,7 +724,6 @@
                             </div>
                         </div>
 
-                        <!-- Count Badge -->
                         <span id="extras-count-badge" class="px-3 py-1.5 rounded-xl bg-[#1e1c25] border border-[#2a2731] text-xs font-semibold text-stone-300 whitespace-nowrap">
                             Showing {{ $extras->count() }} of {{ $extras->count() }}
                         </span>
@@ -606,7 +745,7 @@
                                     data-name="{{ strtolower($e->name) }}"
                                     data-price="{{ $e->price }}"
                                     data-status="{{ $e->is_available ? 'available' : 'unavailable' }}">
-                                    <td class="py-3 px-4 sm:px-5 text-white font-medium whitespace-nowrap extra-name-cell">{{ $e->name }}</td>
+                                    <td class="py-3 px-4 sm:px-5 text-white font-medium whitespace-nowrap">{{ $e->name }}</td>
                                     <td class="px-4 sm:px-5 text-[#b08d57] font-bold whitespace-nowrap">${{ number_format($e->price, 2) }}</td>
                                     <td class="px-4 sm:px-5 whitespace-nowrap">
                                         @if ($e->is_available)
@@ -621,7 +760,6 @@
                     </table>
                 </div>
 
-                <!-- Empty State Message -->
                 <div id="extras-empty-state" class="hidden p-8 sm:p-12 text-center flex-col items-center justify-center space-y-3">
                     <div class="w-12 h-12 rounded-2xl bg-[#1e1c25] flex items-center justify-center text-stone-500 mx-auto">
                         <i data-lucide="sparkles" class="w-6 h-6"></i>
@@ -637,6 +775,147 @@
 
 <script>
 const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
+// ---- Charts Initialization ----
+let revenueChartInstance = null;
+let categoryChartInstance = null;
+
+function initCharts() {
+    const chartLabels = @json($chartLabels);
+    const chartRevenue = @json($chartRevenue);
+    const chartOrders = @json($chartOrders);
+    const categoryLabels = @json($categoryLabels);
+    const categoryCounts = @json($categoryCounts);
+
+    // 1. Revenue & Orders Trend Chart
+    const revCtx = document.getElementById('revenueTrendChart')?.getContext('2d');
+    if (revCtx) {
+        if (revenueChartInstance) revenueChartInstance.destroy();
+
+        const goldGradient = revCtx.createLinearGradient(0, 0, 0, 300);
+        goldGradient.addColorStop(0, 'rgba(176, 141, 87, 0.45)');
+        goldGradient.addColorStop(1, 'rgba(176, 141, 87, 0.0)');
+
+        revenueChartInstance = new Chart(revCtx, {
+            type: 'line',
+            data: {
+                labels: chartLabels,
+                datasets: [
+                    {
+                        label: 'Revenue ($)',
+                        data: chartRevenue,
+                        borderColor: '#b08d57',
+                        backgroundColor: goldGradient,
+                        borderWidth: 2.5,
+                        fill: true,
+                        tension: 0.35,
+                        pointBackgroundColor: '#b08d57',
+                        pointBorderColor: '#0f0e13',
+                        pointHoverRadius: 6,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'Orders Count',
+                        data: chartOrders,
+                        borderColor: '#a855f7',
+                        backgroundColor: 'transparent',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        pointBackgroundColor: '#a855f7',
+                        pointHoverRadius: 6,
+                        tension: 0.35,
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                plugins: {
+                    legend: {
+                        labels: { color: '#a8a29e', font: { family: 'Plus Jakarta Sans', size: 11, weight: '600' } }
+                    },
+                    tooltip: {
+                        backgroundColor: '#14131a',
+                        titleColor: '#fff',
+                        bodyColor: '#a8a29e',
+                        borderColor: '#2a2731',
+                        borderWidth: 1,
+                        padding: 10,
+                        cornerRadius: 10
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { color: '#1e1c25' },
+                        ticks: { color: '#78716c', font: { size: 11 } }
+                    },
+                    y: {
+                        position: 'left',
+                        grid: { color: '#1e1c25' },
+                        ticks: {
+                            color: '#78716c',
+                            font: { size: 11 },
+                            callback: (v) => '$' + v
+                        }
+                    },
+                    y1: {
+                        position: 'right',
+                        grid: { drawOnChartArea: false },
+                        ticks: { color: '#a855f7', font: { size: 11 }, precision: 0 }
+                    }
+                }
+            }
+        });
+    }
+
+    // 2. Category Distribution Donut Chart
+    const catCtx = document.getElementById('categoryDonutChart')?.getContext('2d');
+    if (catCtx) {
+        if (categoryChartInstance) categoryChartInstance.destroy();
+
+        const defaultColors = ['#b08d57', '#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#64748b'];
+
+        categoryChartInstance = new Chart(catCtx, {
+            type: 'doughnut',
+            data: {
+                labels: categoryLabels.length > 0 ? categoryLabels : ['No Categories'],
+                datasets: [{
+                    data: categoryCounts.length > 0 ? categoryCounts : [1],
+                    backgroundColor: defaultColors.slice(0, Math.max(categoryLabels.length, 1)),
+                    borderColor: '#14131a',
+                    borderWidth: 3,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '72%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: '#a8a29e',
+                            boxWidth: 10,
+                            padding: 12,
+                            font: { family: 'Plus Jakarta Sans', size: 11 }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#14131a',
+                        titleColor: '#fff',
+                        bodyColor: '#a8a29e',
+                        borderColor: '#2a2731',
+                        borderWidth: 1,
+                        cornerRadius: 10
+                    }
+                }
+            }
+        });
+    }
+}
 
 // ---- Mobile Drawer Controls ----
 const sidebar = document.getElementById('sidebar');
@@ -659,7 +938,7 @@ if (openSidebarBtn) openSidebarBtn.addEventListener('click', openMobileSidebar);
 if (closeSidebarBtn) closeSidebarBtn.addEventListener('click', closeMobileSidebar);
 if (sidebarBackdrop) sidebarBackdrop.addEventListener('click', closeMobileSidebar);
 
-// ---- Sidebar navigation switching ----
+// ---- Sidebar Navigation Switching ----
 const navLinks = document.querySelectorAll('.nav-link');
 const sections = document.querySelectorAll('.page-section');
 
@@ -670,7 +949,12 @@ function showSection(target) {
     document.querySelectorAll(`.nav-link[data-target="${target}"]`).forEach(l => l.classList.add('active'));
     
     closeMobileSidebar();
-    setTimeout(() => lucide.createIcons(), 50);
+    setTimeout(() => {
+        lucide.createIcons();
+        if (target === 'overview') {
+            initCharts();
+        }
+    }, 50);
 }
 
 navLinks.forEach(link => {
@@ -887,12 +1171,8 @@ function setupDataTable({ searchInputId, clearBtnClass, tableBodyId, emptyStateI
             }
         });
 
-        // Update Counter Badge
-        if (countBadge) {
-            countBadge.textContent = `Showing ${visibleCount} of ${totalCount}`;
-        }
+        if (countBadge) countBadge.textContent = `Showing ${visibleCount} of ${totalCount}`;
 
-        // Toggle Empty State Message
         if (emptyState) {
             if (visibleCount === 0 && totalCount > 0) {
                 emptyState.classList.remove('hidden');
@@ -903,19 +1183,14 @@ function setupDataTable({ searchInputId, clearBtnClass, tableBodyId, emptyStateI
             }
         }
 
-        // Hide buffer spinner
         if (spinner && searchIcon) {
             spinner.classList.add('hidden');
             searchIcon.classList.remove('hidden');
         }
 
-        // Toggle clear search button
         if (clearBtn) {
-            if (query.length > 0) {
-                clearBtn.classList.remove('hidden');
-            } else {
-                clearBtn.classList.add('hidden');
-            }
+            if (query.length > 0) clearBtn.classList.remove('hidden');
+            else clearBtn.classList.add('hidden');
         }
     }
 
@@ -927,12 +1202,10 @@ function setupDataTable({ searchInputId, clearBtnClass, tableBodyId, emptyStateI
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(() => {
             applyFilter();
-        }, 180); // Buffered 180ms live debounce
+        }, 180);
     }
 
-    if (searchInput) {
-        searchInput.addEventListener('input', triggerBufferedFilter);
-    }
+    if (searchInput) searchInput.addEventListener('input', triggerBufferedFilter);
 
     if (clearBtn) {
         clearBtn.addEventListener('click', () => {
@@ -949,7 +1222,6 @@ function setupDataTable({ searchInputId, clearBtnClass, tableBodyId, emptyStateI
 let productsDataTable, staffDataTable, extrasDataTable;
 
 function initAllDataTables() {
-    // 1. Products DataTable
     const prodCategorySelect = document.getElementById('products-filter-category');
     const prodStatusSelect = document.getElementById('products-filter-status');
 
@@ -979,7 +1251,6 @@ function initAllDataTables() {
     if (prodCategorySelect) prodCategorySelect.addEventListener('change', () => productsDataTable.refresh());
     if (prodStatusSelect) prodStatusSelect.addEventListener('change', () => productsDataTable.refresh());
 
-    // 2. Staff DataTable
     const staffRoleSelect = document.getElementById('staff-filter-role');
 
     staffDataTable = setupDataTable({
@@ -1005,7 +1276,6 @@ function initAllDataTables() {
 
     if (staffRoleSelect) staffRoleSelect.addEventListener('change', () => staffDataTable.refresh());
 
-    // 3. Extras DataTable
     const extrasStatusSelect = document.getElementById('extras-filter-status');
 
     extrasDataTable = setupDataTable({
@@ -1152,6 +1422,7 @@ document.getElementById('extra-form').addEventListener('submit', function (e) {
 document.addEventListener('DOMContentLoaded', () => {
     initCustomSelects();
     initAllDataTables();
+    initCharts();
     lucide.createIcons();
 });
 </script>
