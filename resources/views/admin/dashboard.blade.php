@@ -104,12 +104,7 @@
                     <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Store Overview &amp; Analytics</h2>
                     <p class="text-stone-500 text-xs sm:text-sm mt-1">Real-time performance, revenue in ETB, and store metrics</p>
                 </div>
-                <div class="flex items-center gap-2">
-                    <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold">
-                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                        Live Store Status
-                    </span>
-                </div>
+                
             </div>
 
             <!-- Top Metric KPI Cards -->
