@@ -5,13 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Sign in | CraveDash Delivery</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Laravel Vite Bundled Tailwind CSS & JS -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
     <!-- Google Font & Lucide Icons -->
-    <link rel="preconnect" href__="https://fonts.googleapis.com">
-    <link rel="preconnect" href__="https://fonts.gstatic.com" crossorigin>
-    <link href__="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
 
@@ -145,7 +148,7 @@
                             <input type="checkbox" name="remember" class="cd-check">
                             <span class="group-hover:text-white transition">Remember me</span>
                         </label>
-                        <a href__="#" class="text-sm text-[#b08d57] font-medium hover:text-[#c9a36b] transition">
+                        <a href="#" class="text-sm text-[#b08d57] font-medium hover:text-[#c9a36b] transition">
                             Forgot password?
                         </a>
                     </div>
@@ -162,7 +165,7 @@
                 <!-- Register Link -->
                 <p class="text-stone-500 text-sm mt-6 text-center">
                     Don't have an account?
-                    <a href__="{{ route('register') }}" class="text-[#b08d57] font-semibold hover:text-[#c9a36b] hover:underline transition">
+                    <a href="{{ route('register') }}" class="text-[#b08d57] font-semibold hover:text-[#c9a36b] hover:underline transition">
                         Register
                     </a>
                 </p>
@@ -178,7 +181,6 @@
         <section class="hidden lg:flex lg:col-span-7 xl:col-span-8 bg-[#14131a] p-12 xl:p-16 flex-col justify-between relative overflow-hidden">
 
             <div class="max-w-xl">
-                
                 <h2 class="text-3xl xl:text-4xl font-black text-white tracking-tight mt-5">
                     Fast, synchronized food orders and kitchen delivery control.
                 </h2>
