@@ -277,7 +277,6 @@
                 <div>
                     <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Role</label>
                     
-                    <!-- Customized Interactive Role Selector -->
                     <div class="relative custom-select-wrapper" id="staff-role-wrapper">
                         <select name="role_id" required class="custom-native-select opacity-0 absolute pointer-events-none h-0 w-0">
                             <option value="">Select role</option>
