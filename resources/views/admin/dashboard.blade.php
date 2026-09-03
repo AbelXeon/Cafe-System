@@ -1347,7 +1347,6 @@ async function submitForm(formEl, url, onSuccess) {
     }
 }
 
-// ---- Product Form Submit ----
 document.getElementById('product-form').addEventListener('submit', function (e) {
     e.preventDefault();
     submitForm(this, "{{ route('admin.products.store') }}", (data) => {
