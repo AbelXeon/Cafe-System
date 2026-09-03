@@ -202,7 +202,6 @@
                             </div>
                         </div>
 
-                        <!-- Image Preview State (Shows up when image is chosen) -->
                         <div id="image-preview-container" class="hidden w-full relative flex items-center gap-3">
                             <div class="relative w-16 h-16 rounded-xl overflow-hidden bg-[#0f0e13] border border-[#2a2731] shrink-0 shadow-md">
                                 <img id="image-preview-img" src="" alt="Preview" class="w-full h-full object-cover">
