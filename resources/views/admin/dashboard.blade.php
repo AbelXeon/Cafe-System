@@ -76,19 +76,36 @@
             </button>
         </div>
 
-        <nav class="flex-1 px-3 py-4 space-y-1.5 overflow-y-auto custom-scroll">
-            <button data-target="overview" class="nav-link w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-3">
-                <i data-lucide="layout-dashboard" class="w-4 h-4"></i><span>Overview</span>
-            </button>
-            <button data-target="products" class="nav-link w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-3">
-                <i data-lucide="package" class="w-4 h-4"></i><span>Products</span>
-            </button>
-            <button data-target="staff" class="nav-link w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-3">
-                <i data-lucide="users" class="w-4 h-4"></i><span>Staff</span>
-            </button>
-            <button data-target="extras" class="nav-link w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-3">
-                <i data-lucide="sparkles" class="w-4 h-4"></i><span>Extras</span>
-            </button>
+        <!-- Grouped Sidebar Navigation -->
+        <nav class="flex-1 px-3 py-4 space-y-4 overflow-y-auto custom-scroll">
+            
+            <!-- GROUP: Dashboard -->
+            <div class="space-y-1">
+                <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-stone-500 block">Dashboard</span>
+                <button data-target="overview" class="nav-link w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-3">
+                    <i data-lucide="layout-dashboard" class="w-4 h-4"></i><span>Overview</span>
+                </button>
+            </div>
+
+            <!-- GROUP: Restaurant -->
+            <div class="space-y-1">
+                <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-stone-500 block">Restaurant</span>
+                <button data-target="products" class="nav-link w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-3">
+                    <i data-lucide="package" class="w-4 h-4"></i><span>Products</span>
+                </button>
+                <button data-target="extras" class="nav-link w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-3">
+                    <i data-lucide="sparkles" class="w-4 h-4"></i><span>Extras</span>
+                </button>
+            </div>
+
+            <!-- GROUP: Workforce -->
+            <div class="space-y-1">
+                <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-stone-500 block">Workforce</span>
+                <button data-target="staff" class="nav-link w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-3">
+                    <i data-lucide="users" class="w-4 h-4"></i><span>Staff</span>
+                </button>
+            </div>
+
         </nav>
 
         <form method="POST" action="{{ route('logout') }}" class="p-3 border-t border-[#1e1c25]">
@@ -109,7 +126,6 @@
                     <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Store Overview &amp; Analytics</h2>
                     <p class="text-stone-500 text-xs sm:text-sm mt-1">Real-time performance, revenue in ETB, and store metrics</p>
                 </div>
-                
             </div>
 
             <!-- Top Metric KPI Cards -->
