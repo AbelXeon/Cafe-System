@@ -26,6 +26,48 @@
 </head>
 <body class="bg-[#0f0e13] text-stone-200 h-screen overflow-hidden selection:bg-[#b08d57] selection:text-[#0f0e13]" x-data="{ mobileNavOpen: false, mobileCartOpen: false }">
 
+<!-- Animated Success Toast Notification (Bottom-Right Corner) -->
+<div x-show="$store.toast.visible"
+     x-cloak
+     x-transition:enter="transform ease-out duration-300 transition"
+     x-transition:enter-start="translate-y-6 opacity-0 scale-90 sm:translate-x-8 sm:translate-y-0"
+     x-transition:enter-end="translate-y-0 opacity-100 scale-100 sm:translate-x-0"
+     x-transition:leave="transition ease-in duration-200"
+     x-transition:leave-start="opacity-100 scale-100 sm:translate-x-0"
+     x-transition:leave-end="opacity-0 scale-90 sm:translate-x-8"
+     class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 max-w-sm w-[calc(100%-2rem)] sm:w-96 bg-[#14131a]/95 border border-[#b08d57]/60 rounded-2xl shadow-2xl overflow-hidden backdrop-blur-xl">
+     
+    <div class="p-4 flex items-start gap-3.5 relative">
+        <!-- Glowing Pulse Icon -->
+        <div class="w-10 h-10 rounded-xl bg-[#b08d57]/15 border border-[#b08d57]/30 flex items-center justify-center text-[#b08d57] shrink-0 shadow-lg shadow-[#b08d57]/20 relative">
+            <span class="absolute -top-1 -right-1 flex h-3 w-3">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#b08d57] opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-3 w-3 bg-[#b08d57]"></span>
+            </span>
+            <i data-lucide="sparkles" class="w-5 h-5"></i>
+        </div>
+
+        <div class="flex-1 min-w-0 pr-1">
+            <div class="flex items-center gap-2">
+                <h4 class="text-sm font-bold text-white tracking-tight" x-text="$store.toast.title"></h4>
+                <span x-show="$store.toast.orderId" class="text-[10px] font-black bg-[#b08d57] text-[#0f0e13] px-2 py-0.5 rounded-full" x-text="$store.toast.orderId"></span>
+            </div>
+            <p class="text-xs text-stone-400 mt-1 leading-relaxed" x-text="$store.toast.message"></p>
+        </div>
+
+        <!-- Close Button -->
+        <button @click="$store.toast.hide()" class="text-stone-500 hover:text-white transition p-1 rounded-lg hover:bg-[#1e1c25]">
+            <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+    </div>
+
+    <!-- Countdown Progress Bar -->
+    <div class="w-full bg-[#1e1c25] h-1 overflow-hidden">
+        <div class="bg-gradient-to-r from-[#b08d57] to-[#e4cb9d] h-full transition-all duration-75 ease-linear"
+             :style="`width: ${$store.toast.progress}%`"></div>
+    </div>
+</div>
+
 <!-- Mobile Top Navigation Bar (Visible on screens < lg) -->
 <header class="lg:hidden bg-[#0f0e13] border-b border-[#1e1c25] px-4 py-3 flex items-center justify-between z-30 shrink-0">
     <div class="flex items-center gap-3">
@@ -555,6 +597,52 @@
     const CSRF_TOKEN = document.querySelector('meta[name="csrf-token"]').content;
 
     document.addEventListener('alpine:init', () => {
+        // Global Animated Toast Store
+        Alpine.store('toast', {
+            visible: false,
+            title: '',
+            message: '',
+            orderId: '',
+            progress: 100,
+            timer: null,
+            interval: null,
+
+            trigger(title, message, orderId) {
+                this.title = title || 'Order Placed!';
+                this.message = message || 'Your order has been sent to the kitchen.';
+                this.orderId = orderId ? '#' + orderId : '';
+                this.progress = 100;
+                this.visible = true;
+
+                clearInterval(this.interval);
+                clearTimeout(this.timer);
+
+                const duration = 4500;
+                const step = 50;
+                const stepPercent = 100 / (duration / step);
+
+                this.interval = setInterval(() => {
+                    this.progress -= stepPercent;
+                    if (this.progress <= 0) {
+                        clearInterval(this.interval);
+                    }
+                }, step);
+
+                this.timer = setTimeout(() => {
+                    this.hide();
+                }, duration);
+
+                setTimeout(() => lucide.createIcons(), 50);
+            },
+
+            hide() {
+                this.visible = false;
+                clearInterval(this.interval);
+                clearTimeout(this.timer);
+            }
+        });
+
+        // Cart Store
         Alpine.store('cart', {
             items: JSON.parse(localStorage.getItem('cafe_cart') || '[]'),
 
@@ -620,6 +708,7 @@
             },
         });
 
+        // Addresses Store
         Alpine.store('addresses', {
             list: window.ADDRESSES_DATA || [],
             selectedId: null,
@@ -811,7 +900,13 @@
                     this.$store.cart.clear();
                     this.showConfirm = false;
                     this.placingOrder = false;
-                    alert('Order placed successfully — #' + data.order.id);
+                    
+                    // Trigger Beautiful Animated Toast Notification
+                    this.$store.toast.trigger(
+                        'Order Placed Successfully!',
+                        'Your meal is confirmed and has been sent to our kitchen team.',
+                        data.order.id
+                    );
                 } catch (e) {
                     this.orderError = 'Network error. Try again.';
                     this.placingOrder = false;
