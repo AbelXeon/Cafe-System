@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Order;
-use App\Models\OrderItems;
+use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\SavedLocation;
 use Illuminate\Http\Request;
