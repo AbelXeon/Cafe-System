@@ -33,7 +33,6 @@ class AdminController extends Controller
             $totalCustomers = User::whereDoesntHave('role', fn($q) => $q->whereIn('name', ['admin', 'staff', 'delivery']))->count();
         }
 
-        // Safely check total revenue and orders
         $totalOrders = class_exists(Order::class) ? Order::count() : 0;
         $totalRevenue = 0;
         if (class_exists(Order::class) && $totalOrders > 0) {
