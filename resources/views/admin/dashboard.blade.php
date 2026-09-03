@@ -1218,7 +1218,6 @@ function setupDataTable({ searchInputId, clearBtnClass, tableBodyId, emptyStateI
     return { refresh: applyFilter };
 }
 
-// ---- Initialize DataTables ----
 let productsDataTable, staffDataTable, extrasDataTable;
 
 function initAllDataTables() {
