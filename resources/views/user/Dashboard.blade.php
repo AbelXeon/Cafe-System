@@ -157,7 +157,7 @@
                 </button>
                 <button data-target="chat" @click="mobileNavOpen = false" class="side-link w-full text-left px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-3">
                     <i data-lucide="message-square" class="w-4 h-4"></i>
-                    <span>Chat Support</span>
+                    <span>Chat</span>
                 </button>
                 <button data-target="profile" @click="mobileNavOpen = false" class="side-link w-full text-left px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-3">
                     <i data-lucide="user-cog" class="w-4 h-4"></i>
