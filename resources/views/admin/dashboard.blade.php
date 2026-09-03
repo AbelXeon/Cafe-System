@@ -95,8 +95,10 @@
         </form>
     </aside>
 
+    {{-- Main Content Area --}}
     <main class="flex-1 p-4 sm:p-6 lg:p-10 overflow-y-auto custom-scroll">
 
+        {{-- OVERVIEW --}}
         <section id="section-overview" class="page-section">
             <div class="mb-6 sm:mb-8">
                 <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Overview</h2>
@@ -138,7 +140,7 @@
                 <div>
                     <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Category</label>
                     
-                    <!-- Customized Interactive Category Selector -->
+                    <!-- Form Category Selector -->
                     <div class="relative custom-select-wrapper" id="product-category-wrapper">
                         <select name="category_id" required class="custom-native-select opacity-0 absolute pointer-events-none h-0 w-0">
                             <option value="">Select category</option>
@@ -179,6 +181,7 @@
                     <input type="number" step="0.01" name="price" required class="cd-input w-full rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none transition">
                 </div>
                 
+                <!-- Interactive Image Picker with Live Preview -->
                 <div>
                     <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Product Image</label>
                     
@@ -199,6 +202,7 @@
                             </div>
                         </div>
 
+                        <!-- Image Preview State -->
                         <div id="image-preview-container" class="hidden w-full relative flex items-center gap-3">
                             <div class="relative w-16 h-16 rounded-xl overflow-hidden bg-[#0f0e13] border border-[#2a2731] shrink-0 shadow-md">
                                 <img id="image-preview-img" src="" alt="Preview" class="w-full h-full object-cover">
@@ -229,9 +233,86 @@
                 </div>
             </form>
 
+            <!-- Products DataTable Card -->
             <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl overflow-hidden shadow-lg">
+                <!-- Filter & Buffer Search Toolbar -->
+                <div class="p-4 sm:p-5 border-b border-[#2a2731] flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#0f0e13]/40">
+                    <!-- Left: Search Box with Loading Buffer -->
+                    <div class="relative flex-1 max-w-md">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-stone-500">
+                            <i data-lucide="search" class="w-4 h-4 search-icon"></i>
+                            <div class="w-4 h-4 border-2 border-[#b08d57] border-t-transparent rounded-full animate-spin hidden buffer-spinner"></div>
+                        </div>
+                        <input type="text" id="products-search-input" placeholder="Search products by name, category, or price..." class="cd-input w-full rounded-xl pl-10 pr-9 py-2.5 text-sm text-white focus:outline-none transition">
+                        <button type="button" class="clear-search-btn absolute inset-y-0 right-0 pr-3 flex items-center text-stone-500 hover:text-stone-300 hidden">
+                            <i data-lucide="x" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+
+                    <!-- Right: Filters & Total Count -->
+                    <div class="flex flex-wrap items-center gap-3">
+                        <!-- Category Filter Dropdown -->
+                        <div class="relative custom-select-wrapper min-w-[150px]">
+                            <select id="products-filter-category" class="custom-native-select opacity-0 absolute pointer-events-none h-0 w-0">
+                                <option value="all">All Categories</option>
+                                @foreach ($categories as $cat)
+                                    <option value="{{ $cat->name }}">{{ $cat->name }}</option>
+                                @endforeach
+                            </select>
+                            <button type="button" class="custom-select-trigger cd-input w-full rounded-xl px-3 py-2 text-xs text-left flex items-center justify-between transition group hover:border-[#b08d57]/70">
+                                <span class="custom-select-label text-stone-300 font-semibold truncate" data-placeholder="All Categories">All Categories</span>
+                                <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-stone-400 group-hover:text-stone-200 transition-transform duration-300 chevron-icon shrink-0 ml-2"></i>
+                            </button>
+                            <div class="custom-select-menu hidden absolute right-0 left-0 top-[calc(100%+6px)] bg-[#14131a]/95 backdrop-blur-xl border border-[#2a2731] rounded-xl p-1.5 shadow-2xl z-50 max-h-52 overflow-y-auto custom-scroll space-y-1">
+                                <div class="custom-option px-2.5 py-1.5 rounded-lg text-xs text-stone-300 hover:text-white hover:bg-[#1e1c25] cursor-pointer flex items-center justify-between transition" data-value="all" data-text="All Categories">
+                                    <span>All Categories</span>
+                                    <i data-lucide="check" class="w-3.5 h-3.5 text-[#b08d57] hidden check-icon"></i>
+                                </div>
+                                @foreach ($categories as $cat)
+                                    <div class="custom-option px-2.5 py-1.5 rounded-lg text-xs text-stone-300 hover:text-white hover:bg-[#1e1c25] cursor-pointer flex items-center justify-between transition" data-value="{{ $cat->name }}" data-text="{{ $cat->name }}">
+                                        <span>{{ $cat->name }}</span>
+                                        <i data-lucide="check" class="w-3.5 h-3.5 text-[#b08d57] hidden check-icon"></i>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <!-- Availability Filter Dropdown -->
+                        <div class="relative custom-select-wrapper min-w-[130px]">
+                            <select id="products-filter-status" class="custom-native-select opacity-0 absolute pointer-events-none h-0 w-0">
+                                <option value="all">All Status</option>
+                                <option value="available">Available</option>
+                                <option value="unavailable">Unavailable</option>
+                            </select>
+                            <button type="button" class="custom-select-trigger cd-input w-full rounded-xl px-3 py-2 text-xs text-left flex items-center justify-between transition group hover:border-[#b08d57]/70">
+                                <span class="custom-select-label text-stone-300 font-semibold truncate" data-placeholder="All Status">All Status</span>
+                                <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-stone-400 group-hover:text-stone-200 transition-transform duration-300 chevron-icon shrink-0 ml-2"></i>
+                            </button>
+                            <div class="custom-select-menu hidden absolute right-0 left-0 top-[calc(100%+6px)] bg-[#14131a]/95 backdrop-blur-xl border border-[#2a2731] rounded-xl p-1.5 shadow-2xl z-50 max-h-52 overflow-y-auto custom-scroll space-y-1">
+                                <div class="custom-option px-2.5 py-1.5 rounded-lg text-xs text-stone-300 hover:text-white hover:bg-[#1e1c25] cursor-pointer flex items-center justify-between transition" data-value="all" data-text="All Status">
+                                    <span>All Status</span>
+                                    <i data-lucide="check" class="w-3.5 h-3.5 text-[#b08d57] hidden check-icon"></i>
+                                </div>
+                                <div class="custom-option px-2.5 py-1.5 rounded-lg text-xs text-stone-300 hover:text-white hover:bg-[#1e1c25] cursor-pointer flex items-center justify-between transition" data-value="available" data-text="Available">
+                                    <span>Available</span>
+                                    <i data-lucide="check" class="w-3.5 h-3.5 text-[#b08d57] hidden check-icon"></i>
+                                </div>
+                                <div class="custom-option px-2.5 py-1.5 rounded-lg text-xs text-stone-300 hover:text-white hover:bg-[#1e1c25] cursor-pointer flex items-center justify-between transition" data-value="unavailable" data-text="Unavailable">
+                                    <span>Unavailable</span>
+                                    <i data-lucide="check" class="w-3.5 h-3.5 text-[#b08d57] hidden check-icon"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Count Badge -->
+                        <span id="products-count-badge" class="px-3 py-1.5 rounded-xl bg-[#1e1c25] border border-[#2a2731] text-xs font-semibold text-stone-300 whitespace-nowrap">
+                            Showing {{ $products->count() }} of {{ $products->count() }}
+                        </span>
+                    </div>
+                </div>
+
                 <div class="overflow-x-auto custom-scroll">
-                    <table class="w-full text-sm text-left">
+                    <table class="w-full text-sm text-left" id="products-table">
                         <thead>
                             <tr class="text-stone-400 border-b border-[#2a2731] bg-[#0f0e13]/50">
                                 <th class="py-3 px-4 sm:px-5 font-semibold">Image</th>
@@ -243,10 +324,14 @@
                         </thead>
                         <tbody id="products-table-body">
                             @foreach ($products as $p)
-                                <tr class="border-b border-[#2a2731]/60 hover:bg-[#1e1c25]/40 transition">
+                                <tr class="data-row border-b border-[#2a2731]/60 hover:bg-[#1e1c25]/40 transition" 
+                                    data-name="{{ strtolower($p->name) }}" 
+                                    data-category="{{ strtolower($p->category->name) }}" 
+                                    data-price="{{ $p->price }}" 
+                                    data-status="{{ $p->is_available ? 'available' : 'unavailable' }}">
                                     <td class="py-3 px-4 sm:px-5"><img src="{{ asset('storage/' . $p->image) }}" class="w-10 h-10 object-cover rounded-lg bg-[#0f0e13]"></td>
-                                    <td class="px-4 sm:px-5 text-white font-medium whitespace-nowrap">{{ $p->name }}</td>
-                                    <td class="px-4 sm:px-5 text-stone-400 whitespace-nowrap">{{ $p->category->name }}</td>
+                                    <td class="px-4 sm:px-5 text-white font-medium whitespace-nowrap product-name-cell">{{ $p->name }}</td>
+                                    <td class="px-4 sm:px-5 text-stone-400 whitespace-nowrap product-cat-cell">{{ $p->category->name }}</td>
                                     <td class="px-4 sm:px-5 text-[#b08d57] font-bold whitespace-nowrap">${{ number_format($p->price, 2) }}</td>
                                     <td class="px-4 sm:px-5 whitespace-nowrap">
                                         @if ($p->is_available)
@@ -260,9 +345,19 @@
                         </tbody>
                     </table>
                 </div>
+
+                <!-- Empty State Message -->
+                <div id="products-empty-state" class="hidden p-8 sm:p-12 text-center flex-col items-center justify-center space-y-3">
+                    <div class="w-12 h-12 rounded-2xl bg-[#1e1c25] flex items-center justify-center text-stone-500 mx-auto">
+                        <i data-lucide="package-search" class="w-6 h-6"></i>
+                    </div>
+                    <p class="text-white font-bold text-sm">No products found</p>
+                    <p class="text-stone-500 text-xs max-w-sm mx-auto">No products matched your search query or filter selection.</p>
+                </div>
             </div>
         </section>
 
+        {{-- STAFF --}}
         <section id="section-staff" class="page-section hidden">
             <div class="mb-6 sm:mb-8">
                 <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Staff &amp; Delivery</h2>
@@ -273,6 +368,7 @@
                 <div>
                     <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Role</label>
                     
+                    <!-- Form Role Selector -->
                     <div class="relative custom-select-wrapper" id="staff-role-wrapper">
                         <select name="role_id" required class="custom-native-select opacity-0 absolute pointer-events-none h-0 w-0">
                             <option value="">Select role</option>
@@ -332,9 +428,58 @@
                 </div>
             </form>
 
+            <!-- Staff DataTable Card -->
             <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl overflow-hidden shadow-lg">
+                <!-- Filter & Buffer Search Toolbar -->
+                <div class="p-4 sm:p-5 border-b border-[#2a2731] flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#0f0e13]/40">
+                    <!-- Left: Search Box -->
+                    <div class="relative flex-1 max-w-md">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-stone-500">
+                            <i data-lucide="search" class="w-4 h-4 search-icon"></i>
+                            <div class="w-4 h-4 border-2 border-[#b08d57] border-t-transparent rounded-full animate-spin hidden buffer-spinner"></div>
+                        </div>
+                        <input type="text" id="staff-search-input" placeholder="Search staff by name, username, or phone..." class="cd-input w-full rounded-xl pl-10 pr-9 py-2.5 text-sm text-white focus:outline-none transition">
+                        <button type="button" class="clear-search-btn absolute inset-y-0 right-0 pr-3 flex items-center text-stone-500 hover:text-stone-300 hidden">
+                            <i data-lucide="x" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+
+                    <!-- Right: Role Filter & Count -->
+                    <div class="flex flex-wrap items-center gap-3">
+                        <div class="relative custom-select-wrapper min-w-[150px]">
+                            <select id="staff-filter-role" class="custom-native-select opacity-0 absolute pointer-events-none h-0 w-0">
+                                <option value="all">All Roles</option>
+                                @foreach ($roles as $r)
+                                    <option value="{{ strtolower($r->name) }}">{{ ucfirst($r->name) }}</option>
+                                @endforeach
+                            </select>
+                            <button type="button" class="custom-select-trigger cd-input w-full rounded-xl px-3 py-2 text-xs text-left flex items-center justify-between transition group hover:border-[#b08d57]/70">
+                                <span class="custom-select-label text-stone-300 font-semibold truncate" data-placeholder="All Roles">All Roles</span>
+                                <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-stone-400 group-hover:text-stone-200 transition-transform duration-300 chevron-icon shrink-0 ml-2"></i>
+                            </button>
+                            <div class="custom-select-menu hidden absolute right-0 left-0 top-[calc(100%+6px)] bg-[#14131a]/95 backdrop-blur-xl border border-[#2a2731] rounded-xl p-1.5 shadow-2xl z-50 max-h-52 overflow-y-auto custom-scroll space-y-1">
+                                <div class="custom-option px-2.5 py-1.5 rounded-lg text-xs text-stone-300 hover:text-white hover:bg-[#1e1c25] cursor-pointer flex items-center justify-between transition" data-value="all" data-text="All Roles">
+                                    <span>All Roles</span>
+                                    <i data-lucide="check" class="w-3.5 h-3.5 text-[#b08d57] hidden check-icon"></i>
+                                </div>
+                                @foreach ($roles as $r)
+                                    <div class="custom-option px-2.5 py-1.5 rounded-lg text-xs text-stone-300 hover:text-white hover:bg-[#1e1c25] cursor-pointer flex items-center justify-between transition" data-value="{{ strtolower($r->name) }}" data-text="{{ ucfirst($r->name) }}">
+                                        <span>{{ ucfirst($r->name) }}</span>
+                                        <i data-lucide="check" class="w-3.5 h-3.5 text-[#b08d57] hidden check-icon"></i>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <!-- Count Badge -->
+                        <span id="staff-count-badge" class="px-3 py-1.5 rounded-xl bg-[#1e1c25] border border-[#2a2731] text-xs font-semibold text-stone-300 whitespace-nowrap">
+                            Showing {{ $staff->count() }} of {{ $staff->count() }}
+                        </span>
+                    </div>
+                </div>
+
                 <div class="overflow-x-auto custom-scroll">
-                    <table class="w-full text-sm text-left">
+                    <table class="w-full text-sm text-left" id="staff-table">
                         <thead>
                             <tr class="text-stone-400 border-b border-[#2a2731] bg-[#0f0e13]/50">
                                 <th class="py-3 px-4 sm:px-5 font-semibold">Name</th>
@@ -345,15 +490,28 @@
                         </thead>
                         <tbody id="staff-table-body">
                             @foreach ($staff as $s)
-                                <tr class="border-b border-[#2a2731]/60 hover:bg-[#1e1c25]/40 transition">
-                                    <td class="py-3 px-4 sm:px-5 text-white font-medium whitespace-nowrap">{{ $s->fullname }}</td>
-                                    <td class="px-4 sm:px-5 text-stone-400 whitespace-nowrap">{{ $s->username }}</td>
-                                    <td class="px-4 sm:px-5 whitespace-nowrap"><span class="inline-flex items-center text-xs font-semibold text-[#b08d57] bg-[#b08d57]/10 border border-[#b08d57]/20 px-2.5 py-1 rounded-full">{{ ucfirst($s->role->name) }}</span></td>
-                                    <td class="px-4 sm:px-5 text-stone-400 whitespace-nowrap">{{ $s->phone }}</td>
+                                <tr class="data-row border-b border-[#2a2731]/60 hover:bg-[#1e1c25]/40 transition"
+                                    data-fullname="{{ strtolower($s->fullname) }}"
+                                    data-username="{{ strtolower($s->username) }}"
+                                    data-role="{{ strtolower($s->role->name) }}"
+                                    data-phone="{{ strtolower($s->phone ?? '') }}">
+                                    <td class="py-3 px-4 sm:px-5 text-white font-medium whitespace-nowrap staff-name-cell">{{ $s->fullname }}</td>
+                                    <td class="px-4 sm:px-5 text-stone-400 whitespace-nowrap staff-username-cell">{{ $s->username }}</td>
+                                    <td class="px-4 sm:px-5 whitespace-nowrap"><span class="inline-flex items-center text-xs font-semibold text-[#b08d57] bg-[#b08d57]/10 border border-[#b08d57]/20 px-2.5 py-1 rounded-full staff-role-cell">{{ ucfirst($s->role->name) }}</span></td>
+                                    <td class="px-4 sm:px-5 text-stone-400 whitespace-nowrap staff-phone-cell">{{ $s->phone }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
+                </div>
+
+                <!-- Empty State Message -->
+                <div id="staff-empty-state" class="hidden p-8 sm:p-12 text-center flex-col items-center justify-center space-y-3">
+                    <div class="w-12 h-12 rounded-2xl bg-[#1e1c25] flex items-center justify-center text-stone-500 mx-auto">
+                        <i data-lucide="user-x" class="w-6 h-6"></i>
+                    </div>
+                    <p class="text-white font-bold text-sm">No staff members found</p>
+                    <p class="text-stone-500 text-xs max-w-sm mx-auto">No members matched your search query or role filter.</p>
                 </div>
             </div>
         </section>
@@ -382,9 +540,59 @@
                 </div>
             </form>
 
+            <!-- Extras DataTable Card -->
             <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl overflow-hidden shadow-lg">
+                <!-- Filter & Buffer Search Toolbar -->
+                <div class="p-4 sm:p-5 border-b border-[#2a2731] flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#0f0e13]/40">
+                    <!-- Left: Search Box -->
+                    <div class="relative flex-1 max-w-md">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-stone-500">
+                            <i data-lucide="search" class="w-4 h-4 search-icon"></i>
+                            <div class="w-4 h-4 border-2 border-[#b08d57] border-t-transparent rounded-full animate-spin hidden buffer-spinner"></div>
+                        </div>
+                        <input type="text" id="extras-search-input" placeholder="Search extras by name or price..." class="cd-input w-full rounded-xl pl-10 pr-9 py-2.5 text-sm text-white focus:outline-none transition">
+                        <button type="button" class="clear-search-btn absolute inset-y-0 right-0 pr-3 flex items-center text-stone-500 hover:text-stone-300 hidden">
+                            <i data-lucide="x" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+
+                    <!-- Right: Availability Filter & Count -->
+                    <div class="flex flex-wrap items-center gap-3">
+                        <div class="relative custom-select-wrapper min-w-[140px]">
+                            <select id="extras-filter-status" class="custom-native-select opacity-0 absolute pointer-events-none h-0 w-0">
+                                <option value="all">All Status</option>
+                                <option value="available">Available</option>
+                                <option value="unavailable">Unavailable</option>
+                            </select>
+                            <button type="button" class="custom-select-trigger cd-input w-full rounded-xl px-3 py-2 text-xs text-left flex items-center justify-between transition group hover:border-[#b08d57]/70">
+                                <span class="custom-select-label text-stone-300 font-semibold truncate" data-placeholder="All Status">All Status</span>
+                                <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-stone-400 group-hover:text-stone-200 transition-transform duration-300 chevron-icon shrink-0 ml-2"></i>
+                            </button>
+                            <div class="custom-select-menu hidden absolute right-0 left-0 top-[calc(100%+6px)] bg-[#14131a]/95 backdrop-blur-xl border border-[#2a2731] rounded-xl p-1.5 shadow-2xl z-50 max-h-52 overflow-y-auto custom-scroll space-y-1">
+                                <div class="custom-option px-2.5 py-1.5 rounded-lg text-xs text-stone-300 hover:text-white hover:bg-[#1e1c25] cursor-pointer flex items-center justify-between transition" data-value="all" data-text="All Status">
+                                    <span>All Status</span>
+                                    <i data-lucide="check" class="w-3.5 h-3.5 text-[#b08d57] hidden check-icon"></i>
+                                </div>
+                                <div class="custom-option px-2.5 py-1.5 rounded-lg text-xs text-stone-300 hover:text-white hover:bg-[#1e1c25] cursor-pointer flex items-center justify-between transition" data-value="available" data-text="Available">
+                                    <span>Available</span>
+                                    <i data-lucide="check" class="w-3.5 h-3.5 text-[#b08d57] hidden check-icon"></i>
+                                </div>
+                                <div class="custom-option px-2.5 py-1.5 rounded-lg text-xs text-stone-300 hover:text-white hover:bg-[#1e1c25] cursor-pointer flex items-center justify-between transition" data-value="unavailable" data-text="Unavailable">
+                                    <span>Unavailable</span>
+                                    <i data-lucide="check" class="w-3.5 h-3.5 text-[#b08d57] hidden check-icon"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Count Badge -->
+                        <span id="extras-count-badge" class="px-3 py-1.5 rounded-xl bg-[#1e1c25] border border-[#2a2731] text-xs font-semibold text-stone-300 whitespace-nowrap">
+                            Showing {{ $extras->count() }} of {{ $extras->count() }}
+                        </span>
+                    </div>
+                </div>
+
                 <div class="overflow-x-auto custom-scroll">
-                    <table class="w-full text-sm text-left">
+                    <table class="w-full text-sm text-left" id="extras-table">
                         <thead>
                             <tr class="text-stone-400 border-b border-[#2a2731] bg-[#0f0e13]/50">
                                 <th class="py-3 px-4 sm:px-5 font-semibold">Name</th>
@@ -394,8 +602,11 @@
                         </thead>
                         <tbody id="extras-table-body">
                             @foreach ($extras as $e)
-                                <tr class="border-b border-[#2a2731]/60 hover:bg-[#1e1c25]/40 transition">
-                                    <td class="py-3 px-4 sm:px-5 text-white font-medium whitespace-nowrap">{{ $e->name }}</td>
+                                <tr class="data-row border-b border-[#2a2731]/60 hover:bg-[#1e1c25]/40 transition"
+                                    data-name="{{ strtolower($e->name) }}"
+                                    data-price="{{ $e->price }}"
+                                    data-status="{{ $e->is_available ? 'available' : 'unavailable' }}">
+                                    <td class="py-3 px-4 sm:px-5 text-white font-medium whitespace-nowrap extra-name-cell">{{ $e->name }}</td>
                                     <td class="px-4 sm:px-5 text-[#b08d57] font-bold whitespace-nowrap">${{ number_format($e->price, 2) }}</td>
                                     <td class="px-4 sm:px-5 whitespace-nowrap">
                                         @if ($e->is_available)
@@ -408,6 +619,15 @@
                             @endforeach
                         </tbody>
                     </table>
+                </div>
+
+                <!-- Empty State Message -->
+                <div id="extras-empty-state" class="hidden p-8 sm:p-12 text-center flex-col items-center justify-center space-y-3">
+                    <div class="w-12 h-12 rounded-2xl bg-[#1e1c25] flex items-center justify-center text-stone-500 mx-auto">
+                        <i data-lucide="sparkles" class="w-6 h-6"></i>
+                    </div>
+                    <p class="text-white font-bold text-sm">No extras found</p>
+                    <p class="text-stone-500 text-xs max-w-sm mx-auto">No extras matched your search query or filter selection.</p>
                 </div>
             </div>
         </section>
@@ -450,7 +670,6 @@ function showSection(target) {
     document.querySelectorAll(`.nav-link[data-target="${target}"]`).forEach(l => l.classList.add('active'));
     
     closeMobileSidebar();
-    
     setTimeout(() => lucide.createIcons(), 50);
 }
 
@@ -459,6 +678,7 @@ navLinks.forEach(link => {
 });
 showSection('overview');
 
+// ---- Image Picker & Preview Handling ----
 const imageInput = document.getElementById('product-image-input');
 const dropzone = document.getElementById('image-dropzone');
 const placeholder = document.getElementById('image-placeholder');
@@ -537,8 +757,12 @@ if (removeImageBtn) {
     });
 }
 
+// ---- Customized Dropdowns Management ----
 function initCustomSelects() {
     document.querySelectorAll('.custom-select-wrapper').forEach(wrapper => {
+        if (wrapper.dataset.initialized) return;
+        wrapper.dataset.initialized = "true";
+
         const trigger = wrapper.querySelector('.custom-select-trigger');
         const menu = wrapper.querySelector('.custom-select-menu');
         const label = wrapper.querySelector('.custom-select-label');
@@ -551,7 +775,6 @@ function initCustomSelects() {
         function toggleMenu(show) {
             const isOpen = show !== undefined ? show : menu.classList.contains('hidden');
             if (isOpen) {
-                // Close other opened menus
                 document.querySelectorAll('.custom-select-menu').forEach(m => {
                     if (m !== menu) {
                         m.classList.add('hidden');
@@ -580,17 +803,14 @@ function initCustomSelects() {
                 const val = opt.getAttribute('data-value');
                 const text = opt.getAttribute('data-text');
 
-                // Sync with underlying native select
                 nativeSelect.value = val;
                 nativeSelect.dispatchEvent(new Event('change', { bubbles: true }));
 
-                // Update Trigger UI
                 label.textContent = text;
                 label.classList.remove('text-stone-500');
                 label.classList.add('text-white', 'font-semibold');
                 if (triggerDot) triggerDot.classList.replace('bg-stone-600', 'bg-[#b08d57]');
 
-                // Highlight active option with checkmark
                 options.forEach(o => {
                     const check = o.querySelector('.check-icon');
                     const dot = o.querySelector('.dot-indicator');
@@ -609,7 +829,6 @@ function initCustomSelects() {
             });
         });
 
-        // Handle Form Reset
         const parentForm = wrapper.closest('form');
         if (parentForm) {
             parentForm.addEventListener('reset', () => {
@@ -631,7 +850,6 @@ function initCustomSelects() {
         }
     });
 
-    // Close on outside click
     document.addEventListener('click', () => {
         document.querySelectorAll('.custom-select-menu').forEach(m => m.classList.add('hidden'));
         document.querySelectorAll('.chevron-icon').forEach(c => c.classList.remove('rotate-180'));
@@ -639,12 +857,185 @@ function initCustomSelects() {
     });
 }
 
-// ---- generic AJAX submit helper ----
+// ---- Reusable DataTable Filter & Buffer Engine ----
+function setupDataTable({ searchInputId, clearBtnClass, tableBodyId, emptyStateId, countBadgeId, getFilters, rowMatcher }) {
+    const searchInput = document.getElementById(searchInputId);
+    const tableBody = document.getElementById(tableBodyId);
+    const emptyState = document.getElementById(emptyStateId);
+    const countBadge = document.getElementById(countBadgeId);
+    const container = searchInput?.closest('.relative');
+    const searchIcon = container?.querySelector('.search-icon');
+    const spinner = container?.querySelector('.buffer-spinner');
+    const clearBtn = container?.querySelector('.clear-search-btn');
+
+    let debounceTimer = null;
+
+    function applyFilter() {
+        const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
+        const filters = getFilters ? getFilters() : {};
+        const rows = tableBody.querySelectorAll('tr.data-row');
+        let visibleCount = 0;
+        const totalCount = rows.length;
+
+        rows.forEach(row => {
+            const matches = rowMatcher(row, query, filters);
+            if (matches) {
+                row.classList.remove('hidden');
+                visibleCount++;
+            } else {
+                row.classList.add('hidden');
+            }
+        });
+
+        // Update Counter Badge
+        if (countBadge) {
+            countBadge.textContent = `Showing ${visibleCount} of ${totalCount}`;
+        }
+
+        // Toggle Empty State Message
+        if (emptyState) {
+            if (visibleCount === 0 && totalCount > 0) {
+                emptyState.classList.remove('hidden');
+                emptyState.classList.add('flex');
+            } else {
+                emptyState.classList.add('hidden');
+                emptyState.classList.remove('flex');
+            }
+        }
+
+        // Hide buffer spinner
+        if (spinner && searchIcon) {
+            spinner.classList.add('hidden');
+            searchIcon.classList.remove('hidden');
+        }
+
+        // Toggle clear search button
+        if (clearBtn) {
+            if (query.length > 0) {
+                clearBtn.classList.remove('hidden');
+            } else {
+                clearBtn.classList.add('hidden');
+            }
+        }
+    }
+
+    function triggerBufferedFilter() {
+        if (spinner && searchIcon) {
+            searchIcon.classList.add('hidden');
+            spinner.classList.remove('hidden');
+        }
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            applyFilter();
+        }, 180); // Buffered 180ms live debounce
+    }
+
+    if (searchInput) {
+        searchInput.addEventListener('input', triggerBufferedFilter);
+    }
+
+    if (clearBtn) {
+        clearBtn.addEventListener('click', () => {
+            searchInput.value = '';
+            triggerBufferedFilter();
+            searchInput.focus();
+        });
+    }
+
+    return { refresh: applyFilter };
+}
+
+// ---- Initialize DataTables ----
+let productsDataTable, staffDataTable, extrasDataTable;
+
+function initAllDataTables() {
+    // 1. Products DataTable
+    const prodCategorySelect = document.getElementById('products-filter-category');
+    const prodStatusSelect = document.getElementById('products-filter-status');
+
+    productsDataTable = setupDataTable({
+        searchInputId: 'products-search-input',
+        tableBodyId: 'products-table-body',
+        emptyStateId: 'products-empty-state',
+        countBadgeId: 'products-count-badge',
+        getFilters: () => ({
+            category: prodCategorySelect ? prodCategorySelect.value.toLowerCase() : 'all',
+            status: prodStatusSelect ? prodStatusSelect.value.toLowerCase() : 'all'
+        }),
+        rowMatcher: (row, query, filters) => {
+            const name = row.getAttribute('data-name') || '';
+            const category = row.getAttribute('data-category') || '';
+            const price = row.getAttribute('data-price') || '';
+            const status = row.getAttribute('data-status') || '';
+
+            const matchesQuery = !query || name.includes(query) || category.includes(query) || price.includes(query);
+            const matchesCategory = filters.category === 'all' || category === filters.category;
+            const matchesStatus = filters.status === 'all' || status === filters.status;
+
+            return matchesQuery && matchesCategory && matchesStatus;
+        }
+    });
+
+    if (prodCategorySelect) prodCategorySelect.addEventListener('change', () => productsDataTable.refresh());
+    if (prodStatusSelect) prodStatusSelect.addEventListener('change', () => productsDataTable.refresh());
+
+    // 2. Staff DataTable
+    const staffRoleSelect = document.getElementById('staff-filter-role');
+
+    staffDataTable = setupDataTable({
+        searchInputId: 'staff-search-input',
+        tableBodyId: 'staff-table-body',
+        emptyStateId: 'staff-empty-state',
+        countBadgeId: 'staff-count-badge',
+        getFilters: () => ({
+            role: staffRoleSelect ? staffRoleSelect.value.toLowerCase() : 'all'
+        }),
+        rowMatcher: (row, query, filters) => {
+            const fullname = row.getAttribute('data-fullname') || '';
+            const username = row.getAttribute('data-username') || '';
+            const phone = row.getAttribute('data-phone') || '';
+            const role = row.getAttribute('data-role') || '';
+
+            const matchesQuery = !query || fullname.includes(query) || username.includes(query) || phone.includes(query) || role.includes(query);
+            const matchesRole = filters.role === 'all' || role === filters.role;
+
+            return matchesQuery && matchesRole;
+        }
+    });
+
+    if (staffRoleSelect) staffRoleSelect.addEventListener('change', () => staffDataTable.refresh());
+
+    // 3. Extras DataTable
+    const extrasStatusSelect = document.getElementById('extras-filter-status');
+
+    extrasDataTable = setupDataTable({
+        searchInputId: 'extras-search-input',
+        tableBodyId: 'extras-table-body',
+        emptyStateId: 'extras-empty-state',
+        countBadgeId: 'extras-count-badge',
+        getFilters: () => ({
+            status: extrasStatusSelect ? extrasStatusSelect.value.toLowerCase() : 'all'
+        }),
+        rowMatcher: (row, query, filters) => {
+            const name = row.getAttribute('data-name') || '';
+            const price = row.getAttribute('data-price') || '';
+            const status = row.getAttribute('data-status') || '';
+
+            const matchesQuery = !query || name.includes(query) || price.includes(query);
+            const matchesStatus = filters.status === 'all' || status === filters.status;
+
+            return matchesQuery && matchesStatus;
+        }
+    });
+
+    if (extrasStatusSelect) extrasStatusSelect.addEventListener('change', () => extrasDataTable.refresh());
+}
+
+// ---- AJAX Form Submissions ----
 async function submitForm(formEl, url, onSuccess) {
     const errorEl = formEl.querySelector('.form-error');
     errorEl.textContent = '';
 
-    // Validate custom required selects
     let hasSelectError = false;
     formEl.querySelectorAll('.custom-native-select[required]').forEach(select => {
         if (!select.value) {
@@ -686,13 +1077,18 @@ async function submitForm(formEl, url, onSuccess) {
     }
 }
 
-// ---- product form ----
+// ---- Product Form Submit ----
 document.getElementById('product-form').addEventListener('submit', function (e) {
     e.preventDefault();
     submitForm(this, "{{ route('admin.products.store') }}", (data) => {
         const p = data.product;
         const row = document.createElement('tr');
-        row.className = 'border-b border-[#2a2731]/60 hover:bg-[#1e1c25]/40 transition';
+        row.className = 'data-row border-b border-[#2a2731]/60 hover:bg-[#1e1c25]/40 transition';
+        row.setAttribute('data-name', (p.name || '').toLowerCase());
+        row.setAttribute('data-category', (p.category?.name || '').toLowerCase());
+        row.setAttribute('data-price', p.price);
+        row.setAttribute('data-status', p.is_available ? 'available' : 'unavailable');
+        
         row.innerHTML = `
             <td class="py-3 px-4 sm:px-5"><img src="/storage/${p.image}" class="w-10 h-10 object-cover rounded-lg bg-[#0f0e13]"></td>
             <td class="px-4 sm:px-5 text-white font-medium whitespace-nowrap">${p.name}</td>
@@ -701,17 +1097,23 @@ document.getElementById('product-form').addEventListener('submit', function (e) 
             <td class="px-4 sm:px-5 whitespace-nowrap">${p.is_available ? '<span class="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full"><i data-lucide="check" class="w-3 h-3"></i>Yes</span>' : '<span class="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-400 bg-rose-500/10 border border-rose-500/20 px-2.5 py-1 rounded-full"><i data-lucide="x" class="w-3 h-3"></i>No</span>'}</td>
         `;
         document.getElementById('products-table-body').prepend(row);
+        if (productsDataTable) productsDataTable.refresh();
         setTimeout(() => lucide.createIcons(), 50);
     });
 });
 
-// ---- staff form ----
+// ---- Staff Form Submit ----
 document.getElementById('staff-form').addEventListener('submit', function (e) {
     e.preventDefault();
     submitForm(this, "{{ route('admin.staff.store') }}", (data) => {
         const s = data.staff;
         const row = document.createElement('tr');
-        row.className = 'border-b border-[#2a2731]/60 hover:bg-[#1e1c25]/40 transition';
+        row.className = 'data-row border-b border-[#2a2731]/60 hover:bg-[#1e1c25]/40 transition';
+        row.setAttribute('data-fullname', (s.fullname || '').toLowerCase());
+        row.setAttribute('data-username', (s.username || '').toLowerCase());
+        row.setAttribute('data-role', (s.role?.name || '').toLowerCase());
+        row.setAttribute('data-phone', (s.phone || '').toLowerCase());
+
         row.innerHTML = `
             <td class="py-3 px-4 sm:px-5 text-white font-medium whitespace-nowrap">${s.fullname}</td>
             <td class="px-4 sm:px-5 text-stone-400 whitespace-nowrap">${s.username}</td>
@@ -719,23 +1121,29 @@ document.getElementById('staff-form').addEventListener('submit', function (e) {
             <td class="px-4 sm:px-5 text-stone-400 whitespace-nowrap">${s.phone ?? ''}</td>
         `;
         document.getElementById('staff-table-body').prepend(row);
+        if (staffDataTable) staffDataTable.refresh();
         setTimeout(() => lucide.createIcons(), 50);
     });
 });
 
-// ---- extra form ----
+// ---- Extra Form Submit ----
 document.getElementById('extra-form').addEventListener('submit', function (e) {
     e.preventDefault();
     submitForm(this, "{{ route('admin.extras.store') }}", (data) => {
         const ex = data.extra;
         const row = document.createElement('tr');
-        row.className = 'border-b border-[#2a2731]/60 hover:bg-[#1e1c25]/40 transition';
+        row.className = 'data-row border-b border-[#2a2731]/60 hover:bg-[#1e1c25]/40 transition';
+        row.setAttribute('data-name', (ex.name || '').toLowerCase());
+        row.setAttribute('data-price', ex.price);
+        row.setAttribute('data-status', ex.is_available ? 'available' : 'unavailable');
+
         row.innerHTML = `
             <td class="py-3 px-4 sm:px-5 text-white font-medium whitespace-nowrap">${ex.name}</td>
             <td class="px-4 sm:px-5 text-[#b08d57] font-bold whitespace-nowrap">$${Number(ex.price).toFixed(2)}</td>
             <td class="px-4 sm:px-5 whitespace-nowrap">${ex.is_available ? '<span class="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full"><i data-lucide="check" class="w-3 h-3"></i>Yes</span>' : '<span class="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-400 bg-rose-500/10 border border-rose-500/20 px-2.5 py-1 rounded-full"><i data-lucide="x" class="w-3 h-3"></i>No</span>'}</td>
         `;
         document.getElementById('extras-table-body').prepend(row);
+        if (extrasDataTable) extrasDataTable.refresh();
         setTimeout(() => lucide.createIcons(), 50);
     });
 });
@@ -743,6 +1151,7 @@ document.getElementById('extra-form').addEventListener('submit', function (e) {
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
     initCustomSelects();
+    initAllDataTables();
     lucide.createIcons();
 });
 </script>
