@@ -68,7 +68,6 @@ class AdminController extends Controller
         $categoryLabels = $categories->pluck('name')->toArray();
         $categoryCounts = $categories->pluck('products_count')->toArray();
 
-        // 5. Recent Admin Activities Log
         $recentActions = AdminAction::with('admin')->latest()->take(6)->get();
 
         return view('admin.dashboard', compact(
