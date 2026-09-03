@@ -28,7 +28,6 @@ class AdminController extends Controller
             ->get();
         $roles = Role::whereIn('name', ['staff', 'delivery'])->get();
 
-        // 2. Overview Analytics & Metrics
         $totalCustomers = User::whereHas('role', fn($q) => $q->where('name', 'customer'))->count();
         if ($totalCustomers === 0) {
             $totalCustomers = User::whereDoesntHave('role', fn($q) => $q->whereIn('name', ['admin', 'staff', 'delivery']))->count();
