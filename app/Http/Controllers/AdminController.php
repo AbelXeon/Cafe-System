@@ -12,13 +12,13 @@ use App\Models\AdminAction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class AdminController extends Controller
 {
     public function dashboard()
     {
+        // 1. Core Model Queries
         $categories = Category::withCount('products')->orderBy('name')->get();
         $products = Product::with('category')->latest()->get();
         $extras = Extra::latest()->get();
@@ -28,11 +28,13 @@ class AdminController extends Controller
             ->get();
         $roles = Role::whereIn('name', ['staff', 'delivery'])->get();
 
+        // 2. Real Customers Count
         $totalCustomers = User::whereHas('role', fn($q) => $q->where('name', 'customer'))->count();
         if ($totalCustomers === 0) {
             $totalCustomers = User::whereDoesntHave('role', fn($q) => $q->whereIn('name', ['admin', 'staff', 'delivery']))->count();
         }
 
+        // 3. Real Total Orders & Revenue in ETB
         $totalOrders = class_exists(Order::class) ? Order::count() : 0;
         $totalRevenue = 0;
         if (class_exists(Order::class) && $totalOrders > 0) {
@@ -41,6 +43,30 @@ class AdminController extends Controller
                 ?: 0;
         }
 
+        // 4. Real Week-over-Week Revenue Comparison
+        $thisWeekRevenue = 0;
+        $lastWeekRevenue = 0;
+        $revenueGrowthPercent = 0;
+
+        if (class_exists(Order::class)) {
+            $thisWeekRevenue = Order::whereNotIn('status', ['cancelled', 'failed'])
+                ->where('created_at', '>=', Carbon::now()->startOfWeek())
+                ->sum('total_price') ?: 0;
+
+            $lastWeekRevenue = Order::whereNotIn('status', ['cancelled', 'failed'])
+                ->whereBetween('created_at', [
+                    Carbon::now()->subWeek()->startOfWeek(),
+                    Carbon::now()->subWeek()->endOfWeek()
+                ])->sum('total_price') ?: 0;
+
+            if ($lastWeekRevenue > 0) {
+                $revenueGrowthPercent = round((($thisWeekRevenue - $lastWeekRevenue) / $lastWeekRevenue) * 100, 1);
+            } elseif ($thisWeekRevenue > 0) {
+                $revenueGrowthPercent = 100;
+            }
+        }
+
+        // 5. Real 7-Day Revenue & Orders Data (for Chart.js)
         $chartLabels = [];
         $chartRevenue = [];
         $chartOrders = [];
@@ -59,9 +85,11 @@ class AdminController extends Controller
             }
         }
 
+        // 6. Real Category Distribution
         $categoryLabels = $categories->pluck('name')->toArray();
         $categoryCounts = $categories->pluck('products_count')->toArray();
 
+        // 7. Recent Admin Activities Log
         $recentActions = AdminAction::with('admin')->latest()->take(6)->get();
 
         return view('admin.dashboard', compact(
@@ -73,6 +101,7 @@ class AdminController extends Controller
             'totalCustomers',
             'totalOrders',
             'totalRevenue',
+            'revenueGrowthPercent',
             'chartLabels',
             'chartRevenue',
             'chartOrders',

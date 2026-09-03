@@ -102,7 +102,7 @@
             <div class="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                     <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Store Overview &amp; Analytics</h2>
-                    <p class="text-stone-500 text-xs sm:text-sm mt-1">Live performance, sales volume, and key business metrics</p>
+                    <p class="text-stone-500 text-xs sm:text-sm mt-1">Real-time performance, revenue in ETB, and store metrics</p>
                 </div>
                 <div class="flex items-center gap-2">
                     <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold">
@@ -114,18 +114,18 @@
 
             <!-- Top Metric KPI Cards -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-8">
-                <!-- Total Revenue -->
+                <!-- Total Revenue in ETB -->
                 <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl p-5 shadow-lg relative overflow-hidden group hover:border-[#b08d57]/50 transition duration-300">
                     <div class="flex items-center justify-between">
                         <span class="text-stone-500 text-xs uppercase tracking-wider font-bold">Total Revenue</span>
-                        <div class="w-9 h-9 rounded-xl bg-[#b08d57]/10 text-[#b08d57] flex items-center justify-center">
-                            <i data-lucide="dollar-sign" class="w-5 h-5"></i>
+                        <div class="w-9 h-9 rounded-xl bg-[#b08d57]/10 text-[#b08d57] flex items-center justify-center font-bold text-xs">
+                            ETB
                         </div>
                     </div>
-                    <p class="text-2xl sm:text-3xl font-black text-white mt-2">${{ number_format($totalRevenue, 2) }}</p>
-                    <div class="flex items-center gap-1.5 mt-2 text-[11px] text-emerald-400">
-                        <i data-lucide="trending-up" class="w-3.5 h-3.5"></i>
-                        <span>+14.2% from last week</span>
+                    <p class="text-2xl sm:text-3xl font-black text-white mt-2">{{ number_format($totalRevenue, 2) }} <span class="text-sm font-bold text-[#b08d57]">ETB</span></p>
+                    <div class="flex items-center gap-1.5 mt-2 text-[11px] {{ $revenueGrowthPercent >= 0 ? 'text-emerald-400' : 'text-rose-400' }}">
+                        <i data-lucide="{{ $revenueGrowthPercent >= 0 ? 'trending-up' : 'trending-down' }}" class="w-3.5 h-3.5"></i>
+                        <span>{{ $revenueGrowthPercent >= 0 ? '+' : '' }}{{ $revenueGrowthPercent }}% from last week</span>
                     </div>
                 </div>
 
@@ -140,7 +140,7 @@
                     <p class="text-2xl sm:text-3xl font-black text-white mt-2">{{ $totalOrders }}</p>
                     <div class="flex items-center gap-1.5 mt-2 text-[11px] text-stone-400">
                         <i data-lucide="activity" class="w-3.5 h-3.5 text-stone-500"></i>
-                        <span>Active orders tracked</span>
+                        <span>Active store orders</span>
                     </div>
                 </div>
 
@@ -155,7 +155,7 @@
                     <p class="text-2xl sm:text-3xl font-black text-white mt-2">{{ $totalCustomers }}</p>
                     <div class="flex items-center gap-1.5 mt-2 text-[11px] text-emerald-400">
                         <i data-lucide="user-check" class="w-3.5 h-3.5"></i>
-                        <span>Registered accounts</span>
+                        <span>Registered users</span>
                     </div>
                 </div>
 
@@ -176,12 +176,12 @@
 
             <!-- Charts Grid -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                <!-- Main Revenue & Sales Line/Bar Chart (2 cols) -->
+                <!-- Revenue (ETB) & Orders Trend Chart -->
                 <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl p-5 sm:p-6 shadow-lg lg:col-span-2 flex flex-col justify-between">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
                         <div>
                             <h3 class="text-base font-bold text-white flex items-center gap-2">
-                                <i data-lucide="trending-up" class="w-4 h-4 text-[#b08d57]"></i> Revenue &amp; Orders Trend
+                                <i data-lucide="trending-up" class="w-4 h-4 text-[#b08d57]"></i> Revenue (ETB) &amp; Orders Trend
                             </h3>
                             <p class="text-stone-500 text-xs">Past 7 days financial progression</p>
                         </div>
@@ -194,7 +194,7 @@
                     </div>
                 </div>
 
-                <!-- Category Breakdown Donut Chart (1 col) -->
+                <!-- Category Distribution Donut Chart -->
                 <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl p-5 sm:p-6 shadow-lg flex flex-col justify-between">
                     <div class="mb-3">
                         <h3 class="text-base font-bold text-white flex items-center gap-2">
@@ -217,7 +217,7 @@
                 <!-- Quick Operations Summary -->
                 <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl p-5 sm:p-6 shadow-lg space-y-4">
                     <h3 class="text-base font-bold text-white flex items-center gap-2">
-                        <i data-lucide="zap" class="w-4 h-4 text-[#b08d57]"></i> Quick Operations
+                        <i data-lucide="zap" class="w-4 h-4 text-[#b08d57]"></i> Operations Team
                     </h3>
                     <div class="space-y-3">
                         <div class="flex items-center justify-between p-3 rounded-xl bg-[#0f0e13] border border-[#2a2731]">
@@ -227,7 +227,7 @@
                                 </div>
                                 <div>
                                     <p class="text-xs font-bold text-white">Delivery Fleet</p>
-                                    <p class="text-[10px] text-stone-500">Drivers on duty</p>
+                                    <p class="text-[10px] text-stone-500">Drivers registered</p>
                                 </div>
                             </div>
                             <span class="text-sm font-bold text-white">{{ $staff->filter(fn($s) => $s->role->name === 'delivery')->count() }}</span>
@@ -265,9 +265,9 @@
                 <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl p-5 sm:p-6 shadow-lg lg:col-span-2">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-base font-bold text-white flex items-center gap-2">
-                            <i data-lucide="history" class="w-4 h-4 text-[#b08d57]"></i> Recent Admin Activity
+                            <i data-lucide="history" class="w-4 h-4 text-[#b08d57]"></i> Recent Activity Log
                         </h3>
-                        <span class="text-xs text-stone-500">Audit trail</span>
+                        <span class="text-xs text-stone-500">Database audit trail</span>
                     </div>
 
                     <div class="space-y-3 overflow-y-auto max-h-64 custom-scroll pr-1">
@@ -342,8 +342,8 @@
                     <input type="text" name="name" required class="cd-input w-full rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none transition">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Price</label>
-                    <input type="number" step="0.01" name="price" required class="cd-input w-full rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none transition">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Price (ETB)</label>
+                    <input type="number" step="0.01" name="price" placeholder="0.00" required class="cd-input w-full rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none transition">
                 </div>
                 
                 <div>
@@ -483,9 +483,9 @@
                                     data-price="{{ $p->price }}" 
                                     data-status="{{ $p->is_available ? 'available' : 'unavailable' }}">
                                     <td class="py-3 px-4 sm:px-5"><img src="{{ asset('storage/' . $p->image) }}" class="w-10 h-10 object-cover rounded-lg bg-[#0f0e13]"></td>
-                                    <td class="px-4 sm:px-5 text-white font-medium whitespace-nowrap">{{ $p->name }}</td>
-                                    <td class="px-4 sm:px-5 text-stone-400 whitespace-nowrap">{{ $p->category->name }}</td>
-                                    <td class="px-4 sm:px-5 text-[#b08d57] font-bold whitespace-nowrap">${{ number_format($p->price, 2) }}</td>
+                                    <td class="px-4 sm:px-5 text-white font-medium whitespace-nowrap product-name-cell">{{ $p->name }}</td>
+                                    <td class="px-4 sm:px-5 text-stone-400 whitespace-nowrap product-cat-cell">{{ $p->category->name }}</td>
+                                    <td class="px-4 sm:px-5 text-[#b08d57] font-bold whitespace-nowrap">{{ number_format($p->price, 2) }} ETB</td>
                                     <td class="px-4 sm:px-5 whitespace-nowrap">
                                         @if ($p->is_available)
                                             <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full"><i data-lucide="check" class="w-3 h-3"></i>Yes</span>
@@ -640,10 +640,10 @@
                                     data-username="{{ strtolower($s->username) }}"
                                     data-role="{{ strtolower($s->role->name) }}"
                                     data-phone="{{ strtolower($s->phone ?? '') }}">
-                                    <td class="py-3 px-4 sm:px-5 text-white font-medium whitespace-nowrap">{{ $s->fullname }}</td>
-                                    <td class="px-4 sm:px-5 text-stone-400 whitespace-nowrap">{{ $s->username }}</td>
-                                    <td class="px-4 sm:px-5 whitespace-nowrap"><span class="inline-flex items-center text-xs font-semibold text-[#b08d57] bg-[#b08d57]/10 border border-[#b08d57]/20 px-2.5 py-1 rounded-full">{{ ucfirst($s->role->name) }}</span></td>
-                                    <td class="px-4 sm:px-5 text-stone-400 whitespace-nowrap">{{ $s->phone }}</td>
+                                    <td class="py-3 px-4 sm:px-5 text-white font-medium whitespace-nowrap staff-name-cell">{{ $s->fullname }}</td>
+                                    <td class="px-4 sm:px-5 text-stone-400 whitespace-nowrap staff-username-cell">{{ $s->username }}</td>
+                                    <td class="px-4 sm:px-5 whitespace-nowrap"><span class="inline-flex items-center text-xs font-semibold text-[#b08d57] bg-[#b08d57]/10 border border-[#b08d57]/20 px-2.5 py-1 rounded-full staff-role-cell">{{ ucfirst($s->role->name) }}</span></td>
+                                    <td class="px-4 sm:px-5 text-stone-400 whitespace-nowrap staff-phone-cell">{{ $s->phone }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -673,8 +673,8 @@
                     <input type="text" name="name" required class="cd-input w-full rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none transition">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Price</label>
-                    <input type="number" step="0.01" name="price" required class="cd-input w-full rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none transition">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Price (ETB)</label>
+                    <input type="number" step="0.01" name="price" placeholder="0.00" required class="cd-input w-full rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none transition">
                 </div>
                 <div class="sm:col-span-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
                     <p class="text-rose-400 text-xs sm:text-sm form-error" data-form="extra"></p>
@@ -745,8 +745,8 @@
                                     data-name="{{ strtolower($e->name) }}"
                                     data-price="{{ $e->price }}"
                                     data-status="{{ $e->is_available ? 'available' : 'unavailable' }}">
-                                    <td class="py-3 px-4 sm:px-5 text-white font-medium whitespace-nowrap">{{ $e->name }}</td>
-                                    <td class="px-4 sm:px-5 text-[#b08d57] font-bold whitespace-nowrap">${{ number_format($e->price, 2) }}</td>
+                                    <td class="py-3 px-4 sm:px-5 text-white font-medium whitespace-nowrap extra-name-cell">{{ $e->name }}</td>
+                                    <td class="px-4 sm:px-5 text-[#b08d57] font-bold whitespace-nowrap">{{ number_format($e->price, 2) }} ETB</td>
                                     <td class="px-4 sm:px-5 whitespace-nowrap">
                                         @if ($e->is_available)
                                             <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full"><i data-lucide="check" class="w-3 h-3"></i>Yes</span>
@@ -802,7 +802,7 @@ function initCharts() {
                 labels: chartLabels,
                 datasets: [
                     {
-                        label: 'Revenue ($)',
+                        label: 'Revenue (ETB)',
                         data: chartRevenue,
                         borderColor: '#b08d57',
                         backgroundColor: goldGradient,
@@ -843,7 +843,19 @@ function initCharts() {
                         borderColor: '#2a2731',
                         borderWidth: 1,
                         padding: 10,
-                        cornerRadius: 10
+                        cornerRadius: 10,
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) label += ': ';
+                                if (context.datasetIndex === 0) {
+                                    label += Number(context.parsed.y).toLocaleString() + ' ETB';
+                                } else {
+                                    label += context.parsed.y;
+                                }
+                                return label;
+                            }
+                        }
                     }
                 },
                 scales: {
@@ -857,7 +869,7 @@ function initCharts() {
                         ticks: {
                             color: '#78716c',
                             font: { size: 11 },
-                            callback: (v) => '$' + v
+                            callback: (v) => v.toLocaleString() + ' ETB'
                         }
                     },
                     y1: {
@@ -1141,6 +1153,7 @@ function initCustomSelects() {
     });
 }
 
+// ---- Reusable DataTable Filter & Buffer Engine ----
 function setupDataTable({ searchInputId, clearBtnClass, tableBodyId, emptyStateId, countBadgeId, getFilters, rowMatcher }) {
     const searchInput = document.getElementById(searchInputId);
     const tableBody = document.getElementById(tableBodyId);
@@ -1217,6 +1230,7 @@ function setupDataTable({ searchInputId, clearBtnClass, tableBodyId, emptyStateI
     return { refresh: applyFilter };
 }
 
+// ---- Initialize DataTables ----
 let productsDataTable, staffDataTable, extrasDataTable;
 
 function initAllDataTables() {
@@ -1299,6 +1313,7 @@ function initAllDataTables() {
     if (extrasStatusSelect) extrasStatusSelect.addEventListener('change', () => extrasDataTable.refresh());
 }
 
+// ---- AJAX Form Submissions ----
 async function submitForm(formEl, url, onSuccess) {
     const errorEl = formEl.querySelector('.form-error');
     errorEl.textContent = '';
@@ -1344,6 +1359,7 @@ async function submitForm(formEl, url, onSuccess) {
     }
 }
 
+// ---- Product Form Submit ----
 document.getElementById('product-form').addEventListener('submit', function (e) {
     e.preventDefault();
     submitForm(this, "{{ route('admin.products.store') }}", (data) => {
@@ -1359,7 +1375,7 @@ document.getElementById('product-form').addEventListener('submit', function (e) 
             <td class="py-3 px-4 sm:px-5"><img src="/storage/${p.image}" class="w-10 h-10 object-cover rounded-lg bg-[#0f0e13]"></td>
             <td class="px-4 sm:px-5 text-white font-medium whitespace-nowrap">${p.name}</td>
             <td class="px-4 sm:px-5 text-stone-400 whitespace-nowrap">${p.category.name}</td>
-            <td class="px-4 sm:px-5 text-[#b08d57] font-bold whitespace-nowrap">$${Number(p.price).toFixed(2)}</td>
+            <td class="px-4 sm:px-5 text-[#b08d57] font-bold whitespace-nowrap">${Number(p.price).toFixed(2)} ETB</td>
             <td class="px-4 sm:px-5 whitespace-nowrap">${p.is_available ? '<span class="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full"><i data-lucide="check" class="w-3 h-3"></i>Yes</span>' : '<span class="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-400 bg-rose-500/10 border border-rose-500/20 px-2.5 py-1 rounded-full"><i data-lucide="x" class="w-3 h-3"></i>No</span>'}</td>
         `;
         document.getElementById('products-table-body').prepend(row);
@@ -1368,6 +1384,7 @@ document.getElementById('product-form').addEventListener('submit', function (e) 
     });
 });
 
+// ---- Staff Form Submit ----
 document.getElementById('staff-form').addEventListener('submit', function (e) {
     e.preventDefault();
     submitForm(this, "{{ route('admin.staff.store') }}", (data) => {
@@ -1391,6 +1408,7 @@ document.getElementById('staff-form').addEventListener('submit', function (e) {
     });
 });
 
+// ---- Extra Form Submit ----
 document.getElementById('extra-form').addEventListener('submit', function (e) {
     e.preventDefault();
     submitForm(this, "{{ route('admin.extras.store') }}", (data) => {
@@ -1403,7 +1421,7 @@ document.getElementById('extra-form').addEventListener('submit', function (e) {
 
         row.innerHTML = `
             <td class="py-3 px-4 sm:px-5 text-white font-medium whitespace-nowrap">${ex.name}</td>
-            <td class="px-4 sm:px-5 text-[#b08d57] font-bold whitespace-nowrap">$${Number(ex.price).toFixed(2)}</td>
+            <td class="px-4 sm:px-5 text-[#b08d57] font-bold whitespace-nowrap">${Number(ex.price).toFixed(2)} ETB</td>
             <td class="px-4 sm:px-5 whitespace-nowrap">${ex.is_available ? '<span class="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full"><i data-lucide="check" class="w-3 h-3"></i>Yes</span>' : '<span class="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-400 bg-rose-500/10 border border-rose-500/20 px-2.5 py-1 rounded-full"><i data-lucide="x" class="w-3 h-3"></i>No</span>'}</td>
         `;
         document.getElementById('extras-table-body').prepend(row);
@@ -1412,6 +1430,7 @@ document.getElementById('extra-form').addEventListener('submit', function (e) {
     });
 });
 
+// Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
     initCustomSelects();
     initAllDataTables();
