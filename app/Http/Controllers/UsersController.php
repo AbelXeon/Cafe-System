@@ -53,7 +53,7 @@ class UsersController extends Controller
 
         $addresses = SavedLocation::where('user_id', $request->user()->id)->get();
 
-        return view('user.dashboard', compact('categories', 'menuData', 'addresses', 'extras'));
+        return view('user.Dashboard', compact('categories', 'menuData', 'addresses', 'extras'));
     }
 
     public function storeOrder(Request $request)
