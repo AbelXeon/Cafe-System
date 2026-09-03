@@ -154,10 +154,47 @@
                     <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Price</label>
                     <input type="number" step="0.01" name="price" required class="cd-input w-full rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none transition">
                 </div>
+                
+                <!-- Interactive Image Picker with Live Preview -->
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Image</label>
-                    <input type="file" name="image" accept="image/*" required class="cd-input w-full rounded-xl px-3.5 py-2 text-sm text-stone-300 file:mr-3 file:rounded-lg file:border-0 file:bg-[#1e1c25] file:text-stone-200 file:px-3 file:py-1.5 focus:outline-none transition">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Product Image</label>
+                    
+                    <input type="file" id="product-image-input" name="image" accept="image/*" required class="hidden">
+                    
+                    <div id="image-dropzone" class="relative group cursor-pointer border-2 border-dashed border-[#2a2731] hover:border-[#b08d57]/70 bg-[#0f0e13]/80 hover:bg-[#14131a] rounded-xl p-3 sm:p-4 transition flex flex-col items-center justify-center min-h-[105px]">
+                        
+                        <!-- Initial Placeholder State -->
+                        <div id="image-placeholder" class="flex flex-col items-center justify-center text-center py-1.5 space-y-1.5 pointer-events-none">
+                            <div class="w-9 h-9 rounded-xl bg-[#1e1c25] group-hover:bg-[#b08d57]/20 flex items-center justify-center text-stone-400 group-hover:text-[#b08d57] transition">
+                                <i data-lucide="image-plus" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs font-semibold text-stone-300 group-hover:text-white transition">
+                                    <span class="text-[#b08d57]">Click to upload</span> or drag image
+                                </p>
+                                <p class="text-[10px] text-stone-500">PNG, JPG, WEBP up to 5MB</p>
+                            </div>
+                        </div>
+
+                        <!-- Image Preview State (Shows up when image is chosen) -->
+                        <div id="image-preview-container" class="hidden w-full relative flex items-center gap-3">
+                            <div class="relative w-16 h-16 rounded-xl overflow-hidden bg-[#0f0e13] border border-[#2a2731] shrink-0 shadow-md">
+                                <img id="image-preview-img" src="" alt="Preview" class="w-full h-full object-cover">
+                            </div>
+                            <div class="flex-1 min-w-0 pr-1">
+                                <p id="image-preview-name" class="text-xs font-bold text-white truncate"></p>
+                                <span class="inline-flex items-center gap-1 text-[10px] text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full font-semibold mt-1">
+                                    <i data-lucide="check-circle-2" class="w-3 h-3"></i> Ready to upload
+                                </span>
+                                <p class="text-[11px] text-stone-500 mt-1">Click to replace</p>
+                            </div>
+                            <button type="button" id="remove-image-btn" class="p-2 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-500/20 hover:text-rose-300 transition shrink-0" title="Remove image">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
+
                 <div class="sm:col-span-2">
                     <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Description</label>
                     <textarea name="description" rows="2" class="cd-input w-full rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none transition"></textarea>
@@ -377,6 +414,85 @@ navLinks.forEach(link => {
 });
 showSection('overview');
 
+// ---- Image Picker & Preview Handling ----
+const imageInput = document.getElementById('product-image-input');
+const dropzone = document.getElementById('image-dropzone');
+const placeholder = document.getElementById('image-placeholder');
+const previewContainer = document.getElementById('image-preview-container');
+const previewImg = document.getElementById('image-preview-img');
+const previewName = document.getElementById('image-preview-name');
+const removeImageBtn = document.getElementById('remove-image-btn');
+
+function showImagePreview(file) {
+    if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            previewImg.src = e.target.result;
+            previewName.textContent = file.name;
+            placeholder.classList.add('hidden');
+            previewContainer.classList.remove('hidden');
+            setTimeout(() => lucide.createIcons(), 50);
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function resetImagePreview() {
+    imageInput.value = '';
+    previewImg.src = '';
+    previewName.textContent = '';
+    previewContainer.classList.add('hidden');
+    placeholder.classList.remove('hidden');
+    setTimeout(() => lucide.createIcons(), 50);
+}
+
+if (imageInput) {
+    imageInput.addEventListener('change', function () {
+        if (this.files && this.files[0]) {
+            showImagePreview(this.files[0]);
+        } else {
+            resetImagePreview();
+        }
+    });
+}
+
+if (dropzone) {
+    dropzone.addEventListener('click', (e) => {
+        if (!e.target.closest('#remove-image-btn')) {
+            imageInput.click();
+        }
+    });
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropzone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            dropzone.classList.add('border-[#b08d57]', 'bg-[#1e1c25]/80');
+        });
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropzone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('border-[#b08d57]', 'bg-[#1e1c25]/80');
+        });
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+        const files = e.dataTransfer.files;
+        if (files && files.length > 0) {
+            imageInput.files = files;
+            showImagePreview(files[0]);
+        }
+    });
+}
+
+if (removeImageBtn) {
+    removeImageBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        resetImagePreview();
+    });
+}
+
 // ---- generic AJAX submit helper ----
 async function submitForm(formEl, url, onSuccess, isMultipart = false) {
     const formData = new FormData(formEl);
@@ -399,6 +515,7 @@ async function submitForm(formEl, url, onSuccess, isMultipart = false) {
 
         onSuccess(data);
         formEl.reset();
+        resetImagePreview();
     } catch (err) {
         errorEl.textContent = 'Network error. Try again.';
     }
