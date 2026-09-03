@@ -40,13 +40,11 @@ class AdminController extends Controller
         $totalOrders = class_exists(Order::class) ? Order::count() : 0;
         $totalRevenue = 0;
         if (class_exists(Order::class) && $totalOrders > 0) {
-            // Sums total_price if exists, or defaults to 0
             $totalRevenue = Order::whereNotIn('status', ['cancelled', 'failed'])->sum('total_price') 
                 ?: Order::whereNotIn('status', ['cancelled', 'failed'])->sum('total_amount') 
                 ?: 0;
         }
 
-        // 3. Last 7 Days Revenue & Orders Chart Data
         $chartLabels = [];
         $chartRevenue = [];
         $chartOrders = [];
