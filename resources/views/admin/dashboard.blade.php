@@ -95,7 +95,6 @@
         </form>
     </aside>
 
-    {{-- Main Content Area --}}
     <main class="flex-1 p-4 sm:p-6 lg:p-10 overflow-y-auto custom-scroll">
 
         {{-- OVERVIEW --}}
