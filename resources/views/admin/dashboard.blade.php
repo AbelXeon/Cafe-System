@@ -181,7 +181,6 @@
                     <input type="number" step="0.01" name="price" required class="cd-input w-full rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none transition">
                 </div>
                 
-                <!-- Interactive Image Picker with Live Preview -->
                 <div>
                     <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Product Image</label>
                     
