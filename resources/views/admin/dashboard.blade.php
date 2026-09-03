@@ -4,59 +4,108 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Admin Dashboard</title>
+    <title>Admin Dashboard | CraveDash</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts & Lucide Icons -->
+    <link rel="preconnect" href__="https://fonts.googleapis.com">
+    <link rel="preconnect" href__="https://fonts.gstatic.com" crossorigin>
+    <link href__="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .custom-scroll::-webkit-scrollbar { width: 5px; height: 5px; }
+        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #2a2731; border-radius: 9999px; }
+        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #3a3741; }
+        .nav-link { color: #a8a29e; transition: all 0.15s ease-in-out; }
+        .nav-link:hover { color: #f5f5f4; background: #1e1c25; }
+        .nav-link.active { background: #b08d57; color: #0f0e13; font-weight: 700; }
+        .cd-input:focus { border-color: #b08d57; box-shadow: 0 0 0 3px rgba(176, 141, 87, 0.18); }
+        .cd-input { background-color: #0f0e13; border: 1px solid #2a2731; }
+        .cd-input::placeholder { color: #57534e; }
+    </style>
 </head>
-<body class="bg-slate-950 text-slate-200">
-<div class="flex min-h-screen">
+<body class="bg-[#0f0e13] text-stone-200 h-screen overflow-hidden selection:bg-[#b08d57] selection:text-[#0f0e13]">
+<div class="flex h-full w-full">
 
     {{-- Sidebar --}}
-    <aside class="w-60 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
-        <div class="px-6 py-5 border-b border-slate-800">
-            <h1 class="text-white font-bold text-lg">Admin</h1>
+    <aside class="w-60 bg-[#0f0e13] border-r border-[#1e1c25] flex flex-col shrink-0">
+        <div class="px-6 py-5 border-b border-[#1e1c25] flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-[#b08d57] flex items-center justify-center text-[#0f0e13]">
+                <i data-lucide="utensils" class="w-4 h-4 stroke-[2.5]"></i>
+            </div>
+            <div>
+                <span class="text-white font-bold text-base block">Crave<span class="text-[#b08d57]">Dash</span></span>
+                <span class="text-xs text-stone-500 font-medium">Admin Panel</span>
+            </div>
         </div>
-        <nav class="flex-1 px-3 py-4 space-y-1">
-            <button data-target="overview" class="nav-link w-full text-left px-3 py-2 rounded-lg text-sm font-medium">Overview</button>
-            <button data-target="products" class="nav-link w-full text-left px-3 py-2 rounded-lg text-sm font-medium">Products</button>
-            <button data-target="staff" class="nav-link w-full text-left px-3 py-2 rounded-lg text-sm font-medium">Staff</button>
-            <button data-target="extras" class="nav-link w-full text-left px-3 py-2 rounded-lg text-sm font-medium">Extras</button>
+        <nav class="flex-1 px-3 py-4 space-y-1.5">
+            <button data-target="overview" class="nav-link w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-3">
+                <i data-lucide="layout-dashboard" class="w-4 h-4"></i><span>Overview</span>
+            </button>
+            <button data-target="products" class="nav-link w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-3">
+                <i data-lucide="package" class="w-4 h-4"></i><span>Products</span>
+            </button>
+            <button data-target="staff" class="nav-link w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-3">
+                <i data-lucide="users" class="w-4 h-4"></i><span>Staff</span>
+            </button>
+            <button data-target="extras" class="nav-link w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-3">
+                <i data-lucide="sparkles" class="w-4 h-4"></i><span>Extras</span>
+            </button>
         </nav>
-        <form method="POST" action="{{ route('logout') }}" class="p-3 border-t border-slate-800">
+        <form method="POST" action="{{ route('logout') }}" class="p-3 border-t border-[#1e1c25]">
             @csrf
-            <button class="w-full text-left px-3 py-2 rounded-lg text-sm text-red-400 hover:bg-red-500/10">Logout</button>
+            <button class="w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold text-rose-400 hover:bg-rose-500/10 transition flex items-center gap-3">
+                <i data-lucide="log-out" class="w-4 h-4"></i><span>Logout</span>
+            </button>
         </form>
     </aside>
 
     {{-- Main --}}
-    <main class="flex-1 p-8 overflow-y-auto">
+    <main class="flex-1 p-8 lg:p-10 overflow-y-auto custom-scroll">
 
         {{-- OVERVIEW --}}
         <section id="section-overview" class="page-section">
-            <h2 class="text-xl font-bold text-white mb-6">Overview</h2>
-            <div class="grid grid-cols-3 gap-4">
-                <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
-                    <p class="text-slate-400 text-sm">Products</p>
-                    <p class="text-2xl font-bold text-white">{{ $products->count() }}</p>
+            <div class="mb-8">
+                <h2 class="text-2xl font-extrabold text-white tracking-tight">Overview</h2>
+                <p class="text-stone-500 text-sm mt-1">A quick snapshot of your store</p>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl p-6">
+                    <div class="w-10 h-10 rounded-xl bg-[#1e1c25] flex items-center justify-center text-[#b08d57] mb-4">
+                        <i data-lucide="package" class="w-5 h-5"></i>
+                    </div>
+                    <p class="text-stone-500 text-xs uppercase tracking-wider font-semibold">Products</p>
+                    <p class="text-3xl font-black text-white mt-1">{{ $products->count() }}</p>
                 </div>
-                <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
-                    <p class="text-slate-400 text-sm">Staff / Delivery</p>
-                    <p class="text-2xl font-bold text-white">{{ $staff->count() }}</p>
+                <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl p-6">
+                    <div class="w-10 h-10 rounded-xl bg-[#1e1c25] flex items-center justify-center text-[#b08d57] mb-4">
+                        <i data-lucide="users" class="w-5 h-5"></i>
+                    </div>
+                    <p class="text-stone-500 text-xs uppercase tracking-wider font-semibold">Staff / Delivery</p>
+                    <p class="text-3xl font-black text-white mt-1">{{ $staff->count() }}</p>
                 </div>
-                <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
-                    <p class="text-slate-400 text-sm">Extras</p>
-                    <p class="text-2xl font-bold text-white">{{ $extras->count() }}</p>
+                <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl p-6">
+                    <div class="w-10 h-10 rounded-xl bg-[#1e1c25] flex items-center justify-center text-[#b08d57] mb-4">
+                        <i data-lucide="sparkles" class="w-5 h-5"></i>
+                    </div>
+                    <p class="text-stone-500 text-xs uppercase tracking-wider font-semibold">Extras</p>
+                    <p class="text-3xl font-black text-white mt-1">{{ $extras->count() }}</p>
                 </div>
             </div>
         </section>
 
         {{-- PRODUCTS --}}
         <section id="section-products" class="page-section hidden">
-            <h2 class="text-xl font-bold text-white mb-6">Products</h2>
+            <div class="mb-8">
+                <h2 class="text-2xl font-extrabold text-white tracking-tight">Products</h2>
+                <p class="text-stone-500 text-sm mt-1">Add and manage your menu items</p>
+            </div>
 
-            <form id="product-form" class="bg-slate-900 border border-slate-800 rounded-xl p-6 grid grid-cols-2 gap-4 mb-8">
+            <form id="product-form" class="bg-[#14131a] border border-[#2a2731] rounded-2xl p-6 grid grid-cols-1 sm:grid-cols-2 gap-5 mb-8">
                 <div>
-                    <label class="block text-sm text-slate-300 mb-1">Category</label>
-                    <select name="category_id" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Category</label>
+                    <select name="category_id" required class="cd-input w-full rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none transition">
                         <option value="">Select category</option>
                         @foreach ($categories as $cat)
                             <option value="{{ $cat->id }}">{{ $cat->name }}</option>
@@ -64,55 +113,70 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm text-slate-300 mb-1">Name</label>
-                    <input type="text" name="name" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Name</label>
+                    <input type="text" name="name" required class="cd-input w-full rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none transition">
                 </div>
                 <div>
-                    <label class="block text-sm text-slate-300 mb-1">Price</label>
-                    <input type="number" step="0.01" name="price" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Price</label>
+                    <input type="number" step="0.01" name="price" required class="cd-input w-full rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none transition">
                 </div>
                 <div>
-                    <label class="block text-sm text-slate-300 mb-1">Image</label>
-                    <input type="file" name="image" accept="image/*" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Image</label>
+                    <input type="file" name="image" accept="image/*" required class="cd-input w-full rounded-xl px-3.5 py-2.5 text-sm text-stone-300 file:mr-3 file:rounded-lg file:border-0 file:bg-[#1e1c25] file:text-stone-200 file:px-3 file:py-1.5 focus:outline-none transition">
                 </div>
-                <div class="col-span-2">
-                    <label class="block text-sm text-slate-300 mb-1">Description</label>
-                    <textarea name="description" rows="2" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2"></textarea>
+                <div class="sm:col-span-2">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Description</label>
+                    <textarea name="description" rows="2" class="cd-input w-full rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none transition"></textarea>
                 </div>
-                <div class="col-span-2 flex items-center justify-between">
-                    <p class="text-red-400 text-sm form-error" data-form="product"></p>
-                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-lg px-5 py-2">Create Product</button>
+                <div class="sm:col-span-2 flex items-center justify-between">
+                    <p class="text-rose-400 text-sm form-error" data-form="product"></p>
+                    <button type="submit" class="bg-[#b08d57] hover:bg-[#c9a36b] text-[#0f0e13] font-bold rounded-xl px-5 py-2.5 text-sm transition flex items-center gap-2">
+                        <i data-lucide="plus" class="w-4 h-4"></i><span>Create Product</span>
+                    </button>
                 </div>
             </form>
 
-            <table class="w-full text-sm">
-                <thead>
-                    <tr class="text-left text-slate-400 border-b border-slate-800">
-                        <th class="py-2">Image</th><th>Name</th><th>Category</th><th>Price</th><th>Available</th>
-                    </tr>
-                </thead>
-                <tbody id="products-table-body">
-                    @foreach ($products as $p)
-                        <tr class="border-b border-slate-800/50">
-                            <td class="py-2"><img src="{{ asset('storage/' . $p->image) }}" class="w-10 h-10 object-cover rounded"></td>
-                            <td>{{ $p->name }}</td>
-                            <td>{{ $p->category->name }}</td>
-                            <td>{{ number_format($p->price, 2) }}</td>
-                            <td>{{ $p->is_available ? 'Yes' : 'No' }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+            <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl overflow-hidden">
+                <div class="overflow-x-auto custom-scroll">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="text-left text-stone-400 border-b border-[#2a2731] bg-[#0f0e13]/50">
+                                <th class="py-3 px-5 font-semibold">Image</th><th class="px-5 font-semibold">Name</th><th class="px-5 font-semibold">Category</th><th class="px-5 font-semibold">Price</th><th class="px-5 font-semibold">Available</th>
+                            </tr>
+                        </thead>
+                        <tbody id="products-table-body">
+                            @foreach ($products as $p)
+                                <tr class="border-b border-[#2a2731]/60 hover:bg-[#1e1c25]/40 transition">
+                                    <td class="py-3 px-5"><img src="{{ asset('storage/' . $p->image) }}" class="w-10 h-10 object-cover rounded-lg"></td>
+                                    <td class="px-5 text-white font-medium">{{ $p->name }}</td>
+                                    <td class="px-5 text-stone-400">{{ $p->category->name }}</td>
+                                    <td class="px-5 text-[#b08d57] font-bold">{{ number_format($p->price, 2) }}</td>
+                                    <td class="px-5">
+                                        @if ($p->is_available)
+                                            <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full"><i data-lucide="check" class="w-3 h-3"></i>Yes</span>
+                                        @else
+                                            <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-400 bg-rose-500/10 border border-rose-500/20 px-2.5 py-1 rounded-full"><i data-lucide="x" class="w-3 h-3"></i>No</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </section>
 
         {{-- STAFF --}}
         <section id="section-staff" class="page-section hidden">
-            <h2 class="text-xl font-bold text-white mb-6">Staff & Delivery</h2>
+            <div class="mb-8">
+                <h2 class="text-2xl font-extrabold text-white tracking-tight">Staff &amp; Delivery</h2>
+                <p class="text-stone-500 text-sm mt-1">Manage your team members and drivers</p>
+            </div>
 
-            <form id="staff-form" class="bg-slate-900 border border-slate-800 rounded-xl p-6 grid grid-cols-2 gap-4 mb-8">
+            <form id="staff-form" class="bg-[#14131a] border border-[#2a2731] rounded-2xl p-6 grid grid-cols-1 sm:grid-cols-2 gap-5 mb-8">
                 <div>
-                    <label class="block text-sm text-slate-300 mb-1">Role</label>
-                    <select name="role_id" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Role</label>
+                    <select name="role_id" required class="cd-input w-full rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none transition">
                         <option value="">Select role</option>
                         @foreach ($roles as $r)
                             <option value="{{ $r->id }}">{{ ucfirst($r->name) }}</option>
@@ -120,94 +184,110 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm text-slate-300 mb-1">Full name</label>
-                    <input type="text" name="fullname" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Full name</label>
+                    <input type="text" name="fullname" required class="cd-input w-full rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none transition">
                 </div>
                 <div>
-                    <label class="block text-sm text-slate-300 mb-1">Username</label>
-                    <input type="text" name="username" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Username</label>
+                    <input type="text" name="username" required class="cd-input w-full rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none transition">
                 </div>
                 <div>
-                    <label class="block text-sm text-slate-300 mb-1">Email</label>
-                    <input type="email" name="email" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Email</label>
+                    <input type="email" name="email" class="cd-input w-full rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none transition">
                 </div>
                 <div>
-                    <label class="block text-sm text-slate-300 mb-1">Phone</label>
-                    <input type="text" name="phone" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Phone</label>
+                    <input type="text" name="phone" class="cd-input w-full rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none transition">
                 </div>
                 <div>
-                    <label class="block text-sm text-slate-300 mb-1">Password</label>
-                    <input type="password" name="password" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Password</label>
+                    <input type="password" name="password" required class="cd-input w-full rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none transition">
                 </div>
-                <div class="col-span-2 flex items-center justify-between">
-                    <p class="text-red-400 text-sm form-error" data-form="staff"></p>
-                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-lg px-5 py-2">Create Staff</button>
+                <div class="sm:col-span-2 flex items-center justify-between">
+                    <p class="text-rose-400 text-sm form-error" data-form="staff"></p>
+                    <button type="submit" class="bg-[#b08d57] hover:bg-[#c9a36b] text-[#0f0e13] font-bold rounded-xl px-5 py-2.5 text-sm transition flex items-center gap-2">
+                        <i data-lucide="user-plus" class="w-4 h-4"></i><span>Create Staff</span>
+                    </button>
                 </div>
             </form>
 
-            <table class="w-full text-sm">
-                <thead>
-                    <tr class="text-left text-slate-400 border-b border-slate-800">
-                        <th class="py-2">Name</th><th>Username</th><th>Role</th><th>Phone</th>
-                    </tr>
-                </thead>
-                <tbody id="staff-table-body">
-                    @foreach ($staff as $s)
-                        <tr class="border-b border-slate-800/50">
-                            <td class="py-2">{{ $s->fullname }}</td>
-                            <td>{{ $s->username }}</td>
-                            <td>{{ ucfirst($s->role->name) }}</td>
-                            <td>{{ $s->phone }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+            <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl overflow-hidden">
+                <div class="overflow-x-auto custom-scroll">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="text-left text-stone-400 border-b border-[#2a2731] bg-[#0f0e13]/50">
+                                <th class="py-3 px-5 font-semibold">Name</th><th class="px-5 font-semibold">Username</th><th class="px-5 font-semibold">Role</th><th class="px-5 font-semibold">Phone</th>
+                            </tr>
+                        </thead>
+                        <tbody id="staff-table-body">
+                            @foreach ($staff as $s)
+                                <tr class="border-b border-[#2a2731]/60 hover:bg-[#1e1c25]/40 transition">
+                                    <td class="py-3 px-5 text-white font-medium">{{ $s->fullname }}</td>
+                                    <td class="px-5 text-stone-400">{{ $s->username }}</td>
+                                    <td class="px-5"><span class="inline-flex items-center text-xs font-semibold text-[#b08d57] bg-[#b08d57]/10 border border-[#b08d57]/20 px-2.5 py-1 rounded-full">{{ ucfirst($s->role->name) }}</span></td>
+                                    <td class="px-5 text-stone-400">{{ $s->phone }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </section>
 
         {{-- EXTRAS --}}
         <section id="section-extras" class="page-section hidden">
-            <h2 class="text-xl font-bold text-white mb-6">Extras</h2>
+            <div class="mb-8">
+                <h2 class="text-2xl font-extrabold text-white tracking-tight">Extras</h2>
+                <p class="text-stone-500 text-sm mt-1">Add-ons and side options</p>
+            </div>
 
-            <form id="extra-form" class="bg-slate-900 border border-slate-800 rounded-xl p-6 grid grid-cols-2 gap-4 mb-8">
+            <form id="extra-form" class="bg-[#14131a] border border-[#2a2731] rounded-2xl p-6 grid grid-cols-1 sm:grid-cols-2 gap-5 mb-8">
                 <div>
-                    <label class="block text-sm text-slate-300 mb-1">Name</label>
-                    <input type="text" name="name" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Name</label>
+                    <input type="text" name="name" required class="cd-input w-full rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none transition">
                 </div>
                 <div>
-                    <label class="block text-sm text-slate-300 mb-1">Price</label>
-                    <input type="number" step="0.01" name="price" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Price</label>
+                    <input type="number" step="0.01" name="price" required class="cd-input w-full rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none transition">
                 </div>
-                <div class="col-span-2 flex items-center justify-between">
-                    <p class="text-red-400 text-sm form-error" data-form="extra"></p>
-                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-lg px-5 py-2">Create Extra</button>
+                <div class="sm:col-span-2 flex items-center justify-between">
+                    <p class="text-rose-400 text-sm form-error" data-form="extra"></p>
+                    <button type="submit" class="bg-[#b08d57] hover:bg-[#c9a36b] text-[#0f0e13] font-bold rounded-xl px-5 py-2.5 text-sm transition flex items-center gap-2">
+                        <i data-lucide="plus" class="w-4 h-4"></i><span>Create Extra</span>
+                    </button>
                 </div>
             </form>
 
-            <table class="w-full text-sm">
-                <thead>
-                    <tr class="text-left text-slate-400 border-b border-slate-800">
-                        <th class="py-2">Name</th><th>Price</th><th>Available</th>
-                    </tr>
-                </thead>
-                <tbody id="extras-table-body">
-                    @foreach ($extras as $e)
-                        <tr class="border-b border-slate-800/50">
-                            <td class="py-2">{{ $e->name }}</td>
-                            <td>{{ number_format($e->price, 2) }}</td>
-                            <td>{{ $e->is_available ? 'Yes' : 'No' }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+            <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl overflow-hidden">
+                <div class="overflow-x-auto custom-scroll">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="text-left text-stone-400 border-b border-[#2a2731] bg-[#0f0e13]/50">
+                                <th class="py-3 px-5 font-semibold">Name</th><th class="px-5 font-semibold">Price</th><th class="px-5 font-semibold">Available</th>
+                            </tr>
+                        </thead>
+                        <tbody id="extras-table-body">
+                            @foreach ($extras as $e)
+                                <tr class="border-b border-[#2a2731]/60 hover:bg-[#1e1c25]/40 transition">
+                                    <td class="py-3 px-5 text-white font-medium">{{ $e->name }}</td>
+                                    <td class="px-5 text-[#b08d57] font-bold">{{ number_format($e->price, 2) }}</td>
+                                    <td class="px-5">
+                                        @if ($e->is_available)
+                                            <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full"><i data-lucide="check" class="w-3 h-3"></i>Yes</span>
+                                        @else
+                                            <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-400 bg-rose-500/10 border border-rose-500/20 px-2.5 py-1 rounded-full"><i data-lucide="x" class="w-3 h-3"></i>No</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </section>
 
     </main>
 </div>
-
-<style>
-    .nav-link { color: #94a3b8; }
-    .nav-link.active { background: #4f46e5; color: #fff; }
-</style>
 
 <script>
 const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
@@ -221,6 +301,7 @@ function showSection(target) {
     document.getElementById('section-' + target).classList.remove('hidden');
     navLinks.forEach(l => l.classList.remove('active'));
     document.querySelector(`.nav-link[data-target="${target}"]`).classList.add('active');
+    setTimeout(() => lucide.createIcons(), 50);
 }
 
 navLinks.forEach(link => {
@@ -261,15 +342,16 @@ document.getElementById('product-form').addEventListener('submit', function (e) 
     submitForm(this, "{{ route('admin.products.store') }}", (data) => {
         const p = data.product;
         const row = document.createElement('tr');
-        row.className = 'border-b border-slate-800/50';
+        row.className = 'border-b border-[#2a2731]/60 hover:bg-[#1e1c25]/40 transition';
         row.innerHTML = `
-            <td class="py-2"><img src="/storage/${p.image}" class="w-10 h-10 object-cover rounded"></td>
-            <td>${p.name}</td>
-            <td>${p.category.name}</td>
-            <td>${Number(p.price).toFixed(2)}</td>
-            <td>${p.is_available ? 'Yes' : 'No'}</td>
+            <td class="py-3 px-5"><img src="/storage/${p.image}" class="w-10 h-10 object-cover rounded-lg"></td>
+            <td class="px-5 text-white font-medium">${p.name}</td>
+            <td class="px-5 text-stone-400">${p.category.name}</td>
+            <td class="px-5 text-[#b08d57] font-bold">${Number(p.price).toFixed(2)}</td>
+            <td class="px-5">${p.is_available ? '<span class="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">Yes</span>' : '<span class="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-400 bg-rose-500/10 border border-rose-500/20 px-2.5 py-1 rounded-full">No</span>'}</td>
         `;
         document.getElementById('products-table-body').prepend(row);
+        setTimeout(() => lucide.createIcons(), 50);
     });
 });
 
@@ -279,14 +361,15 @@ document.getElementById('staff-form').addEventListener('submit', function (e) {
     submitForm(this, "{{ route('admin.staff.store') }}", (data) => {
         const s = data.staff;
         const row = document.createElement('tr');
-        row.className = 'border-b border-slate-800/50';
+        row.className = 'border-b border-[#2a2731]/60 hover:bg-[#1e1c25]/40 transition';
         row.innerHTML = `
-            <td class="py-2">${s.fullname}</td>
-            <td>${s.username}</td>
-            <td>${s.role.name.charAt(0).toUpperCase() + s.role.name.slice(1)}</td>
-            <td>${s.phone ?? ''}</td>
+            <td class="py-3 px-5 text-white font-medium">${s.fullname}</td>
+            <td class="px-5 text-stone-400">${s.username}</td>
+            <td class="px-5"><span class="inline-flex items-center text-xs font-semibold text-[#b08d57] bg-[#b08d57]/10 border border-[#b08d57]/20 px-2.5 py-1 rounded-full">${s.role.name.charAt(0).toUpperCase() + s.role.name.slice(1)}</span></td>
+            <td class="px-5 text-stone-400">${s.phone ?? ''}</td>
         `;
         document.getElementById('staff-table-body').prepend(row);
+        setTimeout(() => lucide.createIcons(), 50);
     });
 });
 
@@ -296,14 +379,19 @@ document.getElementById('extra-form').addEventListener('submit', function (e) {
     submitForm(this, "{{ route('admin.extras.store') }}", (data) => {
         const ex = data.extra;
         const row = document.createElement('tr');
-        row.className = 'border-b border-slate-800/50';
+        row.className = 'border-b border-[#2a2731]/60 hover:bg-[#1e1c25]/40 transition';
         row.innerHTML = `
-            <td class="py-2">${ex.name}</td>
-            <td>${Number(ex.price).toFixed(2)}</td>
-            <td>${ex.is_available ? 'Yes' : 'No'}</td>
+            <td class="py-3 px-5 text-white font-medium">${ex.name}</td>
+            <td class="px-5 text-[#b08d57] font-bold">${Number(ex.price).toFixed(2)}</td>
+            <td class="px-5">${ex.is_available ? '<span class="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">Yes</span>' : '<span class="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-400 bg-rose-500/10 border border-rose-500/20 px-2.5 py-1 rounded-full">No</span>'}</td>
         `;
         document.getElementById('extras-table-body').prepend(row);
+        setTimeout(() => lucide.createIcons(), 50);
     });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    lucide.createIcons();
 });
 </script>
 </body>
