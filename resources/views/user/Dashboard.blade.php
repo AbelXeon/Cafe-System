@@ -202,10 +202,10 @@
     <!-- SECTION: Menu Catalog -->
     <div id="section-menu" class="page-section flex flex-1 min-h-0 bg-[#14131a]/40 w-full">
 
-        <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 custom-scroll pb-24 lg:pb-8" x-data="menuApp()" x-init="init()">
+        <main class="flex-1 overflow-y-auto custom-scroll pb-24 lg:pb-8 relative" x-data="menuApp()" x-init="init()">
 
-            <!-- STICKY TOP: Browse Menu & Category Filters Banner -->
-            <div class="sticky top-0 z-20 bg-[#0f0e13]/95 backdrop-blur-md -mt-4 sm:-mt-6 lg:-mt-8 -mx-4 sm:-mx-6 lg:-mx-8 p-4 sm:p-6 lg:p-8 pb-4 mb-6 border-b border-[#2a2731]/80 shadow-lg shadow-black/30">
+            <!-- STICKY TOP: Browse Menu & Category Filters Banner (FLUSH ZERO GAP) -->
+            <div class="sticky top-0 z-20 bg-[#0f0e13]/98 backdrop-blur-xl border-b border-[#2a2731] px-4 sm:px-6 lg:px-8 py-4 sm:py-5 shadow-2xl shadow-black/60">
                 <div class="space-y-3 sm:space-y-4">
                     <div class="flex items-center justify-between">
                         <div>
@@ -233,43 +233,46 @@
                 </div>
             </div>
 
-            <!-- Products Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 sm:gap-6">
-                <template x-for="product in visibleProducts" :key="product.id">
-                    <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl overflow-hidden hover:border-[#b08d57]/60 transition duration-200 flex flex-col justify-between group cursor-pointer shadow-lg"
-                         @click="openModal(product)">
+            <!-- Products Content Area -->
+            <div class="p-4 sm:p-6 lg:p-8">
+                <!-- Products Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 sm:gap-6">
+                    <template x-for="product in visibleProducts" :key="product.id">
+                        <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl overflow-hidden hover:border-[#b08d57]/60 transition duration-200 flex flex-col justify-between group cursor-pointer shadow-lg"
+                             @click="openModal(product)">
 
-                        <div class="relative w-full h-40 sm:h-44 bg-[#0f0e13] overflow-hidden">
-                            <img :src="product.image" :alt="product.name" class="w-full h-full object-cover group-hover:scale-105 transition duration-300 ease-out">
-                            <div class="absolute top-3 right-3 bg-[#0f0e13]/85 backdrop-blur-md px-2.5 py-1 rounded-lg border border-[#2a2731]">
-                                <span class="text-[#b08d57] font-extrabold text-sm" x-text="'$' + product.price.toFixed(2)"></span>
-                            </div>
-                        </div>
-
-                        <div class="p-4 sm:p-5 flex flex-col flex-1 justify-between">
-                            <div>
-                                <div class="flex items-center justify-between gap-2">
-                                    <h3 class="text-white font-bold text-sm sm:text-base leading-snug group-hover:text-[#b08d57] transition" x-text="product.name"></h3>
-                                    <span class="text-[10px] bg-[#1e1c25] text-[#b08d57] px-2 py-0.5 rounded-md font-semibold shrink-0" x-text="product.category"></span>
+                            <div class="relative w-full h-40 sm:h-44 bg-[#0f0e13] overflow-hidden">
+                                <img :src="product.image" :alt="product.name" class="w-full h-full object-cover group-hover:scale-105 transition duration-300 ease-out">
+                                <div class="absolute top-3 right-3 bg-[#0f0e13]/85 backdrop-blur-md px-2.5 py-1 rounded-lg border border-[#2a2731]">
+                                    <span class="text-[#b08d57] font-extrabold text-sm" x-text="'$' + product.price.toFixed(2)"></span>
                                 </div>
-                                <p class="text-stone-500 text-xs mt-1.5 line-clamp-2 leading-relaxed" x-text="product.description"></p>
                             </div>
 
-                            <button
-                                @click.stop="openModal(product)"
-                                class="w-full mt-4 bg-[#1e1c25] hover:bg-[#b08d57] hover:text-[#0f0e13] text-stone-200 text-xs font-bold rounded-xl py-2.5 transition flex items-center justify-center gap-2">
-                                <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-                                <span>Add to Cart</span>
-                            </button>
-                        </div>
-                    </div>
-                </template>
+                            <div class="p-4 sm:p-5 flex flex-col flex-1 justify-between">
+                                <div>
+                                    <div class="flex items-center justify-between gap-2">
+                                        <h3 class="text-white font-bold text-sm sm:text-base leading-snug group-hover:text-[#b08d57] transition" x-text="product.name"></h3>
+                                        <span class="text-[10px] bg-[#1e1c25] text-[#b08d57] px-2 py-0.5 rounded-md font-semibold shrink-0" x-text="product.category"></span>
+                                    </div>
+                                    <p class="text-stone-500 text-xs mt-1.5 line-clamp-2 leading-relaxed" x-text="product.description"></p>
+                                </div>
 
-                <div x-show="visibleProducts.length === 0" class="col-span-full py-16 text-center">
-                    <div class="w-12 h-12 rounded-full bg-[#14131a] border border-[#2a2731] flex items-center justify-center mx-auto text-stone-500 mb-3">
-                        <i data-lucide="package-open" class="w-6 h-6"></i>
+                                <button
+                                    @click.stop="openModal(product)"
+                                    class="w-full mt-4 bg-[#1e1c25] hover:bg-[#b08d57] hover:text-[#0f0e13] text-stone-200 text-xs font-bold rounded-xl py-2.5 transition flex items-center justify-center gap-2">
+                                    <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                                    <span>Add to Cart</span>
+                                </button>
+                            </div>
+                        </div>
+                    </template>
+
+                    <div x-show="visibleProducts.length === 0" class="col-span-full py-16 text-center">
+                        <div class="w-12 h-12 rounded-full bg-[#14131a] border border-[#2a2731] flex items-center justify-center mx-auto text-stone-500 mb-3">
+                            <i data-lucide="package-open" class="w-6 h-6"></i>
+                        </div>
+                        <p class="text-stone-500 font-medium text-sm">No food items found in this category yet.</p>
                     </div>
-                    <p class="text-stone-500 font-medium text-sm">No food items found in this category yet.</p>
                 </div>
             </div>
 
@@ -346,7 +349,7 @@
                                 <div class="mt-4">
                                     <label class="block text-xs uppercase font-semibold text-stone-400 tracking-wider mb-2">Special Instructions</label>
                                     <textarea x-model="modalNote" placeholder="e.g. No onions, sauce on the side..." rows="2"
-                                        class="cd-input w-full bg-[#0f0e13] border border-[#2a2731] rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-stone-600 focus:outline-none transition"></textarea>
+                                        class="cd-input w-full bg-[#0f0e13] border border-[#2a2731] rounded-xl px-3.5 py-2.5 text-sm text-white placeholder:text-stone-600 focus:outline-none transition"></textarea>
                                 </div>
 
                                 <!-- Action Buttons -->
