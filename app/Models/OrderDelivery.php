@@ -32,6 +32,11 @@ class OrderDelivery extends Model
         return $this->belongsTo(Order::class);
     }
 
+    public function messages()
+{
+    return $this->hasMany(ChatMessage::class);
+}
+
     public function deliveryUser()
     {
         return $this->belongsTo(
