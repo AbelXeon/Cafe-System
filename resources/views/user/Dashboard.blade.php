@@ -13,7 +13,6 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.5/dist/cdn.min.js"></script>
 
     <!-- Fonts & Icons -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -124,8 +123,9 @@
     <aside
         :class="mobileNavOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
         class="fixed lg:static top-0 left-0 bottom-0 w-72 lg:w-64 bg-[#0f0e13] border-r border-[#1e1c25] flex flex-col shrink-0 justify-between z-50 lg:z-20 transition-transform duration-300 ease-in-out">
-        <div>
-            <div class="p-5 sm:p-6 border-b border-[#1e1c25] flex items-center justify-between">
+        
+        <div class="flex flex-col min-h-0">
+            <div class="p-5 sm:p-6 border-b border-[#1e1c25] flex items-center justify-between shrink-0">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-xl bg-[#b08d57] flex items-center justify-center text-[#0f0e13]">
                         <i data-lucide="utensils" class="w-5 h-5 stroke-[2.5]"></i>
@@ -141,32 +141,53 @@
                 </button>
             </div>
 
-            <!-- Navigation Links -->
-            <nav class="p-4 space-y-1.5">
-                <button data-target="menu" @click="mobileNavOpen = false" class="side-link w-full text-left px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-3">
-                    <i data-lucide="layout-grid" class="w-4 h-4"></i>
-                    <span>Menu Catalog</span>
-                </button>
-                <button data-target="orders" @click="mobileNavOpen = false" class="side-link w-full text-left px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-3">
-                    <i data-lucide="receipt" class="w-4 h-4"></i>
-                    <span>My Orders</span>
-                </button>
-                <button data-target="address" @click="mobileNavOpen = false" class="side-link w-full text-left px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-3">
-                    <i data-lucide="map-pin" class="w-4 h-4"></i>
-                    <span>My Addresses</span>
-                </button>
-                <button data-target="chat" @click="mobileNavOpen = false" class="side-link w-full text-left px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-3">
-                    <i data-lucide="message-square" class="w-4 h-4"></i>
-                    <span>Chat</span>
-                </button>
-                <button data-target="profile" @click="mobileNavOpen = false" class="side-link w-full text-left px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-3">
-                    <i data-lucide="user-cog" class="w-4 h-4"></i>
-                    <span>Account Settings</span>
-                </button>
+            <!-- Grouped Navigation Links -->
+            <nav class="p-4 space-y-4 overflow-y-auto custom-scroll">
+                
+                <!-- GROUP: Menu -->
+                <div class="space-y-1">
+                    <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-stone-500 block">Menu</span>
+                    <button data-target="menu" @click="mobileNavOpen = false" class="side-link w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-3">
+                        <i data-lucide="layout-grid" class="w-4 h-4"></i>
+                        <span>Menu Catalog</span>
+                    </button>
+                </div>
+
+                <!-- GROUP: Orders -->
+                <div class="space-y-1">
+                    <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-stone-500 block">Orders</span>
+                    <button data-target="orders" @click="mobileNavOpen = false" class="side-link w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-3">
+                        <i data-lucide="receipt" class="w-4 h-4"></i>
+                        <span>My Orders</span>
+                    </button>
+                    <button data-target="chat" @click="mobileNavOpen = false" class="side-link w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-3">
+                        <i data-lucide="message-square" class="w-4 h-4"></i>
+                        <span>Chat</span>
+                    </button>
+                </div>
+
+                <!-- GROUP: Delivery -->
+                <div class="space-y-1">
+                    <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-stone-500 block">Delivery</span>
+                    <button data-target="address" @click="mobileNavOpen = false" class="side-link w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-3">
+                        <i data-lucide="map-pin" class="w-4 h-4"></i>
+                        <span>My Addresses</span>
+                    </button>
+                </div>
+
+                <!-- GROUP: Settings -->
+                <div class="space-y-1">
+                    <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-stone-500 block">Settings</span>
+                    <button data-target="profile" @click="mobileNavOpen = false" class="side-link w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-3">
+                        <i data-lucide="user-cog" class="w-4 h-4"></i>
+                        <span>Account Settings</span>
+                    </button>
+                </div>
+
             </nav>
         </div>
 
-        <div class="p-4 border-t border-[#1e1c25]">
+        <div class="p-4 border-t border-[#1e1c25] shrink-0">
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button class="w-full text-left px-4 py-3 rounded-xl text-sm font-semibold text-rose-400 hover:bg-rose-500/10 transition flex items-center gap-3">
@@ -205,7 +226,7 @@
             <!-- Active Category Title Banner -->
             <div class="flex items-center justify-between border-b border-[#2a2731] pb-3 mb-6">
                 <div class="flex items-center gap-2">
-                    <h2 class="text-base sm:text-lg font-bold text-white uppercase tracking-wider" x-text="activeCategory"></h2>
+                    <h2 class="text-base sm:lg font-bold text-white uppercase tracking-wider" x-text="activeCategory"></h2>
                     <span class="text-xs bg-[#1e1c25] text-stone-400 px-2.5 py-0.5 rounded-full font-medium" x-text="visibleProducts.length + ' items'"></span>
                 </div>
             </div>
@@ -1106,7 +1127,7 @@
                         }
                         setTimeout(() => lucide.createIcons(), 50);
 
-                        // 2. Asynchronous background reverse geocoding (doesn't block map rendering)
+                        // 2. Asynchronous background reverse geocoding
                         fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`, {
                             headers: { 'Accept': 'application/json' }
                         })
