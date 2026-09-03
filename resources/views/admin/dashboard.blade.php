@@ -1396,7 +1396,6 @@ document.getElementById('staff-form').addEventListener('submit', function (e) {
     });
 });
 
-// ---- Extra Form Submit ----
 document.getElementById('extra-form').addEventListener('submit', function (e) {
     e.preventDefault();
     submitForm(this, "{{ route('admin.extras.store') }}", (data) => {
