@@ -19,7 +19,6 @@ class AdminController extends Controller
 {
     public function dashboard()
     {
-        // 1. Basic Models
         $categories = Category::withCount('products')->orderBy('name')->get();
         $products = Product::with('category')->latest()->get();
         $extras = Extra::latest()->get();
