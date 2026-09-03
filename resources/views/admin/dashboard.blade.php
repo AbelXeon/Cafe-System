@@ -545,7 +545,6 @@ if (removeImageBtn) {
     });
 }
 
-// ---- Customized Dropdowns Management ----
 function initCustomSelects() {
     document.querySelectorAll('.custom-select-wrapper').forEach(wrapper => {
         const trigger = wrapper.querySelector('.custom-select-trigger');
