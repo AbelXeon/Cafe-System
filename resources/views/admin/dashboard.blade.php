@@ -1301,7 +1301,6 @@ function initAllDataTables() {
     if (extrasStatusSelect) extrasStatusSelect.addEventListener('change', () => extrasDataTable.refresh());
 }
 
-// ---- AJAX Form Submissions ----
 async function submitForm(formEl, url, onSuccess) {
     const errorEl = formEl.querySelector('.form-error');
     errorEl.textContent = '';
