@@ -1372,7 +1372,6 @@ document.getElementById('product-form').addEventListener('submit', function (e) 
     });
 });
 
-// ---- Staff Form Submit ----
 document.getElementById('staff-form').addEventListener('submit', function (e) {
     e.preventDefault();
     submitForm(this, "{{ route('admin.staff.store') }}", (data) => {
