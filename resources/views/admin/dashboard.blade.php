@@ -1418,7 +1418,6 @@ document.getElementById('extra-form').addEventListener('submit', function (e) {
     });
 });
 
-// Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
     initCustomSelects();
     initAllDataTables();
