@@ -267,7 +267,6 @@
             </div>
         </section>
 
-        {{-- STAFF --}}
         <section id="section-staff" class="page-section hidden">
             <div class="mb-6 sm:mb-8">
                 <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Staff &amp; Delivery</h2>
