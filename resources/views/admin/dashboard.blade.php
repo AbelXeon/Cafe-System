@@ -97,7 +97,6 @@
 
     <main class="flex-1 p-4 sm:p-6 lg:p-10 overflow-y-auto custom-scroll">
 
-        {{-- OVERVIEW --}}
         <section id="section-overview" class="page-section">
             <div class="mb-6 sm:mb-8">
                 <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Overview</h2>
