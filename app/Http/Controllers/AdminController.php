@@ -65,7 +65,6 @@ class AdminController extends Controller
             }
         }
 
-        // 4. Category Distribution for Donut Chart
         $categoryLabels = $categories->pluck('name')->toArray();
         $categoryCounts = $categories->pluck('products_count')->toArray();
 
