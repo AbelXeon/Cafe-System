@@ -139,12 +139,38 @@
             <form id="product-form" class="bg-[#14131a] border border-[#2a2731] rounded-2xl p-5 sm:p-6 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 mb-8 shadow-lg">
                 <div>
                     <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Category</label>
-                    <select name="category_id" required class="cd-input w-full rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none transition">
-                        <option value="">Select category</option>
-                        @foreach ($categories as $cat)
-                            <option value="{{ $cat->id }}">{{ $cat->name }}</option>
-                        @endforeach
-                    </select>
+                    
+                    <!-- Customized Interactive Category Selector -->
+                    <div class="relative custom-select-wrapper" id="product-category-wrapper">
+                        <select name="category_id" required class="custom-native-select opacity-0 absolute pointer-events-none h-0 w-0">
+                            <option value="">Select category</option>
+                            @foreach ($categories as $cat)
+                                <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                            @endforeach
+                        </select>
+                        
+                        <button type="button" class="custom-select-trigger cd-input w-full rounded-xl px-3.5 py-2.5 text-sm text-left flex items-center justify-between transition group hover:border-[#b08d57]/70">
+                            <div class="flex items-center gap-2.5 truncate pr-2">
+                                <div class="w-2 h-2 rounded-full bg-stone-600 transition trigger-dot"></div>
+                                <span class="custom-select-label text-stone-500 font-medium truncate" data-placeholder="Select category">Select category</span>
+                            </div>
+                            <div class="w-6 h-6 rounded-lg bg-[#1e1c25] group-hover:bg-[#2a2731] flex items-center justify-center text-stone-400 group-hover:text-stone-200 shrink-0 transition">
+                                <i data-lucide="chevron-down" class="w-3.5 h-3.5 transition-transform duration-300 chevron-icon"></i>
+                            </div>
+                        </button>
+
+                        <div class="custom-select-menu hidden absolute left-0 right-0 top-[calc(100%+6px)] bg-[#14131a]/95 backdrop-blur-xl border border-[#2a2731] rounded-xl p-1.5 shadow-2xl z-50 max-h-56 overflow-y-auto custom-scroll space-y-1">
+                            @foreach ($categories as $cat)
+                                <div class="custom-option px-3 py-2.5 rounded-lg text-sm text-stone-300 hover:text-white hover:bg-[#1e1c25] cursor-pointer flex items-center justify-between transition group/opt" data-value="{{ $cat->id }}" data-text="{{ $cat->name }}">
+                                    <div class="flex items-center gap-2.5">
+                                        <div class="w-2 h-2 rounded-full bg-stone-600 group-hover/opt:bg-[#b08d57] transition dot-indicator"></div>
+                                        <span class="font-medium">{{ $cat->name }}</span>
+                                    </div>
+                                    <i data-lucide="check" class="w-4 h-4 text-[#b08d57] hidden check-icon"></i>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
                 </div>
                 <div>
                     <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Name</label>
@@ -251,12 +277,38 @@
             <form id="staff-form" class="bg-[#14131a] border border-[#2a2731] rounded-2xl p-5 sm:p-6 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 mb-8 shadow-lg">
                 <div>
                     <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Role</label>
-                    <select name="role_id" required class="cd-input w-full rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none transition">
-                        <option value="">Select role</option>
-                        @foreach ($roles as $r)
-                            <option value="{{ $r->id }}">{{ ucfirst($r->name) }}</option>
-                        @endforeach
-                    </select>
+                    
+                    <!-- Customized Interactive Role Selector -->
+                    <div class="relative custom-select-wrapper" id="staff-role-wrapper">
+                        <select name="role_id" required class="custom-native-select opacity-0 absolute pointer-events-none h-0 w-0">
+                            <option value="">Select role</option>
+                            @foreach ($roles as $r)
+                                <option value="{{ $r->id }}">{{ ucfirst($r->name) }}</option>
+                            @endforeach
+                        </select>
+                        
+                        <button type="button" class="custom-select-trigger cd-input w-full rounded-xl px-3.5 py-2.5 text-sm text-left flex items-center justify-between transition group hover:border-[#b08d57]/70">
+                            <div class="flex items-center gap-2.5 truncate pr-2">
+                                <div class="w-2 h-2 rounded-full bg-stone-600 transition trigger-dot"></div>
+                                <span class="custom-select-label text-stone-500 font-medium truncate" data-placeholder="Select role">Select role</span>
+                            </div>
+                            <div class="w-6 h-6 rounded-lg bg-[#1e1c25] group-hover:bg-[#2a2731] flex items-center justify-center text-stone-400 group-hover:text-stone-200 shrink-0 transition">
+                                <i data-lucide="chevron-down" class="w-3.5 h-3.5 transition-transform duration-300 chevron-icon"></i>
+                            </div>
+                        </button>
+
+                        <div class="custom-select-menu hidden absolute left-0 right-0 top-[calc(100%+6px)] bg-[#14131a]/95 backdrop-blur-xl border border-[#2a2731] rounded-xl p-1.5 shadow-2xl z-50 max-h-56 overflow-y-auto custom-scroll space-y-1">
+                            @foreach ($roles as $r)
+                                <div class="custom-option px-3 py-2.5 rounded-lg text-sm text-stone-300 hover:text-white hover:bg-[#1e1c25] cursor-pointer flex items-center justify-between transition group/opt" data-value="{{ $r->id }}" data-text="{{ ucfirst($r->name) }}">
+                                    <div class="flex items-center gap-2.5">
+                                        <div class="w-2 h-2 rounded-full bg-stone-600 group-hover/opt:bg-[#b08d57] transition dot-indicator"></div>
+                                        <span class="font-medium">{{ ucfirst($r->name) }}</span>
+                                    </div>
+                                    <i data-lucide="check" class="w-4 h-4 text-[#b08d57] hidden check-icon"></i>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
                 </div>
                 <div>
                     <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Full name</label>
@@ -493,11 +545,133 @@ if (removeImageBtn) {
     });
 }
 
+// ---- Customized Dropdowns Management ----
+function initCustomSelects() {
+    document.querySelectorAll('.custom-select-wrapper').forEach(wrapper => {
+        const trigger = wrapper.querySelector('.custom-select-trigger');
+        const menu = wrapper.querySelector('.custom-select-menu');
+        const label = wrapper.querySelector('.custom-select-label');
+        const triggerDot = wrapper.querySelector('.trigger-dot');
+        const chevron = wrapper.querySelector('.chevron-icon');
+        const nativeSelect = wrapper.querySelector('.custom-native-select');
+        const options = wrapper.querySelectorAll('.custom-option');
+        const placeholderText = label.getAttribute('data-placeholder') || label.textContent;
+
+        function toggleMenu(show) {
+            const isOpen = show !== undefined ? show : menu.classList.contains('hidden');
+            if (isOpen) {
+                // Close other opened menus
+                document.querySelectorAll('.custom-select-menu').forEach(m => {
+                    if (m !== menu) {
+                        m.classList.add('hidden');
+                        const otherChevron = m.closest('.custom-select-wrapper')?.querySelector('.chevron-icon');
+                        if (otherChevron) otherChevron.classList.remove('rotate-180');
+                    }
+                });
+                menu.classList.remove('hidden');
+                if (chevron) chevron.classList.add('rotate-180');
+                trigger.classList.add('border-[#b08d57]', 'ring-2', 'ring-[#b08d57]/20');
+            } else {
+                menu.classList.add('hidden');
+                if (chevron) chevron.classList.remove('rotate-180');
+                trigger.classList.remove('border-[#b08d57]', 'ring-2', 'ring-[#b08d57]/20');
+            }
+        }
+
+        trigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleMenu();
+        });
+
+        options.forEach(opt => {
+            opt.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const val = opt.getAttribute('data-value');
+                const text = opt.getAttribute('data-text');
+
+                // Sync with underlying native select
+                nativeSelect.value = val;
+                nativeSelect.dispatchEvent(new Event('change', { bubbles: true }));
+
+                // Update Trigger UI
+                label.textContent = text;
+                label.classList.remove('text-stone-500');
+                label.classList.add('text-white', 'font-semibold');
+                if (triggerDot) triggerDot.classList.replace('bg-stone-600', 'bg-[#b08d57]');
+
+                // Highlight active option with checkmark
+                options.forEach(o => {
+                    const check = o.querySelector('.check-icon');
+                    const dot = o.querySelector('.dot-indicator');
+                    if (o === opt) {
+                        o.classList.add('bg-[#1e1c25]', 'text-white');
+                        if (check) check.classList.remove('hidden');
+                        if (dot) dot.classList.replace('bg-stone-600', 'bg-[#b08d57]');
+                    } else {
+                        o.classList.remove('bg-[#1e1c25]', 'text-white');
+                        if (check) check.classList.add('hidden');
+                        if (dot) dot.classList.replace('bg-[#b08d57]', 'bg-stone-600');
+                    }
+                });
+
+                toggleMenu(false);
+            });
+        });
+
+        // Handle Form Reset
+        const parentForm = wrapper.closest('form');
+        if (parentForm) {
+            parentForm.addEventListener('reset', () => {
+                setTimeout(() => {
+                    nativeSelect.value = '';
+                    label.textContent = placeholderText;
+                    label.classList.add('text-stone-500');
+                    label.classList.remove('text-white', 'font-semibold');
+                    if (triggerDot) triggerDot.classList.replace('bg-[#b08d57]', 'bg-stone-600');
+                    options.forEach(o => {
+                        o.classList.remove('bg-[#1e1c25]', 'text-white');
+                        const check = o.querySelector('.check-icon');
+                        const dot = o.querySelector('.dot-indicator');
+                        if (check) check.classList.add('hidden');
+                        if (dot) dot.classList.replace('bg-[#b08d57]', 'bg-stone-600');
+                    });
+                }, 10);
+            });
+        }
+    });
+
+    // Close on outside click
+    document.addEventListener('click', () => {
+        document.querySelectorAll('.custom-select-menu').forEach(m => m.classList.add('hidden'));
+        document.querySelectorAll('.chevron-icon').forEach(c => c.classList.remove('rotate-180'));
+        document.querySelectorAll('.custom-select-trigger').forEach(t => t.classList.remove('border-[#b08d57]', 'ring-2', 'ring-[#b08d57]/20'));
+    });
+}
+
 // ---- generic AJAX submit helper ----
-async function submitForm(formEl, url, onSuccess, isMultipart = false) {
-    const formData = new FormData(formEl);
+async function submitForm(formEl, url, onSuccess) {
     const errorEl = formEl.querySelector('.form-error');
     errorEl.textContent = '';
+
+    // Validate custom required selects
+    let hasSelectError = false;
+    formEl.querySelectorAll('.custom-native-select[required]').forEach(select => {
+        if (!select.value) {
+            hasSelectError = true;
+            const trigger = select.closest('.custom-select-wrapper')?.querySelector('.custom-select-trigger');
+            if (trigger) {
+                trigger.classList.add('border-rose-500', 'ring-2', 'ring-rose-500/20');
+                setTimeout(() => trigger.classList.remove('border-rose-500', 'ring-2', 'ring-rose-500/20'), 2500);
+            }
+        }
+    });
+
+    if (hasSelectError) {
+        errorEl.textContent = 'Please fill out all required fields.';
+        return;
+    }
+
+    const formData = new FormData(formEl);
 
     try {
         const res = await fetch(url, {
@@ -575,8 +749,9 @@ document.getElementById('extra-form').addEventListener('submit', function (e) {
     });
 });
 
-// Initialize icons on mount
+// Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
+    initCustomSelects();
     lucide.createIcons();
 });
 </script>
