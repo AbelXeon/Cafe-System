@@ -13,6 +13,7 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.5/dist/cdn.min.js"></script>
 
     <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -203,31 +204,32 @@
 
         <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 custom-scroll pb-24 lg:pb-8" x-data="menuApp()" x-init="init()">
 
-            <!-- Header & Category Pills -->
-            <div class="mb-6 sm:mb-8 space-y-4">
-                <div>
-                    <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Browse Menu</h1>
-                </div>
+            <!-- STICKY TOP: Browse Menu & Category Filters Banner -->
+            <div class="sticky top-0 z-20 bg-[#0f0e13]/95 backdrop-blur-md -mt-4 sm:-mt-6 lg:-mt-8 -mx-4 sm:-mx-6 lg:-mx-8 p-4 sm:p-6 lg:p-8 pb-4 mb-6 border-b border-[#2a2731]/80 shadow-lg shadow-black/30">
+                <div class="space-y-3 sm:space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Browse Menu</h1>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <h2 class="hidden sm:inline-block text-xs uppercase font-bold text-[#b08d57] tracking-wider" x-text="activeCategory"></h2>
+                            <span class="text-xs bg-[#1e1c25] text-stone-400 px-2.5 py-0.5 rounded-full font-medium" x-text="visibleProducts.length + ' items'"></span>
+                        </div>
+                    </div>
 
-                <div class="flex flex-wrap items-center gap-2 pt-1">
-                    <template x-for="cat in categories" :key="cat">
-                        <button
-                            @click="activeCategory = cat"
-                            :class="activeCategory === cat
-                                ? 'bg-[#b08d57] text-[#0f0e13] font-bold shadow-md shadow-[#b08d57]/10'
-                                : 'bg-[#14131a] text-stone-400 hover:text-white border border-[#2a2731]'"
-                            class="px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm whitespace-nowrap transition cursor-pointer"
-                            x-text="cat">
-                        </button>
-                    </template>
-                </div>
-            </div>
-
-            <!-- Active Category Title Banner -->
-            <div class="flex items-center justify-between border-b border-[#2a2731] pb-3 mb-6">
-                <div class="flex items-center gap-2">
-                    <h2 class="text-base sm:lg font-bold text-white uppercase tracking-wider" x-text="activeCategory"></h2>
-                    <span class="text-xs bg-[#1e1c25] text-stone-400 px-2.5 py-0.5 rounded-full font-medium" x-text="visibleProducts.length + ' items'"></span>
+                    <!-- Horizontally scrollable on mobile, flex-wrap on desktop -->
+                    <div class="flex items-center gap-2 overflow-x-auto custom-scroll pb-1 sm:flex-wrap">
+                        <template x-for="cat in categories" :key="cat">
+                            <button
+                                @click="activeCategory = cat"
+                                :class="activeCategory === cat
+                                    ? 'bg-[#b08d57] text-[#0f0e13] font-bold shadow-md shadow-[#b08d57]/10'
+                                    : 'bg-[#14131a] text-stone-400 hover:text-white border border-[#2a2731]'"
+                                class="px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm whitespace-nowrap transition cursor-pointer shrink-0"
+                                x-text="cat">
+                            </button>
+                        </template>
+                    </div>
                 </div>
             </div>
 
@@ -344,7 +346,7 @@
                                 <div class="mt-4">
                                     <label class="block text-xs uppercase font-semibold text-stone-400 tracking-wider mb-2">Special Instructions</label>
                                     <textarea x-model="modalNote" placeholder="e.g. No onions, sauce on the side..." rows="2"
-                                        class="cd-input w-full bg-[#0f0e13] border border-[#2a2731] rounded-xl px-3.5 py-2.5 text-sm text-white placeholder:text-stone-600 focus:outline-none transition"></textarea>
+                                        class="cd-input w-full bg-[#0f0e13] border border-[#2a2731] rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-stone-600 focus:outline-none transition"></textarea>
                                 </div>
 
                                 <!-- Action Buttons -->
