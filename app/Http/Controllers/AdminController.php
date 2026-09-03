@@ -32,7 +32,6 @@ class AdminController extends Controller
         // 2. Overview Analytics & Metrics
         $totalCustomers = User::whereHas('role', fn($q) => $q->where('name', 'customer'))->count();
         if ($totalCustomers === 0) {
-            // Fallback count if customer role isn't assigned yet
             $totalCustomers = User::whereDoesntHave('role', fn($q) => $q->whereIn('name', ['admin', 'staff', 'delivery']))->count();
         }
 
