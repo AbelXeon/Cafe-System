@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
+use App\Models\Extra;
 use App\Models\SavedLocation;
 use Illuminate\Http\Request;
 
@@ -17,8 +18,18 @@ class UsersController extends Controller
             $q->where('is_available', true);
         }])->get();
 
+        $categoryNames = $categories->pluck('name')->values()->toArray();
+
+        // Insert 'All' in the middle of categories
+        if (!in_array('All', $categoryNames)) {
+            $middleIndex = (int) floor(count($categoryNames) / 2);
+            array_splice($categoryNames, $middleIndex, 0, 'All');
+        }
+
+        $extras = Extra::where('is_available', true)->get();
+
         $menuData = [
-            'categories' => $categories->pluck('name')->values(),
+            'categories' => $categoryNames,
             'products' => $categories->flatMap(function ($category) {
                 return $category->products->map(function ($product) use ($category) {
                     return [
@@ -31,11 +42,18 @@ class UsersController extends Controller
                     ];
                 });
             })->values(),
+            'extras' => $extras->map(function ($extra) {
+                return [
+                    'id'    => $extra->id,
+                    'name'  => $extra->name,
+                    'price' => (float) $extra->price,
+                ];
+            })->values(),
         ];
 
         $addresses = SavedLocation::where('user_id', $request->user()->id)->get();
 
-        return view('user.dashboard', compact('categories', 'menuData', 'addresses'));
+        return view('user.dashboard', compact('categories', 'menuData', 'addresses', 'extras'));
     }
 
     public function storeOrder(Request $request)
@@ -44,7 +62,8 @@ class UsersController extends Controller
             'items'                => 'required|array|min:1',
             'items.*.product_id'   => 'required|exists:products,id',
             'items.*.quantity'     => 'required|integer|min:1',
-            'items.*.special_note' => 'nullable|string|max:255',
+            'items.*.special_note' => 'nullable|string|max:500',
+            'items.*.custom_price' => 'nullable|numeric|min:0',
             'saved_location_id'    => 'nullable|exists:saved_locations,id',
         ]);
 
@@ -54,7 +73,8 @@ class UsersController extends Controller
 
         $subtotal = 0;
         foreach ($data['items'] as $item) {
-            $subtotal += $products[$item['product_id']]->price * $item['quantity'];
+            $unitPrice = isset($item['custom_price']) ? (float) $item['custom_price'] : (float) $products[$item['product_id']]->price;
+            $subtotal += $unitPrice * $item['quantity'];
         }
 
         $deliveryAddress = null;
@@ -86,13 +106,14 @@ class UsersController extends Controller
 
         foreach ($data['items'] as $item) {
             $product = $products[$item['product_id']];
+            $unitPrice = isset($item['custom_price']) ? (float) $item['custom_price'] : (float) $product->price;
 
             OrderItem::create([
                 'order_id'     => $order->id,
                 'product_id'   => $product->id,
                 'quantity'     => $item['quantity'],
-                'unit_price'   => $product->price,
-                'subtotal'     => $product->price * $item['quantity'],
+                'unit_price'   => $unitPrice,
+                'subtotal'     => $unitPrice * $item['quantity'],
                 'special_note' => $item['special_note'] ?? null,
             ]);
         }

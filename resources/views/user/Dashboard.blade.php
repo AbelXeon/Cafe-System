@@ -122,7 +122,7 @@
                     <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Browse Menu</h1>
                 </div>
 
-                <div class="flex flex-wrap gap-2 pt-1">
+                <div class="flex flex-wrap items-center gap-2 pt-1">
                     <template x-for="cat in categories" :key="cat">
                         <button
                             @click="activeCategory = cat"
@@ -159,12 +159,15 @@
 
                         <div class="p-4 sm:p-5 flex flex-col flex-1 justify-between">
                             <div>
-                                <h3 class="text-white font-bold text-sm sm:text-base leading-snug group-hover:text-[#b08d57] transition" x-text="product.name"></h3>
+                                <div class="flex items-center justify-between gap-2">
+                                    <h3 class="text-white font-bold text-sm sm:text-base leading-snug group-hover:text-[#b08d57] transition" x-text="product.name"></h3>
+                                    <span class="text-[10px] bg-[#1e1c25] text-[#b08d57] px-2 py-0.5 rounded-md font-semibold shrink-0" x-text="product.category"></span>
+                                </div>
                                 <p class="text-stone-500 text-xs mt-1.5 line-clamp-2 leading-relaxed" x-text="product.description"></p>
                             </div>
 
                             <button
-                                @click.stop="$store.cart.add(product, 1, '')"
+                                @click.stop="openModal(product)"
                                 class="w-full mt-4 bg-[#1e1c25] hover:bg-[#b08d57] hover:text-[#0f0e13] text-stone-200 text-xs font-bold rounded-xl py-2.5 transition flex items-center justify-center gap-2">
                                 <i data-lucide="plus" class="w-3.5 h-3.5"></i>
                                 <span>Add to Cart</span>
@@ -181,7 +184,7 @@
                 </div>
             </div>
 
-            <!-- Product Details Modal -->
+            <!-- Product Details & Extras Modal -->
             <div x-show="modalProduct"
                  x-cloak
                  class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto"
@@ -189,22 +192,58 @@
                 <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl my-auto">
                     <template x-if="modalProduct">
                         <div>
-                            <div class="relative w-full h-48 sm:h-56 bg-[#0f0e13]">
+                            <div class="relative w-full h-48 sm:h-52 bg-[#0f0e13]">
                                 <img :src="modalProduct.image" :alt="modalProduct.name" class="w-full h-full object-cover">
                                 <button @click="closeModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-[#0f0e13]/80 text-stone-400 hover:text-white flex items-center justify-center border border-[#2a2731] transition">
                                     <i data-lucide="x" class="w-4 h-4"></i>
                                 </button>
                             </div>
 
-                            <div class="p-5 sm:p-6">
+                            <div class="p-5 sm:p-6 max-h-[70vh] overflow-y-auto custom-scroll">
                                 <div class="flex items-start justify-between gap-4">
-                                    <h3 class="text-lg sm:text-xl font-bold text-white tracking-tight" x-text="modalProduct.name"></h3>
+                                    <div>
+                                        <h3 class="text-lg sm:text-xl font-bold text-white tracking-tight" x-text="modalProduct.name"></h3>
+                                        <span class="text-xs text-stone-500 font-medium" x-text="modalProduct.category"></span>
+                                    </div>
                                     <span class="text-[#b08d57] font-black text-base sm:text-lg" x-text="'$' + modalProduct.price.toFixed(2)"></span>
                                 </div>
-                                <p class="text-stone-500 text-xs sm:text-sm mt-2 leading-relaxed" x-text="modalProduct.description"></p>
+                                <p class="text-stone-400 text-xs sm:text-sm mt-2 leading-relaxed" x-text="modalProduct.description"></p>
 
+                                <!-- Extras / Add-ons Section -->
+                                <div class="mt-6 border-t border-[#2a2731] pt-4" x-show="extras.length > 0">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <div class="flex items-center gap-2">
+                                            <i data-lucide="sparkles" class="w-4 h-4 text-[#b08d57]"></i>
+                                            <span class="text-xs uppercase font-bold text-white tracking-wider">Select Extras & Add-ons</span>
+                                        </div>
+                                        <span class="text-[11px] text-stone-500">Optional</span>
+                                    </div>
+
+                                    <div class="space-y-2.5">
+                                        <template x-for="extra in extras" :key="extra.id">
+                                            <div class="flex items-center justify-between p-3 rounded-xl bg-[#0f0e13] border border-[#2a2731] hover:border-[#b08d57]/40 transition">
+                                                <div class="min-w-0 pr-2">
+                                                    <p class="text-xs sm:text-sm font-semibold text-white truncate" x-text="extra.name"></p>
+                                                    <p class="text-[11px] text-[#b08d57] font-bold mt-0.5" x-text="'+ $' + extra.price.toFixed(2) + ' each'"></p>
+                                                </div>
+
+                                                <div class="flex items-center gap-2 bg-[#14131a] border border-[#2a2731] rounded-lg p-1 shrink-0">
+                                                    <button @click="decrementExtra(extra.id)"
+                                                        class="w-6 h-6 rounded bg-[#1e1c25] hover:bg-[#2a2731] text-white font-bold flex items-center justify-center text-xs transition active:scale-95">-</button>
+                                                    
+                                                    <span class="text-white font-bold w-5 text-center text-xs" x-text="getExtraQty(extra.id)"></span>
+                                                    
+                                                    <button @click="incrementExtra(extra.id)"
+                                                        class="w-6 h-6 rounded bg-[#1e1c25] hover:bg-[#b08d57] hover:text-[#0f0e13] text-white font-bold flex items-center justify-center text-xs transition active:scale-95">+</button>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+
+                                <!-- Item Quantity Stepper -->
                                 <div class="mt-5 flex items-center justify-between border-t border-[#2a2731] pt-4">
-                                    <span class="text-xs uppercase font-semibold text-stone-400 tracking-wider">Quantity</span>
+                                    <span class="text-xs uppercase font-semibold text-stone-400 tracking-wider">Order Quantity</span>
                                     <div class="flex items-center gap-3 bg-[#0f0e13] border border-[#2a2731] rounded-xl p-1">
                                         <button @click="modalQty = Math.max(1, modalQty - 1)"
                                             class="w-8 h-8 rounded-lg bg-[#1e1c25] hover:bg-[#2a2731] text-white font-bold flex items-center justify-center transition">-</button>
@@ -214,20 +253,22 @@
                                     </div>
                                 </div>
 
+                                <!-- Special Instructions -->
                                 <div class="mt-4">
                                     <label class="block text-xs uppercase font-semibold text-stone-400 tracking-wider mb-2">Special Instructions</label>
                                     <textarea x-model="modalNote" placeholder="e.g. No onions, sauce on the side..." rows="2"
                                         class="cd-input w-full bg-[#0f0e13] border border-[#2a2731] rounded-xl px-3.5 py-2.5 text-sm text-white placeholder:text-stone-600 focus:outline-none transition"></textarea>
                                 </div>
 
+                                <!-- Action Buttons -->
                                 <div class="flex gap-3 mt-6">
                                     <button @click="closeModal()"
                                         class="w-1/3 bg-[#1e1c25] hover:bg-[#2a2731] text-white text-sm font-semibold rounded-xl py-3 transition">Cancel</button>
                                     <button @click="addToCartFromModal()"
-                                        class="w-2/3 bg-[#b08d57] hover:bg-[#c9a36b] text-[#0f0e13] text-sm font-bold rounded-xl py-3 transition flex items-center justify-center gap-2">
+                                        class="w-2/3 bg-[#b08d57] hover:bg-[#c9a36b] text-[#0f0e13] text-sm font-bold rounded-xl py-3 transition flex items-center justify-center gap-2 shadow-lg shadow-[#b08d57]/10">
                                         <span>Add to Cart</span>
                                         <span class="font-normal opacity-50">|</span>
-                                        <span x-text="'$' + (modalProduct.price * modalQty).toFixed(2)"></span>
+                                        <span x-text="'$' + modalTotalPrice.toFixed(2)"></span>
                                     </button>
                                 </div>
                             </div>
@@ -250,11 +291,12 @@
                     </div>
 
                     <div class="space-y-3 max-h-40 sm:max-h-48 overflow-y-auto my-4 pr-1 custom-scroll">
-                        <template x-for="item in $store.cart.items" :key="item.id + item.note">
-                            <div class="flex justify-between items-center text-sm py-1">
+                        <template x-for="item in $store.cart.items" :key="item.id + (item.note || '') + (item.extrasText || '')">
+                            <div class="flex justify-between items-start text-sm py-1.5 border-b border-[#1e1c25]/60 last:border-0">
                                 <div class="min-w-0 pr-4">
                                     <span class="text-white font-medium block truncate text-xs sm:text-sm" x-text="item.qty + 'x ' + item.name"></span>
-                                    <span x-show="item.note" class="text-stone-500 text-[11px] truncate block" x-text="item.note"></span>
+                                    <span x-show="item.extrasText" class="text-[#b08d57] text-[11px] block mt-0.5" x-text="item.extrasText"></span>
+                                    <span x-show="item.note" class="text-stone-500 text-[11px] truncate block" x-text="'Note: ' + item.note"></span>
                                 </div>
                                 <span class="text-stone-300 font-bold whitespace-nowrap text-xs sm:text-sm" x-text="'$' + (item.price * item.qty).toFixed(2)"></span>
                             </div>
@@ -353,7 +395,7 @@
 
             <!-- Cart Items Scroll List -->
             <div class="flex-1 overflow-y-auto p-4 space-y-3 custom-scroll">
-                <template x-for="item in $store.cart.items" :key="item.id + item.note">
+                <template x-for="item in $store.cart.items" :key="item.id + (item.note || '') + (item.extrasText || '')">
                     <div class="bg-[#14131a] border border-[#2a2731] rounded-xl p-3 flex gap-3 items-center">
                         <img :src="item.image" class="w-14 h-14 object-cover rounded-lg bg-[#0f0e13] shrink-0">
                         <div class="flex-1 min-w-0">
@@ -363,7 +405,8 @@
                                     <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                                 </button>
                             </div>
-                            <p x-show="item.note" class="text-stone-500 text-[11px] truncate mt-0.5" x-text="item.note"></p>
+                            <p x-show="item.extrasText" class="text-[#b08d57] text-[11px] truncate mt-0.5" x-text="item.extrasText"></p>
+                            <p x-show="item.note" class="text-stone-500 text-[11px] truncate mt-0.5" x-text="'Note: ' + item.note"></p>
 
                             <div class="flex items-center justify-between mt-2.5">
                                 <div class="flex items-center gap-1.5 bg-[#0f0e13] border border-[#2a2731] rounded-lg px-1.5 py-0.5">
@@ -422,7 +465,7 @@
                 <p class="text-stone-500 text-xs sm:text-sm mt-1">Manage saved locations for one-click checkout</p>
             </div>
 
-            <!-- New Address Form (Clean layout without outer card) -->
+            <!-- New Address Form -->
             <div class="mb-8 sm:mb-10 pb-6 sm:pb-8 border-b border-[#2a2731]">
                 <h3 class="text-base font-bold text-white mb-4 flex items-center gap-2">
                     <i data-lucide="plus-circle" class="w-4 h-4 text-[#b08d57]"></i>
@@ -515,12 +558,28 @@
         Alpine.store('cart', {
             items: JSON.parse(localStorage.getItem('cafe_cart') || '[]'),
 
-            add(product, qty, note) {
-                const existing = this.items.find(i => i.id === product.id && i.note === note);
+            add(product, qty, note, customPrice, extrasText) {
+                const effectivePrice = customPrice !== undefined ? customPrice : product.price;
+                const existing = this.items.find(i => 
+                    i.id === product.id && 
+                    i.note === note && 
+                    (i.extrasText || '') === (extrasText || '') &&
+                    Math.abs(i.price - effectivePrice) < 0.001
+                );
+
                 if (existing) {
                     existing.qty += qty;
                 } else {
-                    this.items.push({ id: product.id, name: product.name, price: product.price, image: product.image, qty, note });
+                    this.items.push({ 
+                        id: product.id, 
+                        name: product.name, 
+                        price: effectivePrice, 
+                        basePrice: product.price,
+                        image: product.image, 
+                        qty, 
+                        note: note || '',
+                        extrasText: extrasText || ''
+                    });
                 }
                 this.persist();
                 this.refreshIcons();
@@ -620,21 +679,28 @@
     function menuApp() {
         return {
             categories: [],
-            activeCategory: 'Food',
+            activeCategory: 'All',
             products: [],
+            extras: [],
             modalProduct: null,
             modalQty: 1,
             modalNote: '',
+            selectedExtras: {},
             showConfirm: false,
             placingOrder: false,
             orderError: '',
 
             init() {
-                this.categories = window.MENU_DATA.categories;
-                this.products = window.MENU_DATA.products;
-                if (this.categories.length && !this.categories.includes('Food')) {
+                this.categories = window.MENU_DATA.categories || [];
+                this.products = window.MENU_DATA.products || [];
+                this.extras = window.MENU_DATA.extras || [];
+
+                if (this.categories.includes('All')) {
+                    this.activeCategory = 'All';
+                } else if (this.categories.length > 0) {
                     this.activeCategory = this.categories[0];
                 }
+
                 document.addEventListener('open-confirm', () => {
                     this.showConfirm = true;
                     setTimeout(() => lucide.createIcons(), 50);
@@ -645,6 +711,9 @@
             },
 
             get visibleProducts() {
+                if (this.activeCategory === 'All') {
+                    return this.products;
+                }
                 return this.products.filter(p => p.category === this.activeCategory);
             },
 
@@ -652,13 +721,55 @@
                 this.modalProduct = product;
                 this.modalQty = 1;
                 this.modalNote = '';
+                this.selectedExtras = {};
+                this.extras.forEach(e => {
+                    this.selectedExtras[e.id] = 0;
+                });
                 setTimeout(() => lucide.createIcons(), 50);
             },
             closeModal() {
                 this.modalProduct = null;
             },
+
+            incrementExtra(id) {
+                this.selectedExtras[id] = (this.selectedExtras[id] || 0) + 1;
+            },
+            decrementExtra(id) {
+                if (this.selectedExtras[id] && this.selectedExtras[id] > 0) {
+                    this.selectedExtras[id]--;
+                }
+            },
+            getExtraQty(id) {
+                return this.selectedExtras[id] || 0;
+            },
+
+            get modalExtrasUnitTotal() {
+                return this.extras.reduce((sum, extra) => {
+                    return sum + (extra.price * (this.selectedExtras[extra.id] || 0));
+                }, 0);
+            },
+
+            get modalTotalPrice() {
+                if (!this.modalProduct) return 0;
+                return (this.modalProduct.price + this.modalExtrasUnitTotal) * this.modalQty;
+            },
+
             addToCartFromModal() {
-                this.$store.cart.add(this.modalProduct, this.modalQty, this.modalNote);
+                const chosenExtras = this.extras.filter(e => (this.selectedExtras[e.id] || 0) > 0);
+                let extrasText = '';
+                if (chosenExtras.length > 0) {
+                    extrasText = 'Extras: ' + chosenExtras.map(e => `${e.name} (x${this.selectedExtras[e.id]})`).join(', ');
+                }
+
+                const calculatedUnitPrice = this.modalProduct.price + this.modalExtrasUnitTotal;
+
+                this.$store.cart.add(
+                    this.modalProduct,
+                    this.modalQty,
+                    this.modalNote,
+                    calculatedUnitPrice,
+                    extrasText
+                );
                 this.closeModal();
             },
 
@@ -674,11 +785,18 @@
                             'Accept': 'application/json',
                         },
                         body: JSON.stringify({
-                            items: this.$store.cart.items.map(c => ({
-                                product_id: c.id,
-                                quantity: c.qty,
-                                special_note: c.note,
-                            })),
+                            items: this.$store.cart.items.map(c => {
+                                let noteCombined = c.note || '';
+                                if (c.extrasText) {
+                                    noteCombined = noteCombined ? `${c.extrasText} | Note: ${noteCombined}` : c.extrasText;
+                                }
+                                return {
+                                    product_id: c.id,
+                                    quantity: c.qty,
+                                    special_note: noteCombined,
+                                    custom_price: c.price,
+                                };
+                            }),
                             saved_location_id: this.$store.addresses.selectedId,
                         }),
                     });
