@@ -455,7 +455,6 @@ function showSection(target) {
     navLinks.forEach(l => l.classList.remove('active'));
     document.querySelectorAll(`.nav-link[data-target="${target}"]`).forEach(l => l.classList.add('active'));
     
-    // Auto-close drawer on mobile when item selected
     closeMobileSidebar();
     
     setTimeout(() => lucide.createIcons(), 50);
