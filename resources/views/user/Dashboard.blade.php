@@ -11,6 +11,11 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Leaflet Maps CSS & JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
         [x-cloak] { display: none !important; }
@@ -22,6 +27,7 @@
         .side-link:hover { color: #f5f5f4; background: #1e1c25; }
         .side-link.active { background: #b08d57; color: #0f0e13; font-weight: 700; }
         .cd-input:focus { border-color: #b08d57; box-shadow: 0 0 0 3px rgba(176, 141, 87, 0.18); }
+        .leaflet-container { background: #0f0e13 !important; }
     </style>
 </head>
 <body class="bg-[#0f0e13] text-stone-200 h-screen overflow-hidden selection:bg-[#b08d57] selection:text-[#0f0e13]" x-data="{ mobileNavOpen: false, mobileCartOpen: false }">
@@ -38,7 +44,6 @@
      class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 max-w-sm w-[calc(100%-2rem)] sm:w-96 bg-[#14131a]/95 border border-[#b08d57]/60 rounded-2xl shadow-2xl overflow-hidden backdrop-blur-xl">
      
     <div class="p-4 flex items-start gap-3.5 relative">
-        <!-- Glowing Pulse Icon -->
         <div class="w-10 h-10 rounded-xl bg-[#b08d57]/15 border border-[#b08d57]/30 flex items-center justify-center text-[#b08d57] shrink-0 shadow-lg shadow-[#b08d57]/20 relative">
             <span class="absolute -top-1 -right-1 flex h-3 w-3">
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#b08d57] opacity-75"></span>
@@ -55,7 +60,6 @@
             <p class="text-xs text-stone-400 mt-1 leading-relaxed" x-text="$store.toast.message"></p>
         </div>
 
-        <!-- Close Button -->
         <button @click="$store.toast.hide()" class="text-stone-500 hover:text-white transition p-1 rounded-lg hover:bg-[#1e1c25]">
             <i data-lucide="x" class="w-4 h-4"></i>
         </button>
@@ -71,7 +75,6 @@
 <!-- Mobile Top Navigation Bar (Visible on screens < lg) -->
 <header class="lg:hidden bg-[#0f0e13] border-b border-[#1e1c25] px-4 py-3 flex items-center justify-between z-30 shrink-0">
     <div class="flex items-center gap-3">
-        <!-- Hamburger Button -->
         <button @click="mobileNavOpen = true; $nextTick(() => lucide.createIcons())" class="p-2 -ml-2 rounded-xl text-stone-400 hover:text-white hover:bg-[#1e1c25] transition" aria-label="Open Navigation">
             <i data-lucide="menu" class="w-6 h-6"></i>
         </button>
@@ -84,7 +87,6 @@
         </div>
     </div>
 
-    <!-- Mobile Cart Drawer Toggle Button -->
     <button @click="mobileCartOpen = true; $nextTick(() => lucide.createIcons())" class="relative p-2 rounded-xl text-stone-300 hover:text-white hover:bg-[#1e1c25] transition flex items-center gap-1.5" aria-label="Open Cart">
         <i data-lucide="shopping-bag" class="w-5 h-5 text-[#b08d57]"></i>
         <span x-show="$store.cart.count > 0" class="bg-[#b08d57] text-[#0f0e13] text-[11px] font-black rounded-full px-1.5 py-0.2" x-text="$store.cart.count"></span>
@@ -111,7 +113,6 @@
         :class="mobileNavOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
         class="fixed lg:static top-0 left-0 bottom-0 w-72 lg:w-64 bg-[#0f0e13] border-r border-[#1e1c25] flex flex-col shrink-0 justify-between z-50 lg:z-20 transition-transform duration-300 ease-in-out">
         <div>
-            <!-- Brand Header & Close Button (Mobile) -->
             <div class="p-5 sm:p-6 border-b border-[#1e1c25] flex items-center justify-between">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-xl bg-[#b08d57] flex items-center justify-center text-[#0f0e13]">
@@ -123,13 +124,11 @@
                     </div>
                 </div>
 
-                <!-- X Close Button for Mobile -->
                 <button @click="mobileNavOpen = false" class="lg:hidden p-1.5 rounded-xl text-stone-400 hover:text-white hover:bg-[#1e1c25] transition" aria-label="Close Navigation">
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
 
-            <!-- Navigation Links -->
             <nav class="p-4 space-y-1.5">
                 <button data-target="menu" @click="mobileNavOpen = false" class="side-link w-full text-left px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-3">
                     <i data-lucide="layout-grid" class="w-4 h-4"></i>
@@ -382,7 +381,7 @@
                 </div>
             </div>
 
-            <!-- Floating Mobile Cart Bar (When Cart Has Items on Mobile) -->
+            <!-- Floating Mobile Cart Bar -->
             <div x-show="$store.cart.count > 0"
                  x-cloak
                  class="fixed bottom-4 left-4 right-4 lg:hidden z-30">
@@ -415,12 +414,11 @@
              class="fixed inset-0 bg-black/80 backdrop-blur-sm z-40 lg:hidden">
         </div>
 
-        <!-- Cart Sidebar / Drawer (Desktop Static + Mobile Drawer) -->
+        <!-- Cart Sidebar / Drawer -->
         <aside
             :class="mobileCartOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'"
             class="fixed lg:static top-0 right-0 bottom-0 w-80 sm:w-96 lg:w-80 xl:w-96 bg-[#0f0e13] border-l border-[#1e1c25] flex flex-col shrink-0 justify-between z-50 lg:z-10 transition-transform duration-300 ease-in-out">
 
-            <!-- Cart Header -->
             <div class="p-5 sm:p-6 border-b border-[#1e1c25] flex items-center justify-between">
                 <div class="flex items-center gap-2">
                     <i data-lucide="shopping-bag" class="w-5 h-5 text-[#b08d57]"></i>
@@ -428,14 +426,12 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <span class="text-xs bg-[#1e1c25] text-stone-400 px-2.5 py-1 rounded-full font-bold" x-text="$store.cart.count + ' items'"></span>
-                    <!-- Close button for mobile cart drawer -->
                     <button @click="mobileCartOpen = false" class="lg:hidden p-1.5 rounded-xl text-stone-400 hover:text-white hover:bg-[#1e1c25] transition" aria-label="Close Cart">
                         <i data-lucide="x" class="w-5 h-5"></i>
                     </button>
                 </div>
             </div>
 
-            <!-- Cart Items Scroll List -->
             <div class="flex-1 overflow-y-auto p-4 space-y-3 custom-scroll">
                 <template x-for="item in $store.cart.items" :key="item.id + (item.note || '') + (item.extrasText || '')">
                     <div class="bg-[#14131a] border border-[#2a2731] rounded-xl p-3 flex gap-3 items-center">
@@ -471,7 +467,6 @@
                 </div>
             </div>
 
-            <!-- Cart Footer -->
             <div class="border-t border-[#1e1c25] p-4 sm:p-5 bg-[#0f0e13] space-y-3">
                 <div class="space-y-1.5 text-xs">
                     <div class="flex justify-between text-stone-400">
@@ -500,11 +495,11 @@
     </div>
 
     <!-- SECTION: Delivery Addresses -->
-    <div id="section-address" class="page-section hidden flex-1 overflow-y-auto p-4 sm:p-8 lg:p-12 custom-scroll bg-[#14131a]/40 w-full" x-data="addressApp()">
+    <div id="section-address" class="page-section hidden flex-1 overflow-y-auto p-4 sm:p-8 lg:p-12 custom-scroll bg-[#14131a]/40 w-full" x-data="addressApp()" x-init="init()">
         <div class="max-w-3xl mx-auto pb-16">
             <div class="mb-6 sm:mb-8">
                 <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Delivery Addresses</h1>
-                <p class="text-stone-500 text-xs sm:text-sm mt-1">Manage saved locations for one-click checkout</p>
+                <p class="text-stone-500 text-xs sm:text-sm mt-1">Manage saved locations for quick, accurate delivery</p>
             </div>
 
             <!-- New Address Form -->
@@ -516,12 +511,16 @@
 
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Address Label</label>
-                        <input type="text" x-model="form.name" placeholder="e.g. Home, Office, Dorm"
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Address Label <span class="text-[#b08d57]">*</span></label>
+                        <input type="text" x-model="form.name" placeholder="e.g. Home, Office, Dormitory"
                             class="cd-input w-full bg-[#0f0e13] border border-[#2a2731] rounded-xl px-4 py-2.5 text-sm text-white placeholder-stone-600 focus:outline-none transition">
                     </div>
+                    
                     <div>
-                        <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Street Address / Landmark</label>
+                        <div class="flex items-center justify-between mb-2">
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400">Street Address / Landmark</label>
+                            <span class="text-[11px] text-stone-500">Auto-filled if GPS detected</span>
+                        </div>
                         <input type="text" x-model="form.address" placeholder="Street name, apartment, building no."
                             class="cd-input w-full bg-[#0f0e13] border border-[#2a2731] rounded-xl px-4 py-2.5 text-sm text-white placeholder-stone-600 focus:outline-none transition">
                     </div>
@@ -529,14 +528,23 @@
                     <div class="pt-1">
                         <button @click="useCurrentLocation()" :disabled="capturing"
                             type="button"
-                            class="inline-flex items-center gap-2 text-xs font-semibold text-[#b08d57] hover:text-[#c9a36b] disabled:opacity-50 transition">
+                            class="inline-flex items-center gap-2 text-xs font-bold text-[#b08d57] hover:text-[#c9a36b] bg-[#b08d57]/10 hover:bg-[#b08d57]/20 border border-[#b08d57]/30 px-3.5 py-2 rounded-xl disabled:opacity-50 transition">
                             <i data-lucide="crosshair" class="w-4 h-4"></i>
                             <span x-show="!capturing">Detect Current GPS Location</span>
-                            <span x-show="capturing">Acquiring coordinates...</span>
+                            <span x-show="capturing">Acquiring coordinates &amp; address...</span>
                         </button>
-                        <p x-show="form.latitude" class="text-xs text-stone-400 mt-1">
-                            Coordinates captured: <span class="text-stone-200 font-mono" x-text="form.latitude?.toFixed(5) + ', ' + form.longitude?.toFixed(5)"></span>
-                        </p>
+                    </div>
+
+                    <!-- Live Detected Location Map Preview -->
+                    <div x-show="form.latitude" x-cloak class="mt-4 rounded-2xl overflow-hidden border border-[#b08d57]/40 bg-[#0f0e13] shadow-xl">
+                        <div class="px-4 py-2.5 bg-[#14131a] border-b border-[#2a2731] flex items-center justify-between">
+                            <div class="flex items-center gap-2 text-xs font-semibold text-white">
+                                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                                <span>Detected Location Pin</span>
+                            </div>
+                            <span class="text-[11px] font-mono text-[#b08d57]" x-text="Number(form.latitude).toFixed(5) + ', ' + Number(form.longitude).toFixed(5)"></span>
+                        </div>
+                        <div id="detect-preview-map" class="w-full h-44 sm:h-52 z-10"></div>
                     </div>
 
                     <!-- Form Error -->
@@ -544,7 +552,8 @@
 
                     <div class="pt-2">
                         <button @click="save()" :disabled="saving"
-                            class="bg-[#b08d57] hover:bg-[#c9a36b] disabled:opacity-50 text-[#0f0e13] text-sm font-bold rounded-xl px-6 py-2.5 transition">
+                            class="bg-[#b08d57] hover:bg-[#c9a36b] disabled:opacity-50 text-[#0f0e13] text-sm font-bold rounded-xl px-6 py-2.5 transition flex items-center gap-2 shadow-lg shadow-[#b08d57]/10">
+                            <i data-lucide="save" class="w-4 h-4"></i>
                             <span x-show="!saving">Save Address</span>
                             <span x-show="saving">Saving...</span>
                         </button>
@@ -558,28 +567,49 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <template x-for="addr in $store.addresses.list" :key="addr.id">
-                        <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl p-5 flex flex-col justify-between">
-                            <div>
-                                <div class="flex items-center justify-between">
-                                    <h4 class="text-white font-bold text-base" x-text="addr.name"></h4>
-                                    <span class="text-[10px] bg-[#1e1c25] text-stone-400 uppercase font-bold px-2 py-0.5 rounded">Saved</span>
-                                </div>
-                                <p class="text-stone-400 text-sm mt-1" x-text="addr.address || 'No street text provided'"></p>
-                                <p x-show="addr.latitude" class="text-stone-500 font-mono text-xs mt-2">
-                                    GPS: <span x-text="Number(addr.latitude).toFixed(4)"></span>, <span x-text="Number(addr.longitude).toFixed(4)"></span>
-                                </p>
+                        <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl overflow-hidden flex flex-col justify-between shadow-lg hover:border-[#b08d57]/50 transition">
+                            
+                            <!-- Saved Location Map Banner Preview -->
+                            <div x-show="addr.latitude && addr.longitude" 
+                                 x-init="$nextTick(() => initSavedMiniMap($el, addr.latitude, addr.longitude))"
+                                 class="w-full h-32 bg-[#0f0e13] border-b border-[#2a2731] relative z-0">
                             </div>
-                            <div class="mt-4 pt-4 border-t border-[#2a2731]/80 flex justify-end">
-                                <button @click="remove(addr.id)" class="text-rose-400 hover:text-rose-300 text-xs font-semibold transition flex items-center gap-1">
-                                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                                    <span>Delete</span>
-                                </button>
+
+                            <div class="p-5 flex-1 flex flex-col justify-between">
+                                <div>
+                                    <div class="flex items-center justify-between">
+                                        <h4 class="text-white font-bold text-base" x-text="addr.name"></h4>
+                                        <span class="text-[10px] bg-[#1e1c25] text-stone-400 uppercase font-bold px-2 py-0.5 rounded">Saved</span>
+                                    </div>
+                                    <p class="text-stone-400 text-xs sm:text-sm mt-1.5 line-clamp-2" x-text="addr.address || 'GPS Coordinate Location'"></p>
+                                    
+                                    <div x-show="addr.latitude" class="flex items-center justify-between mt-3 pt-2 border-t border-[#2a2731]/60 text-[11px]">
+                                        <span class="text-stone-500 font-mono">
+                                            GPS: <span x-text="Number(addr.latitude).toFixed(4) + ', ' + Number(addr.longitude).toFixed(4)"></span>
+                                        </span>
+                                        <a :href="`https://www.google.com/maps?q=${addr.latitude},${addr.longitude}`" target="_blank" class="text-[#b08d57] hover:underline flex items-center gap-1 font-semibold">
+                                            <span>Open Map</span>
+                                            <i data-lucide="external-link" class="w-3 h-3"></i>
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div class="mt-4 pt-3 border-t border-[#2a2731]/80 flex justify-end">
+                                    <button @click="remove(addr.id)" class="text-rose-400 hover:text-rose-300 text-xs font-semibold transition flex items-center gap-1">
+                                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                        <span>Delete</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </template>
 
-                    <div x-show="$store.addresses.list.length === 0" class="col-span-full py-10 text-center bg-[#14131a]/40 border border-[#2a2731]/50 rounded-2xl">
-                        <p class="text-stone-500 text-sm">No saved locations found. Add your first address above.</p>
+                    <div x-show="$store.addresses.list.length === 0" class="col-span-full py-12 text-center bg-[#14131a]/40 border border-[#2a2731]/50 rounded-2xl">
+                        <div class="w-12 h-12 rounded-full bg-[#14131a] border border-[#2a2731] flex items-center justify-center mx-auto text-stone-500 mb-3">
+                            <i data-lucide="map-pin-off" class="w-6 h-6"></i>
+                        </div>
+                        <p class="text-stone-400 font-medium text-sm">No saved locations found.</p>
+                        <p class="text-stone-600 text-xs mt-1">Use the form above to add your home or current GPS location.</p>
                     </div>
                 </div>
             </div>
@@ -608,8 +638,8 @@
             interval: null,
 
             trigger(title, message, orderId) {
-                this.title = title || 'Order Placed!';
-                this.message = message || 'Your order has been sent to the kitchen.';
+                this.title = title || 'Success!';
+                this.message = message || 'Action completed successfully.';
                 this.orderId = orderId ? '#' + orderId : '';
                 this.progress = 100;
                 this.visible = true;
@@ -757,6 +787,13 @@
         document.getElementById('section-' + target).classList.remove('hidden');
         sideLinks.forEach(l => l.classList.remove('active'));
         document.querySelectorAll(`.side-link[data-target="${target}"]`).forEach(l => l.classList.add('active'));
+        
+        // Refresh leaflet maps size when address tab opens
+        if (target === 'address') {
+            setTimeout(() => {
+                window.dispatchEvent(new Event('resize'));
+            }, 100);
+        }
         setTimeout(() => lucide.createIcons(), 50);
     }
 
@@ -901,7 +938,6 @@
                     this.showConfirm = false;
                     this.placingOrder = false;
                     
-                    // Trigger Beautiful Animated Toast Notification
                     this.$store.toast.trigger(
                         'Order Placed Successfully!',
                         'Your meal is confirmed and has been sent to our kitchen team.',
@@ -921,46 +957,164 @@
             capturing: false,
             saving: false,
             error: '',
+            detectMap: null,
+            detectMarker: null,
 
-            useCurrentLocation() {
+            init() {},
+
+            initDetectMap(lat, lng) {
+                this.$nextTick(() => {
+                    const container = document.getElementById('detect-preview-map');
+                    if (!container) return;
+
+                    if (!this.detectMap) {
+                        this.detectMap = L.map(container, {
+                            zoomControl: true,
+                            attributionControl: false
+                        }).setView([lat, lng], 16);
+
+                        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                            maxZoom: 19
+                        }).addTo(this.detectMap);
+
+                        const goldIcon = L.divIcon({
+                            className: 'custom-gold-marker',
+                            html: `<div style="background-color:#b08d57; width:16px; height:16px; border-radius:50%; border:3px solid #0f0e13; box-shadow:0 0 14px rgba(176,141,87,0.9);"></div>`,
+                            iconSize: [16, 16],
+                            iconAnchor: [8, 8]
+                        });
+
+                        this.detectMarker = L.marker([lat, lng], { icon: goldIcon }).addTo(this.detectMap);
+                    } else {
+                        this.detectMap.setView([lat, lng], 16);
+                        this.detectMarker.setLatLng([lat, lng]);
+                        this.detectMap.invalidateSize();
+                    }
+                });
+            },
+
+            async useCurrentLocation() {
                 if (!navigator.geolocation) {
-                    this.error = 'Location not supported on this device.';
+                    this.error = 'Location is not supported on this browser or device.';
                     return;
                 }
                 this.capturing = true;
                 this.error = '';
+
                 navigator.geolocation.getCurrentPosition(
-                    (pos) => {
-                        this.form.latitude = pos.coords.latitude;
-                        this.form.longitude = pos.coords.longitude;
+                    async (pos) => {
+                        const lat = pos.coords.latitude;
+                        const lng = pos.coords.longitude;
+                        this.form.latitude = lat;
+                        this.form.longitude = lng;
+
+                        // Try reverse geocoding to automatically populate human-readable address
+                        try {
+                            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`, {
+                                headers: { 'Accept': 'application/json' }
+                            });
+                            const data = await res.json();
+                            if (data && data.display_name && !this.form.address) {
+                                this.form.address = data.display_name.split(',').slice(0, 3).join(',').trim();
+                            }
+                        } catch (err) {
+                            // Fallback if network is slow/offline
+                        }
+
+                        // If address input is still empty, provide clean coordinates placeholder
+                        if (!this.form.address) {
+                            this.form.address = `GPS (${lat.toFixed(5)}, ${lng.toFixed(5)})`;
+                        }
+
                         this.capturing = false;
+                        this.initDetectMap(lat, lng);
+                        setTimeout(() => lucide.createIcons(), 50);
                     },
                     (err) => {
-                        this.error = 'Could not get your location: ' + err.message;
+                        this.error = 'Could not acquire GPS location: ' + err.message;
                         this.capturing = false;
-                    }
+                    },
+                    { enableHighAccuracy: true, timeout: 10000 }
                 );
             },
 
             async save() {
-                if (!this.form.name) {
-                    this.error = 'Give this address a name.';
+                if (!this.form.name || !this.form.name.trim()) {
+                    this.error = 'Please provide an address label (e.g. Home, Office).';
                     return;
                 }
+
+                // Fix SQLite NOT NULL violation: Fallback address if empty
+                let addressText = this.form.address ? this.form.address.trim() : '';
+                if (!addressText) {
+                    if (this.form.latitude && this.form.longitude) {
+                        addressText = `GPS Location (${Number(this.form.latitude).toFixed(5)}, ${Number(this.form.longitude).toFixed(5)})`;
+                    } else {
+                        addressText = this.form.name.trim();
+                    }
+                }
+
                 this.saving = true;
                 this.error = '';
-                const result = await this.$store.addresses.add(this.form);
+
+                const payload = {
+                    name: this.form.name.trim(),
+                    address: addressText,
+                    latitude: this.form.latitude,
+                    longitude: this.form.longitude
+                };
+
+                const result = await this.$store.addresses.add(payload);
                 this.saving = false;
+
                 if (!result.ok) {
                     this.error = result.data.message || 'Could not save address.';
                     return;
                 }
+
+                // Reset form & state
                 this.form = { name: '', address: '', latitude: null, longitude: null };
+                if (this.detectMap) {
+                    this.detectMap.remove();
+                    this.detectMap = null;
+                }
+
+                this.$store.toast.trigger(
+                    'Address Saved!',
+                    'Your address has been saved successfully for quick checkout.'
+                );
             },
 
             async remove(id) {
                 await this.$store.addresses.remove(id);
             },
+
+            initSavedMiniMap(el, lat, lng) {
+                if (!lat || !lng || el._leaflet_id) return;
+                try {
+                    const miniMap = L.map(el, {
+                        zoomControl: false,
+                        attributionControl: false,
+                        dragging: false,
+                        scrollWheelZoom: false,
+                        doubleClickZoom: false,
+                        touchZoom: false
+                    }).setView([lat, lng], 15);
+
+                    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                        maxZoom: 19
+                    }).addTo(miniMap);
+
+                    const goldIcon = L.divIcon({
+                        className: 'custom-gold-pin',
+                        html: `<div style="background-color:#b08d57; width:12px; height:12px; border-radius:50%; border:2px solid #0f0e13; box-shadow:0 0 10px rgba(176,141,87,0.9);"></div>`,
+                        iconSize: [12, 12],
+                        iconAnchor: [6, 6]
+                    });
+
+                    L.marker([lat, lng], { icon: goldIcon }).addTo(miniMap);
+                } catch (e) {}
+            }
         };
     }
 
