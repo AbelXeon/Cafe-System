@@ -28,10 +28,11 @@
         .side-link.active { background: #b08d57; color: #0f0e13; font-weight: 700; }
         .cd-input:focus { border-color: #b08d57; box-shadow: 0 0 0 3px rgba(176, 141, 87, 0.18); }
         
-        /* Clean Dark-Mode Map Filter (Zero API Key & Zero Watermarks) */
+        /* High-speed Dark-Mode Map Filter */
         .leaflet-container { background: #0f0e13 !important; }
         .leaflet-tile {
             filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.75) !important;
+            will-change: transform;
         }
         .leaflet-control-attribution { display: none !important; }
     </style>
@@ -71,14 +72,13 @@
         </button>
     </div>
 
-    <!-- Countdown Progress Bar -->
     <div class="w-full bg-[#1e1c25] h-1 overflow-hidden">
         <div class="bg-gradient-to-r from-[#b08d57] to-[#e4cb9d] h-full transition-all duration-75 ease-linear"
              :style="`width: ${$store.toast.progress}%`"></div>
     </div>
 </div>
 
-<!-- Mobile Top Navigation Bar (Visible on screens < lg) -->
+<!-- Mobile Top Navigation Bar -->
 <header class="lg:hidden bg-[#0f0e13] border-b border-[#1e1c25] px-4 py-3 flex items-center justify-between z-30 shrink-0">
     <div class="flex items-center gap-3">
         <button @click="mobileNavOpen = true; $nextTick(() => lucide.createIcons())" class="p-2 -ml-2 rounded-xl text-stone-400 hover:text-white hover:bg-[#1e1c25] transition" aria-label="Open Navigation">
@@ -114,7 +114,7 @@
          class="fixed inset-0 bg-black/80 backdrop-blur-sm z-40 lg:hidden">
     </div>
 
-    <!-- Sidebar Navigation (Desktop + Mobile Slide-over) -->
+    <!-- Sidebar Navigation -->
     <aside
         :class="mobileNavOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
         class="fixed lg:static top-0 left-0 bottom-0 w-72 lg:w-64 bg-[#0f0e13] border-r border-[#1e1c25] flex flex-col shrink-0 justify-between z-50 lg:z-20 transition-transform duration-300 ease-in-out">
@@ -135,14 +135,27 @@
                 </button>
             </div>
 
+            <!-- Navigation Links -->
             <nav class="p-4 space-y-1.5">
                 <button data-target="menu" @click="mobileNavOpen = false" class="side-link w-full text-left px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-3">
                     <i data-lucide="layout-grid" class="w-4 h-4"></i>
                     <span>Menu Catalog</span>
                 </button>
+                <button data-target="orders" @click="mobileNavOpen = false" class="side-link w-full text-left px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-3">
+                    <i data-lucide="receipt" class="w-4 h-4"></i>
+                    <span>My Orders</span>
+                </button>
                 <button data-target="address" @click="mobileNavOpen = false" class="side-link w-full text-left px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-3">
                     <i data-lucide="map-pin" class="w-4 h-4"></i>
                     <span>My Addresses</span>
+                </button>
+                <button data-target="chat" @click="mobileNavOpen = false" class="side-link w-full text-left px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-3">
+                    <i data-lucide="message-square" class="w-4 h-4"></i>
+                    <span>Chat Support</span>
+                </button>
+                <button data-target="profile" @click="mobileNavOpen = false" class="side-link w-full text-left px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-3">
+                    <i data-lucide="user-cog" class="w-4 h-4"></i>
+                    <span>Account Settings</span>
                 </button>
             </nav>
         </div>
@@ -420,7 +433,7 @@
              class="fixed inset-0 bg-black/80 backdrop-blur-sm z-40 lg:hidden">
         </div>
 
-        <!-- Cart Sidebar / Drawer -->
+        <!-- Cart Sidebar -->
         <aside
             :class="mobileCartOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'"
             class="fixed lg:static top-0 right-0 bottom-0 w-80 sm:w-96 lg:w-80 xl:w-96 bg-[#0f0e13] border-l border-[#1e1c25] flex flex-col shrink-0 justify-between z-50 lg:z-10 transition-transform duration-300 ease-in-out">
@@ -500,6 +513,27 @@
         </aside>
     </div>
 
+    <!-- SECTION: My Orders (Coming Soon) -->
+    <div id="section-orders" class="page-section hidden flex-1 overflow-y-auto p-4 sm:p-8 lg:p-12 custom-scroll bg-[#14131a]/40 w-full">
+        <div class="max-w-3xl mx-auto pb-16">
+            <div class="mb-6 sm:mb-8">
+                <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">My Orders</h1>
+                <p class="text-stone-500 text-xs sm:text-sm mt-1">Track active deliveries and view your past food orders</p>
+            </div>
+
+            <div class="py-16 px-6 text-center bg-[#14131a] border border-[#2a2731] rounded-2xl shadow-xl flex flex-col items-center justify-center">
+                <div class="w-16 h-16 rounded-2xl bg-[#b08d57]/10 border border-[#b08d57]/20 flex items-center justify-center text-[#b08d57] mb-4 shadow-lg shadow-[#b08d57]/10">
+                    <i data-lucide="receipt" class="w-8 h-8"></i>
+                </div>
+                <span class="text-[11px] font-bold uppercase tracking-wider bg-[#b08d57]/20 text-[#b08d57] px-3 py-1 rounded-full border border-[#b08d57]/30 mb-3">Coming Soon</span>
+                <h3 class="text-xl font-bold text-white mb-2">Order History & Live Tracking</h3>
+                <p class="text-stone-400 text-xs sm:text-sm max-w-md mx-auto leading-relaxed">
+                    We're building an interactive order status tracker so you can watch your food move from kitchen preparation to your door in real time!
+                </p>
+            </div>
+        </div>
+    </div>
+
     <!-- SECTION: Delivery Addresses -->
     <div id="section-address" class="page-section hidden flex-1 overflow-y-auto p-4 sm:p-8 lg:p-12 custom-scroll bg-[#14131a]/40 w-full" x-data="addressApp()" x-init="init()">
         <div class="max-w-3xl mx-auto pb-16">
@@ -537,7 +571,7 @@
                             class="inline-flex items-center gap-2 text-xs font-bold text-[#b08d57] hover:text-[#c9a36b] bg-[#b08d57]/10 hover:bg-[#b08d57]/20 border border-[#b08d57]/30 px-3.5 py-2 rounded-xl disabled:opacity-50 transition">
                             <i data-lucide="crosshair" class="w-4 h-4"></i>
                             <span x-show="!capturing">Detect Current GPS Location</span>
-                            <span x-show="capturing">Acquiring coordinates &amp; address...</span>
+                            <span x-show="capturing">Acquiring coordinates...</span>
                         </button>
                     </div>
 
@@ -622,6 +656,48 @@
         </div>
     </div>
 
+    <!-- SECTION: Chat Support (Coming Soon) -->
+    <div id="section-chat" class="page-section hidden flex-1 overflow-y-auto p-4 sm:p-8 lg:p-12 custom-scroll bg-[#14131a]/40 w-full">
+        <div class="max-w-3xl mx-auto pb-16">
+            <div class="mb-6 sm:mb-8">
+                <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Chat Support</h1>
+                <p class="text-stone-500 text-xs sm:text-sm mt-1">Direct communication with our kitchen and delivery team</p>
+            </div>
+
+            <div class="py-16 px-6 text-center bg-[#14131a] border border-[#2a2731] rounded-2xl shadow-xl flex flex-col items-center justify-center">
+                <div class="w-16 h-16 rounded-2xl bg-[#b08d57]/10 border border-[#b08d57]/20 flex items-center justify-center text-[#b08d57] mb-4 shadow-lg shadow-[#b08d57]/10">
+                    <i data-lucide="message-square" class="w-8 h-8"></i>
+                </div>
+                <span class="text-[11px] font-bold uppercase tracking-wider bg-[#b08d57]/20 text-[#b08d57] px-3 py-1 rounded-full border border-[#b08d57]/30 mb-3">Coming Soon</span>
+                <h3 class="text-xl font-bold text-white mb-2">Real-time Order Chat</h3>
+                <p class="text-stone-400 text-xs sm:text-sm max-w-md mx-auto leading-relaxed">
+                    Chat directly with your assigned delivery driver or kitchen staff for quick updates and meal instructions!
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION: Account Settings (Coming Soon) -->
+    <div id="section-profile" class="page-section hidden flex-1 overflow-y-auto p-4 sm:p-8 lg:p-12 custom-scroll bg-[#14131a]/40 w-full">
+        <div class="max-w-3xl mx-auto pb-16">
+            <div class="mb-6 sm:mb-8">
+                <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Account Settings</h1>
+                <p class="text-stone-500 text-xs sm:text-sm mt-1">Manage your customer profile, preferences, and password</p>
+            </div>
+
+            <div class="py-16 px-6 text-center bg-[#14131a] border border-[#2a2731] rounded-2xl shadow-xl flex flex-col items-center justify-center">
+                <div class="w-16 h-16 rounded-2xl bg-[#b08d57]/10 border border-[#b08d57]/20 flex items-center justify-center text-[#b08d57] mb-4 shadow-lg shadow-[#b08d57]/10">
+                    <i data-lucide="user-cog" class="w-8 h-8"></i>
+                </div>
+                <span class="text-[11px] font-bold uppercase tracking-wider bg-[#b08d57]/20 text-[#b08d57] px-3 py-1 rounded-full border border-[#b08d57]/30 mb-3">Coming Soon</span>
+                <h3 class="text-xl font-bold text-white mb-2">Profile & Security Settings</h3>
+                <p class="text-stone-400 text-xs sm:text-sm max-w-md mx-auto leading-relaxed">
+                    Soon you'll be able to edit your personal information, update your phone number, and customize your notification preferences here.
+                </p>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <script>
@@ -633,7 +709,6 @@
     const CSRF_TOKEN = document.querySelector('meta[name="csrf-token"]').content;
 
     document.addEventListener('alpine:init', () => {
-        // Global Animated Toast Store
         Alpine.store('toast', {
             visible: false,
             title: '',
@@ -678,7 +753,6 @@
             }
         });
 
-        // Cart Store
         Alpine.store('cart', {
             items: JSON.parse(localStorage.getItem('cafe_cart') || '[]'),
 
@@ -744,7 +818,6 @@
             },
         });
 
-        // Addresses Store
         Alpine.store('addresses', {
             list: window.ADDRESSES_DATA || [],
             selectedId: null,
@@ -790,14 +863,16 @@
 
     function showSection(target) {
         sections.forEach(s => s.classList.add('hidden'));
-        document.getElementById('section-' + target).classList.remove('hidden');
+        const targetSec = document.getElementById('section-' + target);
+        if (targetSec) targetSec.classList.remove('hidden');
+        
         sideLinks.forEach(l => l.classList.remove('active'));
         document.querySelectorAll(`.side-link[data-target="${target}"]`).forEach(l => l.classList.add('active'));
         
         if (target === 'address') {
             setTimeout(() => {
                 window.dispatchEvent(new Event('resize'));
-            }, 100);
+            }, 80);
         }
         setTimeout(() => lucide.createIcons(), 50);
     }
@@ -975,11 +1050,14 @@
                     if (!this.detectMap) {
                         this.detectMap = L.map(container, {
                             zoomControl: true,
-                            attributionControl: false
+                            attributionControl: false,
+                            fadeAnimation: false,
+                            preferCanvas: true
                         }).setView([lat, lng], 16);
 
-                        // Free OpenStreetMap Tiles with Dark CSS Filter (No API Key Required)
-                        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        // Fast multi-shard tile layer
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            subdomains: ['a', 'b', 'c'],
                             maxZoom: 19
                         }).addTo(this.detectMap);
 
@@ -992,7 +1070,7 @@
 
                         this.detectMarker = L.marker([lat, lng], { icon: goldIcon }).addTo(this.detectMap);
                     } else {
-                        this.detectMap.setView([lat, lng], 16);
+                        this.detectMap.setView([lat, lng], 16, { animate: false });
                         this.detectMarker.setLatLng([lat, lng]);
                         this.detectMap.invalidateSize();
                     }
@@ -1008,35 +1086,37 @@
                 this.error = '';
 
                 navigator.geolocation.getCurrentPosition(
-                    async (pos) => {
+                    (pos) => {
                         const lat = pos.coords.latitude;
                         const lng = pos.coords.longitude;
                         this.form.latitude = lat;
                         this.form.longitude = lng;
+                        this.capturing = false;
 
-                        try {
-                            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`, {
-                                headers: { 'Accept': 'application/json' }
-                            });
-                            const data = await res.json();
-                            if (data && data.display_name && !this.form.address) {
-                                this.form.address = data.display_name.split(',').slice(0, 3).join(',').trim();
-                            }
-                        } catch (err) {}
-
+                        // 1. Render Map INSTANTLY
+                        this.initDetectMap(lat, lng);
                         if (!this.form.address) {
                             this.form.address = `GPS (${lat.toFixed(5)}, ${lng.toFixed(5)})`;
                         }
-
-                        this.capturing = false;
-                        this.initDetectMap(lat, lng);
                         setTimeout(() => lucide.createIcons(), 50);
+
+                        // 2. Asynchronous background reverse geocoding (doesn't block map rendering)
+                        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`, {
+                            headers: { 'Accept': 'application/json' }
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data && data.display_name) {
+                                this.form.address = data.display_name.split(',').slice(0, 3).join(',').trim();
+                            }
+                        })
+                        .catch(() => {});
                     },
                     (err) => {
                         this.error = 'Could not acquire GPS location: ' + err.message;
                         this.capturing = false;
                     },
-                    { enableHighAccuracy: true, timeout: 10000 }
+                    { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
                 );
             },
 
@@ -1098,11 +1178,13 @@
                         dragging: false,
                         scrollWheelZoom: false,
                         doubleClickZoom: false,
-                        touchZoom: false
+                        touchZoom: false,
+                        fadeAnimation: false,
+                        preferCanvas: true
                     }).setView([lat, lng], 15);
 
-                    // Free OpenStreetMap Tiles with Dark CSS Filter (No API Key Required)
-                    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        subdomains: ['a', 'b', 'c'],
                         maxZoom: 19
                     }).addTo(miniMap);
 
