@@ -56,13 +56,13 @@ class DeliveryController extends Controller
         }
 
         $order->update([
-            'status'           => 'out_for_delivery',
+            'status'            => 'out_for_delivery',
             'delivery_user_id'  => auth()->id(),
         ]);
 
         return response()->json([
             'message' => 'Order accepted. Head to the kitchen to pick it up.',
-            'order'   => $this->formatOrder($order->fresh(['items', 'customer', 'savedLocation'])),
+            'order'   => $this->formatOrder($order->fresh(['items', 'user'])),
         ]);
     }
 
@@ -87,7 +87,7 @@ class DeliveryController extends Controller
 
         return response()->json([
             'message' => 'Order marked as delivered. Nice work!',
-            'order'   => $this->formatOrder($order->fresh(['items', 'customer', 'savedLocation'])),
+            'order'   => $this->formatOrder($order->fresh(['items', 'user'])),
         ]);
     }
 
@@ -104,12 +104,12 @@ class DeliveryController extends Controller
 
     /**
      * Base query for the orders this driver should see.
-     * NOTE: adjust relationship/column names (customer, savedLocation, delivery_user_id)
+     * NOTE: adjust relationship/column names (user, delivery_user_id)
      *       to match your actual Order model.
      */
     protected function driverOrders($driverId)
     {
-        return Order::with(['items', 'customer', 'savedLocation'])
+        return Order::with(['items', 'user'])
             ->where(function ($q) use ($driverId) {
                 $q->where('status', 'ready')
                   ->orWhere(function ($q2) use ($driverId) {
@@ -122,13 +122,12 @@ class DeliveryController extends Controller
 
     /**
      * Shape an order for the frontend.
-     * NOTE: adjust the relationship accessors to match your models
-     * (e.g. customer vs user, savedLocation vs location, etc.).
+     * Delivery address/lat/lng live directly on the orders table,
+     * so no location relation is needed here.
      */
     protected function formatOrder($order)
     {
-        $location = $order->savedLocation ?? $order->location ?? null;
-        $customer = $order->customer ?? $order->user ?? null;
+        $customer = $order->user;
 
         return [
             'id'             => $order->id,
@@ -144,11 +143,10 @@ class DeliveryController extends Controller
             'customer_phone' => $customer?->phone ?? null,
             'customer_email' => $customer?->email ?? null,
 
-            // delivery destination
-            'address_name'   => $location?->name ?? null,
-            'address_text'   => $location?->address ?? null,
-            'latitude'       => $location?->latitude ?? null,
-            'longitude'       => $location?->longitude ?? null,
+            // delivery destination (columns on the order itself)
+            'address_text'   => $order->delivery_address,
+            'latitude'       => $order->latitude,
+            'longitude'      => $order->longitude,
 
             'items' => $order->items->map(fn ($i) => [
                 'id'           => $i->id,
