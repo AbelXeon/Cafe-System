@@ -593,7 +593,7 @@
                     <div>
                         <div class="flex items-center justify-between mb-2">
                             <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400">Street Address / Landmark</label>
-                            <span class="text-[11px] text-stone-500" x-text="resolvingAddress ? 'Looking up street address...' : 'Auto-filled on map pin drag / click'"></span>
+                            <span class="text-[11px] text-stone-500" x-text="resolvingAddress ? 'Looking up exact street address...' : 'Auto-filled on map pin drag / click'"></span>
                         </div>
                         <input type="text" x-model="form.address" placeholder="Street name, apartment, building no."
                             class="cd-input w-full bg-[#0f0e13] border border-[#2a2731] rounded-xl px-4 py-2.5 text-sm text-white placeholder-stone-600 focus:outline-none transition">
@@ -606,7 +606,7 @@
                             class="inline-flex items-center gap-2 text-xs font-bold text-[#b08d57] hover:text-[#c9a36b] bg-[#b08d57]/10 hover:bg-[#b08d57]/20 border border-[#b08d57]/30 px-3.5 py-2.5 rounded-xl disabled:opacity-50 transition">
                             <i data-lucide="crosshair" class="w-4 h-4"></i>
                             <span x-show="!capturing">Detect Current GPS Location</span>
-                            <span x-show="capturing">Acquiring coordinates...</span>
+                            <span x-show="capturing" x-text="gpsStatusText || 'Locking GPS sat signal...'"></span>
                         </button>
 
                         <button @click="openManualPicker()"
@@ -615,6 +615,8 @@
                             <i data-lucide="map" class="w-4 h-4 text-[#b08d57]"></i>
                             <span>Choose / Drag on Map</span>
                         </button>
+
+                        <span x-show="accuracy" class="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-lg" x-text="'Precision: ±' + Math.round(accuracy) + 'm'"></span>
                     </div>
 
                     <!-- Live Draggable Location Map Preview -->
@@ -623,11 +625,11 @@
                             <div class="flex items-center gap-2 text-xs font-semibold text-white">
                                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                                 <span>Delivery Pin Location</span>
-                                <span class="text-[11px] text-stone-400 font-normal">(Drag pin or click map to move)</span>
+                                <span class="text-[11px] text-stone-400 font-normal">(Drag pin or click map to adjust exact spot)</span>
                             </div>
-                            <span class="text-[11px] font-mono text-[#b08d57]" x-text="Number(form.latitude).toFixed(5) + ', ' + Number(form.longitude).toFixed(5)"></span>
+                            <span class="text-[11px] font-mono text-[#b08d57]" x-text="Number(form.latitude).toFixed(6) + ', ' + Number(form.longitude).toFixed(6)"></span>
                         </div>
-                        <div id="detect-preview-map" class="w-full h-52 sm:h-64 z-10"></div>
+                        <div id="detect-preview-map" class="w-full h-56 sm:h-72 z-10"></div>
                     </div>
 
                     <!-- Form Error -->
@@ -668,7 +670,7 @@
                                     
                                     <div x-show="addr.latitude" class="flex items-center justify-between mt-3 pt-2 border-t border-[#2a2731]/60 text-[11px]">
                                         <span class="text-stone-500 font-mono">
-                                            GPS: <span x-text="Number(addr.latitude).toFixed(4) + ', ' + Number(addr.longitude).toFixed(4)"></span>
+                                            GPS: <span x-text="Number(addr.latitude).toFixed(5) + ', ' + Number(addr.longitude).toFixed(5)"></span>
                                         </span>
                                         <a :href="`https://www.google.com/maps?q=${addr.latitude},${addr.longitude}`" target="_blank" class="text-[#b08d57] hover:underline flex items-center gap-1 font-semibold">
                                             <span>Open Map</span>
@@ -1080,22 +1082,25 @@
             capturing: false,
             saving: false,
             resolvingAddress: false,
+            accuracy: null,
+            gpsStatusText: '',
             error: '',
             detectMap: null,
             detectMarker: null,
+            accuracyCircle: null,
 
             init() {},
 
-            initDetectMap(lat, lng) {
+            initDetectMap(lat, lng, accuracy = null) {
                 this.$nextTick(() => {
                     const container = document.getElementById('detect-preview-map');
                     if (!container) return;
 
                     const goldIcon = L.divIcon({
                         className: 'custom-gold-marker',
-                        html: `<div style="background-color:#b08d57; width:18px; height:18px; border-radius:50%; border:3px solid #0f0e13; box-shadow:0 0 16px rgba(176,141,87,1);"></div>`,
-                        iconSize: [18, 18],
-                        iconAnchor: [9, 9]
+                        html: `<div style="background-color:#b08d57; width:20px; height:20px; border-radius:50%; border:3px solid #0f0e13; box-shadow:0 0 18px rgba(176,141,87,1); display:flex; align-items:center; justify-content:center;"><div style="width:6px; height:6px; background-color:#ffffff; border-radius:50%;"></div></div>`,
+                        iconSize: [20, 20],
+                        iconAnchor: [10, 10]
                     });
 
                     if (!this.detectMap) {
@@ -1104,14 +1109,26 @@
                             attributionControl: false,
                             fadeAnimation: false,
                             preferCanvas: true
-                        }).setView([lat, lng], 16);
+                        }).setView([lat, lng], 18);
 
                         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                             subdomains: ['a', 'b', 'c'],
                             maxZoom: 19
                         }).addTo(this.detectMap);
 
-                        // Draggable Marker for precise location pin placement
+                        // Precision accuracy radius circle
+                        if (accuracy) {
+                            this.accuracyCircle = L.circle([lat, lng], {
+                                radius: accuracy,
+                                color: '#b08d57',
+                                fillColor: '#b08d57',
+                                fillOpacity: 0.15,
+                                weight: 1.5,
+                                dashArray: '4, 4'
+                            }).addTo(this.detectMap);
+                        }
+
+                        // Draggable Marker for pinpoint delivery location
                         this.detectMarker = L.marker([lat, lng], {
                             icon: goldIcon,
                             draggable: true,
@@ -1121,17 +1138,44 @@
                         // Listen for marker drag drop
                         this.detectMarker.on('dragend', (e) => {
                             const pos = e.target.getLatLng();
+                            if (this.accuracyCircle) {
+                                this.detectMap.removeLayer(this.accuracyCircle);
+                                this.accuracyCircle = null;
+                            }
+                            this.accuracy = null;
                             this.updateLocationByCoordinates(pos.lat, pos.lng, false);
                         });
 
                         // Click anywhere on map to reposition pin
                         this.detectMap.on('click', (e) => {
                             this.detectMarker.setLatLng(e.latlng);
+                            if (this.accuracyCircle) {
+                                this.detectMap.removeLayer(this.accuracyCircle);
+                                this.accuracyCircle = null;
+                            }
+                            this.accuracy = null;
                             this.updateLocationByCoordinates(e.latlng.lat, e.latlng.lng, false);
                         });
                     } else {
-                        this.detectMap.setView([lat, lng], 16, { animate: false });
+                        this.detectMap.setView([lat, lng], 18, { animate: true });
                         this.detectMarker.setLatLng([lat, lng]);
+
+                        if (accuracy) {
+                            if (this.accuracyCircle) {
+                                this.accuracyCircle.setLatLng([lat, lng]);
+                                this.accuracyCircle.setRadius(accuracy);
+                            } else {
+                                this.accuracyCircle = L.circle([lat, lng], {
+                                    radius: accuracy,
+                                    color: '#b08d57',
+                                    fillColor: '#b08d57',
+                                    fillOpacity: 0.15,
+                                    weight: 1.5,
+                                    dashArray: '4, 4'
+                                }).addTo(this.detectMap);
+                            }
+                        }
+
                         this.detectMap.invalidateSize();
                     }
                 });
@@ -1144,24 +1188,42 @@
                 this.error = '';
 
                 if (centerMap && this.detectMap) {
-                    this.detectMap.setView([lat, lng], 16);
+                    this.detectMap.setView([lat, lng], 18);
                     this.detectMarker.setLatLng([lat, lng]);
                 }
 
-                // Reverse geocoding lookup with Nominatim
+                // Reverse geocoding lookup with high-detail Nominatim parameters
                 try {
-                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`, {
+                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`, {
                         headers: { 'Accept': 'application/json' }
                     });
                     const data = await res.json();
-                    if (data && data.display_name) {
-                        this.form.address = data.display_name.split(',').slice(0, 3).join(',').trim();
+                    
+                    if (data && data.address) {
+                        const a = data.address;
+                        const road = a.road || a.pedestrian || a.street || a.neighbourhood || '';
+                        const houseNumber = a.house_number || '';
+                        const suburb = a.suburb || a.district || a.city_district || '';
+                        const city = a.city || a.town || a.village || a.county || '';
+                        
+                        const parts = [];
+                        if (houseNumber && road) {
+                            parts.push(`${houseNumber} ${road}`);
+                        } else if (road) {
+                            parts.push(road);
+                        }
+                        if (suburb && suburb !== road) parts.push(suburb);
+                        if (city && city !== suburb) parts.push(city);
+
+                        this.form.address = parts.length > 0 ? parts.join(', ') : (data.display_name.split(',').slice(0, 3).join(', ').trim());
+                    } else if (data && data.display_name) {
+                        this.form.address = data.display_name.split(',').slice(0, 3).join(', ').trim();
                     } else {
-                        this.form.address = `GPS (${lat.toFixed(5)}, ${lng.toFixed(5)})`;
+                        this.form.address = `GPS (${Number(lat).toFixed(6)}, ${Number(lng).toFixed(6)})`;
                     }
                 } catch (e) {
                     if (!this.form.address) {
-                        this.form.address = `GPS (${lat.toFixed(5)}, ${lng.toFixed(5)})`;
+                        this.form.address = `GPS (${Number(lat).toFixed(6)}, ${Number(lng).toFixed(6)})`;
                     }
                 } finally {
                     this.resolvingAddress = false;
@@ -1170,13 +1232,11 @@
             },
 
             openManualPicker() {
-                // If coordinates are already present, center on them
                 if (this.form.latitude && this.form.longitude) {
                     this.initDetectMap(this.form.latitude, this.form.longitude);
                     return;
                 }
 
-                // If user has saved locations, default to the first one
                 if (this.$store.addresses.list.length > 0 && this.$store.addresses.list[0].latitude) {
                     const lat = parseFloat(this.$store.addresses.list[0].latitude);
                     const lng = parseFloat(this.$store.addresses.list[0].longitude);
@@ -1187,7 +1247,6 @@
                     return;
                 }
 
-                // Default fallback coordinates (or try browser geolocation)
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(
                         (pos) => {
@@ -1195,11 +1254,10 @@
                             const lng = pos.coords.longitude;
                             this.form.latitude = lat;
                             this.form.longitude = lng;
-                            this.initDetectMap(lat, lng);
+                            this.initDetectMap(lat, lng, pos.coords.accuracy);
                             this.updateLocationByCoordinates(lat, lng, false);
                         },
                         () => {
-                            // Standard default center fallback
                             const defaultLat = 40.7128;
                             const defaultLng = -74.0060;
                             this.form.latitude = defaultLat;
@@ -1207,7 +1265,7 @@
                             this.initDetectMap(defaultLat, defaultLng);
                             this.updateLocationByCoordinates(defaultLat, defaultLng, false);
                         },
-                        { timeout: 4000 }
+                        { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
                     );
                 } else {
                     const defaultLat = 40.7128;
@@ -1219,30 +1277,105 @@
                 }
             },
 
+            /**
+             * Multi-stage High Precision GPS Acquisition
+             * Uses watchPosition + zero cache to stream the best accuracy satellite fix
+             */
             async useCurrentLocation() {
                 if (!navigator.geolocation) {
                     this.error = 'Location is not supported on this browser or device.';
                     return;
                 }
+
                 this.capturing = true;
                 this.error = '';
+                this.gpsStatusText = 'Locking GPS satellites...';
 
-                navigator.geolocation.getCurrentPosition(
-                    (pos) => {
-                        const lat = pos.coords.latitude;
-                        const lng = pos.coords.longitude;
-                        this.capturing = false;
+                let bestCoords = null;
+                let watchId = null;
+                let sampleCount = 0;
 
-                        // Render Map
-                        this.initDetectMap(lat, lng);
-                        this.updateLocationByCoordinates(lat, lng, true);
-                    },
-                    (err) => {
-                        this.error = 'Could not acquire GPS location: ' + err.message;
-                        this.capturing = false;
-                    },
-                    { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
-                );
+                const finishTracking = () => {
+                    if (watchId !== null) {
+                        navigator.geolocation.clearWatch(watchId);
+                        watchId = null;
+                    }
+                    this.capturing = false;
+                    this.gpsStatusText = '';
+
+                    if (bestCoords) {
+                        this.accuracy = bestCoords.accuracy;
+                        this.initDetectMap(bestCoords.latitude, bestCoords.longitude, bestCoords.accuracy);
+                        this.updateLocationByCoordinates(bestCoords.latitude, bestCoords.longitude, true);
+                    }
+                };
+
+                const fallbackTimeout = setTimeout(() => {
+                    finishTracking();
+                }, 7500);
+
+                try {
+                    watchId = navigator.geolocation.watchPosition(
+                        (pos) => {
+                            sampleCount++;
+                            const acc = pos.coords.accuracy;
+
+                            // Update to better (lower accuracy radius) reading
+                            if (!bestCoords || acc < bestCoords.accuracy) {
+                                bestCoords = {
+                                    latitude: pos.coords.latitude,
+                                    longitude: pos.coords.longitude,
+                                    accuracy: acc
+                                };
+                                this.accuracy = acc;
+                                this.gpsStatusText = `Calibrating GPS (±${Math.round(acc)}m)...`;
+                                
+                                // Render immediately on first fix
+                                this.initDetectMap(bestCoords.latitude, bestCoords.longitude, acc);
+                                this.updateLocationByCoordinates(bestCoords.latitude, bestCoords.longitude, false);
+                            }
+
+                            // If accuracy is tight (<15m) or after sufficient samples, lock it in
+                            if (acc <= 15 || sampleCount >= 4) {
+                                clearTimeout(fallbackTimeout);
+                                finishTracking();
+                            }
+                        },
+                        (err) => {
+                            clearTimeout(fallbackTimeout);
+                            if (watchId !== null) {
+                                navigator.geolocation.clearWatch(watchId);
+                                watchId = null;
+                            }
+
+                            // If we already have a previous best fix, use it despite the timeout/error
+                            if (bestCoords) {
+                                finishTracking();
+                                return;
+                            }
+
+                            this.capturing = false;
+                            this.gpsStatusText = '';
+                            if (err.code === 1) {
+                                this.error = 'Location access was denied. Please allow location permissions in your browser settings.';
+                            } else if (err.code === 2) {
+                                this.error = 'Position unavailable. Make sure your device location / GPS is turned on.';
+                            } else {
+                                this.error = 'Could not acquire exact GPS location: ' + err.message;
+                            }
+                        },
+                        {
+                            enableHighAccuracy: true,
+                            maximumAge: 0,
+                            timeout: 10000
+                        }
+                    );
+                } catch (e) {
+                    clearTimeout(fallbackTimeout);
+                    this.capturing = false;
+                    this.gpsStatusText = '';
+                    this.error = 'GPS detection failed: ' + e.message;
+                }
             },
 
             async save() {
@@ -1254,7 +1387,7 @@
                 let addressText = this.form.address ? this.form.address.trim() : '';
                 if (!addressText) {
                     if (this.form.latitude && this.form.longitude) {
-                        addressText = `GPS Location (${Number(this.form.latitude).toFixed(5)}, ${Number(this.form.longitude).toFixed(5)})`;
+                        addressText = `GPS Location (${Number(this.form.latitude).toFixed(6)}, ${Number(this.form.longitude).toFixed(6)})`;
                     } else {
                         addressText = this.form.name.trim();
                     }
@@ -1279,6 +1412,7 @@
                 }
 
                 this.form = { name: '', address: '', latitude: null, longitude: null };
+                this.accuracy = null;
                 if (this.detectMap) {
                     this.detectMap.remove();
                     this.detectMap = null;
@@ -1306,7 +1440,7 @@
                         touchZoom: false,
                         fadeAnimation: false,
                         preferCanvas: true
-                    }).setView([lat, lng], 15);
+                    }).setView([lat, lng], 16);
 
                     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                         subdomains: ['a', 'b', 'c'],
