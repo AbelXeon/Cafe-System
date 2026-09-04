@@ -41,6 +41,8 @@
             will-change: transform;
         }
         .leaflet-control-attribution { display: none !important; }
+        .custom-gold-marker { cursor: grab; }
+        .custom-gold-marker:active { cursor: grabbing; }
     </style>
 </head>
 <body class="bg-[#0f0e13] text-stone-200 h-screen overflow-hidden selection:bg-[#b08d57] selection:text-[#0f0e13]" x-data="{ mobileNavOpen: false, mobileCartOpen: false }">
@@ -204,7 +206,7 @@
 
         <main class="flex-1 overflow-y-auto custom-scroll pb-24 lg:pb-8 relative" x-data="menuApp()" x-init="init()">
 
-            <!-- STICKY TOP: Browse Menu & Category Filters Banner (FLUSH ZERO GAP) -->
+            <!-- STICKY TOP: Browse Menu & Category Filters Banner -->
             <div class="sticky top-0 z-20 bg-[#0f0e13]/98 backdrop-blur-xl border-b border-[#2a2731] px-4 sm:px-6 lg:px-8 py-4 sm:py-5 shadow-2xl shadow-black/60">
                 <div class="space-y-3 sm:space-y-4">
                     <div class="flex items-center justify-between">
@@ -545,7 +547,7 @@
         </aside>
     </div>
 
-    <!-- SECTION: My Orders (Coming Soon) -->
+    <!-- SECTION: My Orders -->
     <div id="section-orders" class="page-section hidden flex-1 overflow-y-auto p-4 sm:p-8 lg:p-12 custom-scroll bg-[#14131a]/40 w-full">
         <div class="max-w-3xl mx-auto pb-16">
             <div class="mb-6 sm:mb-8">
@@ -591,32 +593,41 @@
                     <div>
                         <div class="flex items-center justify-between mb-2">
                             <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400">Street Address / Landmark</label>
-                            <span class="text-[11px] text-stone-500">Auto-filled if GPS detected</span>
+                            <span class="text-[11px] text-stone-500" x-text="resolvingAddress ? 'Looking up street address...' : 'Auto-filled on map pin drag / click'"></span>
                         </div>
                         <input type="text" x-model="form.address" placeholder="Street name, apartment, building no."
                             class="cd-input w-full bg-[#0f0e13] border border-[#2a2731] rounded-xl px-4 py-2.5 text-sm text-white placeholder-stone-600 focus:outline-none transition">
                     </div>
 
-                    <div class="pt-1">
+                    <!-- Action Buttons for Location -->
+                    <div class="pt-1 flex flex-wrap gap-2.5 items-center">
                         <button @click="useCurrentLocation()" :disabled="capturing"
                             type="button"
-                            class="inline-flex items-center gap-2 text-xs font-bold text-[#b08d57] hover:text-[#c9a36b] bg-[#b08d57]/10 hover:bg-[#b08d57]/20 border border-[#b08d57]/30 px-3.5 py-2 rounded-xl disabled:opacity-50 transition">
+                            class="inline-flex items-center gap-2 text-xs font-bold text-[#b08d57] hover:text-[#c9a36b] bg-[#b08d57]/10 hover:bg-[#b08d57]/20 border border-[#b08d57]/30 px-3.5 py-2.5 rounded-xl disabled:opacity-50 transition">
                             <i data-lucide="crosshair" class="w-4 h-4"></i>
                             <span x-show="!capturing">Detect Current GPS Location</span>
                             <span x-show="capturing">Acquiring coordinates...</span>
                         </button>
+
+                        <button @click="openManualPicker()"
+                            type="button"
+                            class="inline-flex items-center gap-2 text-xs font-bold text-stone-200 hover:text-white bg-[#1e1c25] hover:bg-[#2a2731] border border-[#2a2731] hover:border-[#b08d57]/50 px-3.5 py-2.5 rounded-xl transition">
+                            <i data-lucide="map" class="w-4 h-4 text-[#b08d57]"></i>
+                            <span>Choose / Drag on Map</span>
+                        </button>
                     </div>
 
-                    <!-- Live Detected Location Map Preview -->
-                    <div x-show="form.latitude" x-cloak class="mt-4 rounded-2xl overflow-hidden border border-[#b08d57]/40 bg-[#0f0e13] shadow-xl">
-                        <div class="px-4 py-2.5 bg-[#14131a] border-b border-[#2a2731] flex items-center justify-between">
+                    <!-- Live Draggable Location Map Preview -->
+                    <div x-show="form.latitude !== null && form.longitude !== null" x-cloak class="mt-4 rounded-2xl overflow-hidden border border-[#b08d57]/40 bg-[#0f0e13] shadow-xl">
+                        <div class="px-4 py-2.5 bg-[#14131a] border-b border-[#2a2731] flex flex-wrap items-center justify-between gap-2">
                             <div class="flex items-center gap-2 text-xs font-semibold text-white">
                                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                                <span>Detected Location Pin</span>
+                                <span>Delivery Pin Location</span>
+                                <span class="text-[11px] text-stone-400 font-normal">(Drag pin or click map to move)</span>
                             </div>
                             <span class="text-[11px] font-mono text-[#b08d57]" x-text="Number(form.latitude).toFixed(5) + ', ' + Number(form.longitude).toFixed(5)"></span>
                         </div>
-                        <div id="detect-preview-map" class="w-full h-44 sm:h-52 z-10"></div>
+                        <div id="detect-preview-map" class="w-full h-52 sm:h-64 z-10"></div>
                     </div>
 
                     <!-- Form Error -->
@@ -688,7 +699,7 @@
         </div>
     </div>
 
-    <!-- SECTION: Chat Support (Coming Soon) -->
+    <!-- SECTION: Chat Support -->
     <div id="section-chat" class="page-section hidden flex-1 overflow-y-auto p-4 sm:p-8 lg:p-12 custom-scroll bg-[#14131a]/40 w-full">
         <div class="max-w-3xl mx-auto pb-16">
             <div class="mb-6 sm:mb-8">
@@ -709,7 +720,7 @@
         </div>
     </div>
 
-    <!-- SECTION: Account Settings (Coming Soon) -->
+    <!-- SECTION: Account Settings -->
     <div id="section-profile" class="page-section hidden flex-1 overflow-y-auto p-4 sm:p-8 lg:p-12 custom-scroll bg-[#14131a]/40 w-full">
         <div class="max-w-3xl mx-auto pb-16">
             <div class="mb-6 sm:mb-8">
@@ -1068,6 +1079,7 @@
             form: { name: '', address: '', latitude: null, longitude: null },
             capturing: false,
             saving: false,
+            resolvingAddress: false,
             error: '',
             detectMap: null,
             detectMarker: null,
@@ -1079,6 +1091,13 @@
                     const container = document.getElementById('detect-preview-map');
                     if (!container) return;
 
+                    const goldIcon = L.divIcon({
+                        className: 'custom-gold-marker',
+                        html: `<div style="background-color:#b08d57; width:18px; height:18px; border-radius:50%; border:3px solid #0f0e13; box-shadow:0 0 16px rgba(176,141,87,1);"></div>`,
+                        iconSize: [18, 18],
+                        iconAnchor: [9, 9]
+                    });
+
                     if (!this.detectMap) {
                         this.detectMap = L.map(container, {
                             zoomControl: true,
@@ -1087,26 +1106,117 @@
                             preferCanvas: true
                         }).setView([lat, lng], 16);
 
-                        // Fast multi-shard tile layer
                         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                             subdomains: ['a', 'b', 'c'],
                             maxZoom: 19
                         }).addTo(this.detectMap);
 
-                        const goldIcon = L.divIcon({
-                            className: 'custom-gold-marker',
-                            html: `<div style="background-color:#b08d57; width:16px; height:16px; border-radius:50%; border:3px solid #0f0e13; box-shadow:0 0 14px rgba(176,141,87,1);"></div>`,
-                            iconSize: [16, 16],
-                            iconAnchor: [8, 8]
+                        // Draggable Marker for precise location pin placement
+                        this.detectMarker = L.marker([lat, lng], {
+                            icon: goldIcon,
+                            draggable: true,
+                            autoPan: true
+                        }).addTo(this.detectMap);
+
+                        // Listen for marker drag drop
+                        this.detectMarker.on('dragend', (e) => {
+                            const pos = e.target.getLatLng();
+                            this.updateLocationByCoordinates(pos.lat, pos.lng, false);
                         });
 
-                        this.detectMarker = L.marker([lat, lng], { icon: goldIcon }).addTo(this.detectMap);
+                        // Click anywhere on map to reposition pin
+                        this.detectMap.on('click', (e) => {
+                            this.detectMarker.setLatLng(e.latlng);
+                            this.updateLocationByCoordinates(e.latlng.lat, e.latlng.lng, false);
+                        });
                     } else {
                         this.detectMap.setView([lat, lng], 16, { animate: false });
                         this.detectMarker.setLatLng([lat, lng]);
                         this.detectMap.invalidateSize();
                     }
                 });
+            },
+
+            async updateLocationByCoordinates(lat, lng, centerMap = true) {
+                this.form.latitude = lat;
+                this.form.longitude = lng;
+                this.resolvingAddress = true;
+                this.error = '';
+
+                if (centerMap && this.detectMap) {
+                    this.detectMap.setView([lat, lng], 16);
+                    this.detectMarker.setLatLng([lat, lng]);
+                }
+
+                // Reverse geocoding lookup with Nominatim
+                try {
+                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`, {
+                        headers: { 'Accept': 'application/json' }
+                    });
+                    const data = await res.json();
+                    if (data && data.display_name) {
+                        this.form.address = data.display_name.split(',').slice(0, 3).join(',').trim();
+                    } else {
+                        this.form.address = `GPS (${lat.toFixed(5)}, ${lng.toFixed(5)})`;
+                    }
+                } catch (e) {
+                    if (!this.form.address) {
+                        this.form.address = `GPS (${lat.toFixed(5)}, ${lng.toFixed(5)})`;
+                    }
+                } finally {
+                    this.resolvingAddress = false;
+                    setTimeout(() => lucide.createIcons(), 50);
+                }
+            },
+
+            openManualPicker() {
+                // If coordinates are already present, center on them
+                if (this.form.latitude && this.form.longitude) {
+                    this.initDetectMap(this.form.latitude, this.form.longitude);
+                    return;
+                }
+
+                // If user has saved locations, default to the first one
+                if (this.$store.addresses.list.length > 0 && this.$store.addresses.list[0].latitude) {
+                    const lat = parseFloat(this.$store.addresses.list[0].latitude);
+                    const lng = parseFloat(this.$store.addresses.list[0].longitude);
+                    this.form.latitude = lat;
+                    this.form.longitude = lng;
+                    this.initDetectMap(lat, lng);
+                    this.updateLocationByCoordinates(lat, lng, false);
+                    return;
+                }
+
+                // Default fallback coordinates (or try browser geolocation)
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        (pos) => {
+                            const lat = pos.coords.latitude;
+                            const lng = pos.coords.longitude;
+                            this.form.latitude = lat;
+                            this.form.longitude = lng;
+                            this.initDetectMap(lat, lng);
+                            this.updateLocationByCoordinates(lat, lng, false);
+                        },
+                        () => {
+                            // Standard default center fallback
+                            const defaultLat = 40.7128;
+                            const defaultLng = -74.0060;
+                            this.form.latitude = defaultLat;
+                            this.form.longitude = defaultLng;
+                            this.initDetectMap(defaultLat, defaultLng);
+                            this.updateLocationByCoordinates(defaultLat, defaultLng, false);
+                        },
+                        { timeout: 4000 }
+                    );
+                } else {
+                    const defaultLat = 40.7128;
+                    const defaultLng = -74.0060;
+                    this.form.latitude = defaultLat;
+                    this.form.longitude = defaultLng;
+                    this.initDetectMap(defaultLat, defaultLng);
+                    this.updateLocationByCoordinates(defaultLat, defaultLng, false);
+                }
             },
 
             async useCurrentLocation() {
@@ -1121,28 +1231,11 @@
                     (pos) => {
                         const lat = pos.coords.latitude;
                         const lng = pos.coords.longitude;
-                        this.form.latitude = lat;
-                        this.form.longitude = lng;
                         this.capturing = false;
 
-                        // 1. Render Map INSTANTLY
+                        // Render Map
                         this.initDetectMap(lat, lng);
-                        if (!this.form.address) {
-                            this.form.address = `GPS (${lat.toFixed(5)}, ${lng.toFixed(5)})`;
-                        }
-                        setTimeout(() => lucide.createIcons(), 50);
-
-                        // 2. Asynchronous background reverse geocoding
-                        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`, {
-                            headers: { 'Accept': 'application/json' }
-                        })
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data && data.display_name) {
-                                this.form.address = data.display_name.split(',').slice(0, 3).join(',').trim();
-                            }
-                        })
-                        .catch(() => {});
+                        this.updateLocationByCoordinates(lat, lng, true);
                     },
                     (err) => {
                         this.error = 'Could not acquire GPS location: ' + err.message;
