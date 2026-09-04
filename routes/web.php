@@ -33,7 +33,12 @@ Route::get('/register', [AuthController::class, 'showRegister'])->name('register
 Route::post('/register', [AuthController::class, 'register'])->name('register.submit');
 
 
-
+// Staff / Kitchen Routes
+Route::middleware(['auth', 'role:staff'])->prefix('staff')->name('staff.')->group(function () {
+    Route::get('/dashboard', [StaffController::class, 'dashboard'])->name('dashboard');
+    Route::get('/orders/live', [StaffController::class, 'getLiveOrders'])->name('orders.live');
+    Route::patch('/orders/{order}/status', [StaffController::class, 'updateStatus'])->name('orders.status');
+});
 
 Route::middleware(['auth', 'role:customer'])->prefix('user')->name('user.')->group(function () {
     Route::get('/dashboard', [UsersController::class, 'dashboard'])->name('dashboard');

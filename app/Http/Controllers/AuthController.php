@@ -53,6 +53,7 @@ class AuthController extends Controller
 
         return match ($role) {
             'admin' => redirect()->route('admin.dashboard'),
+            'staff'    => redirect()->route('staff.dashboard'),
             'customer' => redirect()->route('user.dashboard'),
             default => redirect()->route('login')->withErrors(['username' => 'No dashboard built for this role yet.']),
         };

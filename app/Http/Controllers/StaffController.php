@@ -2,49 +2,90 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Role;
-use App\Models\User;
+use App\Models\Order;
+use App\Models\OrderStatusHistory;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class StaffController extends Controller
 {
-    public function index()
+    public function dashboard()
     {
-        $staffRoleId = Role::where('name', 'staff')->value('id');
-        $staff = User::where('role_id', $staffRoleId)->latest()->get();
-
-        return view('admin.staff.index', compact('staff'));
+        $orders = $this->fetchFormattedOrders();
+        return view('staff.dashboard', compact('orders'));
     }
 
-    public function store(Request $request)
+    public function getLiveOrders()
     {
-        $data = $request->validate([
-            'fullname' => ['required', 'string', 'max:255'],
-            'username' => ['required', 'string', 'max:255', 'unique:users,username'],
-            'email' => ['nullable', 'email', 'unique:users,email'],
-            'phone' => ['nullable', 'string', 'max:20'],
-            'password' => ['required', 'string', 'min:6'],
+        $orders = $this->fetchFormattedOrders();
+        return response()->json([
+            'orders' => $orders,
+            'counts' => [
+                'pending'   => $orders->where('status', 'pending')->count(),
+                'preparing' => $orders->where('status', 'preparing')->count(),
+                'ready'     => $orders->where('status', 'ready')->count(),
+                'completed' => $orders->where('status', 'completed')->count(),
+            ]
         ]);
-
-        $staffRole = Role::where('name', 'staff')->firstOrFail();
-
-        User::create([
-            'role_id' => $staffRole->id,
-            'fullname' => $data['fullname'],
-            'username' => $data['username'],
-            'email' => $data['email'] ?? null,
-            'phone' => $data['phone'] ?? null,
-            'password' => Hash::make($data['password']),
-        ]);
-
-        return back()->with('success', 'Staff member created.');
     }
 
-    public function destroy(User $staff)
+    public function updateStatus(Request $request, Order $order)
     {
-        $staff->delete();
+        $validated = $request->validate([
+            'status' => 'required|in:pending,preparing,ready,completed,cancelled'
+        ]);
 
-        return back()->with('success', 'Staff member removed.');
+        $oldStatus = $order->status;
+        $order->status = $validated['status'];
+        $order->save();
+
+        OrderStatusHistory::create([
+            'order_id'   => $order->id,
+            'status'     => $validated['status'],
+            'changed_by' => Auth::id(),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => "Order #{$order->id} status changed from {$oldStatus} to {$order->status}.",
+            'order'   => $order
+        ]);
+    }
+
+    private function fetchFormattedOrders()
+    {
+        return Order::with(['user', 'items.product', 'items.extras'])
+            ->orderBy('created_at', 'desc')
+            ->take(60)
+            ->get()
+            ->map(function ($order) {
+                return [
+                    'id'               => $order->id,
+                    'customer_name'    => $order->user ? $order->user->fullname : 'Guest Customer',
+                    'customer_phone'   => $order->user ? $order->user->phone : null,
+                    'order_type'       => $order->order_type,
+                    'status'           => $order->status,
+                    'total_amount'     => (float) $order->total_amount,
+                    'delivery_address' => $order->delivery_address,
+                    'latitude'         => $order->latitude,
+                    'longitude'        => $order->longitude,
+                    'special_note'     => $order->special_note,
+                    'created_at'       => $order->created_at->format('h:i A'),
+                    'created_date'     => $order->created_at->format('M d, Y'),
+                    'time_ago'         => $order->created_at->diffForHumans(),
+                    'items_count'      => $order->items->sum('quantity'),
+                    'items'            => $order->items->map(function ($item) {
+                        return [
+                            'id'           => $item->id,
+                            'name'         => $item->product ? $item->product->name : 'Unknown Product',
+                            'image'        => $item->product && $item->product->image ? asset('storage/' . $item->product->image) : null,
+                            'quantity'     => $item->quantity,
+                            'unit_price'   => (float) $item->unit_price,
+                            'subtotal'     => (float) $item->subtotal,
+                            'special_note' => $item->special_note,
+                        ];
+                    })
+                ];
+            });
     }
 }
