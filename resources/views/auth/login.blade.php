@@ -16,7 +16,7 @@
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
-        body { font-family: 'Bebas Neue', sans-serif; }
+        body { font-family: 'M PLUS 1p', sans-serif; }
 
         /* Refined custom checkbox */
         .cd-check {
