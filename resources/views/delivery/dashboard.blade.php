@@ -258,7 +258,13 @@
                                           x-text="statusLabel(order.status)"></span>
                                 </div>
                                 <p class="text-xs text-stone-400 mt-1 flex items-center gap-2 flex-wrap min-w-0">
-                                    <span class="font-bold text-white truncate" x-text="order.customer_name"></span>
+                                    <!-- Pre-accept: hide customer name, just show it's a delivery -->
+                                    <template x-if="order.status === 'ready'">
+                                        <span class="font-bold text-amber-400">Delivery Available</span>
+                                    </template>
+                                    <template x-if="order.status !== 'ready'">
+                                        <span class="font-bold text-white truncate" x-text="order.customer_name"></span>
+                                    </template>
                                     <span>&bull;</span>
                                     <span x-text="order.created_at"></span>
                                     <span>&bull;</span>
@@ -271,61 +277,84 @@
                             </div>
                         </div>
 
-                        <!-- Customer + Destination info (only relevant once accepted or for ready) -->
-                        <div class="p-4 sm:p-5 space-y-3 border-b border-[#2a2731] bg-[#0f0e13]/40">
-
-                            <!-- Customer contact -->
-                            <div class="flex items-start gap-3">
-                                <div class="w-9 h-9 rounded-xl bg-[#1e1c25] border border-[#2a2731] flex items-center justify-center text-[#b08d57] shrink-0">
-                                    <i data-lucide="user" class="w-4 h-4"></i>
-                                </div>
-                                <div class="min-w-0 flex-1">
-                                    <p class="text-[10px] uppercase font-bold tracking-wider text-stone-500">Customer</p>
-                                    <p class="text-sm font-bold text-white truncate" x-text="order.customer_name"></p>
-                                    <div class="flex items-center gap-2 mt-1" x-show="order.customer_phone">
-                                        <i data-lucide="phone" class="w-3.5 h-3.5 text-stone-500"></i>
-                                        <a :href__="'tel:' + (order.customer_phone || '')"
-                                           class="text-xs font-semibold text-[#b08d57] hover:text-[#c9a36b] transition"
-                                           x-text="order.customer_phone"></a>
+                        <!-- ============================================= -->
+                        <!-- PRE-ACCEPT VIEW (status === 'ready')          -->
+                        <!-- Address only. No name, phone, items, notes.   -->
+                        <!-- ============================================= -->
+                        <template x-if="order.status === 'ready'">
+                            <div class="p-4 sm:p-5 border-b border-[#2a2731] bg-[#0f0e13]/40">
+                                <div class="flex items-start gap-3">
+                                    <div class="w-9 h-9 rounded-xl bg-[#1e1c25] border border-[#2a2731] flex items-center justify-center text-[#b08d57] shrink-0">
+                                        <i data-lucide="map-pin" class="w-4 h-4"></i>
+                                    </div>
+                                    <div class="min-w-0 flex-1">
+                                        <p class="text-[10px] uppercase font-bold tracking-wider text-stone-500">Delivery Area</p>
+                                        <p class="text-sm text-white leading-snug break-words" x-text="order.address_text || 'Address will be shown on acceptance'"></p>
+                                        <p class="text-[11px] text-stone-500 mt-1">Accept the order to see customer details, exact location, and item notes.</p>
                                     </div>
                                 </div>
-                                <a x-show="order.customer_phone" :href__="'tel:' + (order.customer_phone || '')"
-                                   class="shrink-0 inline-flex items-center gap-1.5 text-xs font-bold bg-[#b08d57] text-[#0f0e13] px-3 py-2 rounded-xl hover:bg-[#c9a36b] transition">
-                                    <i data-lucide="phone-call" class="w-3.5 h-3.5"></i><span>Call</span>
-                                </a>
                             </div>
+                        </template>
 
-                            <!-- Delivery address -->
-                            <div class="flex items-start gap-3">
-                                <div class="w-9 h-9 rounded-xl bg-[#1e1c25] border border-[#2a2731] flex items-center justify-center text-[#b08d57] shrink-0">
-                                    <i data-lucide="map-pin" class="w-4 h-4"></i>
+                        <!-- ============================================================ -->
+                        <!-- POST-ACCEPT VIEW (out_for_delivery / delivered)                -->
+                        <!-- Full customer info + exact address + GPS navigate              -->
+                        <!-- ============================================================ -->
+                        <template x-if="order.status !== 'ready'">
+                            <div class="p-4 sm:p-5 space-y-3 border-b border-[#2a2731] bg-[#0f0e13]/40">
+
+                                <!-- Customer contact -->
+                                <div class="flex items-start gap-3">
+                                    <div class="w-9 h-9 rounded-xl bg-[#1e1c25] border border-[#2a2731] flex items-center justify-center text-[#b08d57] shrink-0">
+                                        <i data-lucide="user" class="w-4 h-4"></i>
+                                    </div>
+                                    <div class="min-w-0 flex-1">
+                                        <p class="text-[10px] uppercase font-bold tracking-wider text-stone-500">Customer</p>
+                                        <p class="text-sm font-bold text-white truncate" x-text="order.customer_name"></p>
+                                        <div class="flex items-center gap-2 mt-1" x-show="order.customer_phone">
+                                            <i data-lucide="phone" class="w-3.5 h-3.5 text-stone-500"></i>
+                                            <a :href__="'tel:' + (order.customer_phone || '')"
+                                               class="text-xs font-semibold text-[#b08d57] hover:text-[#c9a36b] transition"
+                                               x-text="order.customer_phone"></a>
+                                        </div>
+                                    </div>
+                                    <a x-show="order.customer_phone" :href__="'tel:' + (order.customer_phone || '')"
+                                       class="shrink-0 inline-flex items-center gap-1.5 text-xs font-bold bg-[#b08d57] text-[#0f0e13] px-3 py-2 rounded-xl hover:bg-[#c9a36b] transition">
+                                        <i data-lucide="phone-call" class="w-3.5 h-3.5"></i><span>Call</span>
+                                    </a>
                                 </div>
-                                <div class="min-w-0 flex-1">
-                                    <p class="text-[10px] uppercase font-bold tracking-wider text-stone-500" x-text="order.address_name ? order.address_name : 'Drop-off'"></p>
-                                    <p class="text-sm text-white leading-snug break-words" x-text="order.address_text || 'No street text provided'"></p>
-                                    <p x-show="order.latitude && order.longitude" class="text-[11px] text-stone-500 font-mono mt-1">
-                                        GPS: <span x-text="Number(order.latitude).toFixed(5)"></span>, <span x-text="Number(order.longitude).toFixed(5)"></span>
-                                    </p>
+
+                                <!-- Delivery address -->
+                                <div class="flex items-start gap-3">
+                                    <div class="w-9 h-9 rounded-xl bg-[#1e1c25] border border-[#2a2731] flex items-center justify-center text-[#b08d57] shrink-0">
+                                        <i data-lucide="map-pin" class="w-4 h-4"></i>
+                                    </div>
+                                    <div class="min-w-0 flex-1">
+                                        <p class="text-[10px] uppercase font-bold tracking-wider text-stone-500">Drop-off</p>
+                                        <p class="text-sm text-white leading-snug break-words" x-text="order.address_text || 'No street text provided'"></p>
+                                        <p x-show="order.latitude && order.longitude" class="text-[11px] text-stone-500 font-mono mt-1">
+                                            GPS: <span x-text="Number(order.latitude).toFixed(5)"></span>, <span x-text="Number(order.longitude).toFixed(5)"></span>
+                                        </p>
+                                    </div>
+                                    <button x-show="order.latitude && order.longitude"
+                                       @click="navigateTo(order)"
+                                       class="shrink-0 inline-flex items-center gap-1.5 text-xs font-bold bg-[#1e1c25] border border-[#2a2731] text-stone-200 px-3 py-2 rounded-xl hover:border-[#b08d57]/60 transition">
+                                        <i data-lucide="navigation" class="w-3.5 h-3.5 text-[#b08d57]"></i><span>Navigate</span>
+                                    </button>
                                 </div>
-                                <a x-show="order.latitude && order.longitude"
-                                   :href__="mapsUrl(order)"
-                                   target="_blank" rel="noopener"
-                                   class="shrink-0 inline-flex items-center gap-1.5 text-xs font-bold bg-[#1e1c25] border border-[#2a2731] text-stone-200 px-3 py-2 rounded-xl hover:border-[#b08d57]/60 transition">
-                                    <i data-lucide="navigation" class="w-3.5 h-3.5 text-[#b08d57]"></i><span>Navigate</span>
-                                </a>
                             </div>
-                        </div>
+                        </template>
 
-                        <!-- Special order note -->
-                        <div x-show="order.special_note" class="px-4 py-3 bg-amber-500/10 border-b border-amber-500/30 text-xs min-w-0">
+                        <!-- Special order note (post-accept only) -->
+                        <div x-show="order.status !== 'ready' && order.special_note" class="px-4 py-3 bg-amber-500/10 border-b border-amber-500/30 text-xs min-w-0">
                             <div class="flex items-center gap-1.5 font-extrabold uppercase text-[11px] text-amber-400 tracking-wider mb-1.5">
                                 <i data-lucide="alert-triangle" class="w-3.5 h-3.5 shrink-0"></i><span>Special Order Note</span>
                             </div>
                             <div class="bg-[#0f0e13]/90 text-white font-medium p-2.5 rounded-lg border border-amber-500/25 leading-relaxed whitespace-pre-line break-words" x-text="order.special_note"></div>
                         </div>
 
-                        <!-- Items -->
-                        <div class="p-4 sm:p-5 space-y-3 flex-1 overflow-y-auto max-h-64 custom-scroll min-w-0">
+                        <!-- Items (post-accept only, includes extras) -->
+                        <div x-show="order.status !== 'ready'" class="p-4 sm:p-5 space-y-3 flex-1 overflow-y-auto max-h-64 custom-scroll min-w-0">
                             <template x-for="item in order.items" :key="item.id">
                                 <div class="bg-[#0f0e13] border border-[#2a2731] rounded-xl p-3.5 min-w-0">
                                     <div class="flex items-start justify-between gap-3 min-w-0">
@@ -335,6 +364,14 @@
                                         </div>
                                         <span class="text-xs font-bold text-stone-400 shrink-0" x-text="'$' + (Number(item.subtotal) || 0).toFixed(2)"></span>
                                     </div>
+
+                                    <!-- Extras -->
+                                    <div x-show="hasExtras(item)" class="mt-2 pl-8 flex flex-wrap gap-1.5">
+                                        <template x-for="extra in normalizedExtras(item)" :key="extra">
+                                            <span class="text-[11px] font-semibold bg-[#1e1c25] text-[#b08d57] border border-[#2a2731] px-2 py-0.5 rounded-md" x-text="extra"></span>
+                                        </template>
+                                    </div>
+
                                     <p x-show="item.special_note" class="text-xs text-amber-400/90 mt-2 pl-8 break-words" x-text="item.special_note"></p>
                                 </div>
                             </template>
@@ -431,8 +468,53 @@
                 }[status] || status.replace('_', ' ');
             },
 
-            mapsUrl(order) {
-                return `https://www.google.com/maps/search/?api=1&query=${order.latitude},${order.longitude}`;
+            // Normalizes item.extras whether it's an array, a JSON string, or a comma string
+            normalizedExtras(item) {
+                let e = item.extras;
+                if (!e) return [];
+                if (Array.isArray(e)) return e;
+                if (typeof e === 'string') {
+                    try {
+                        const parsed = JSON.parse(e);
+                        if (Array.isArray(parsed)) return parsed;
+                    } catch (err) { /* not JSON, fall through */ }
+                    return e.split(',').map(s => s.trim()).filter(Boolean);
+                }
+                if (typeof e === 'object') return Object.values(e);
+                return [];
+            },
+
+            hasExtras(item) {
+                return this.normalizedExtras(item).length > 0;
+            },
+
+            /**
+             * Opens live turn-by-turn directions FROM the driver's current GPS
+             * position TO the drop-off. Google/Apple Maps draws the route line
+             * between the two points and keeps updating as the driver moves.
+             */
+            navigateTo(order) {
+                const destination = `${order.latitude},${order.longitude}`;
+
+                if (!navigator.geolocation) {
+                    // No geolocation support — fall back to destination-only directions
+                    window.open(`https://www.google.com/maps/dir/?api=1&destination=${destination}&travelmode=driving`, '_blank');
+                    return;
+                }
+
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        const origin = `${pos.coords.latitude},${pos.coords.longitude}`;
+                        const url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&travelmode=driving`;
+                        window.open(url, '_blank');
+                    },
+                    () => {
+                        // Permission denied or failed — fall back to destination-only
+                        this.showToast('Location Unavailable', 'Could not get your current position. Opening destination only.');
+                        window.open(`https://www.google.com/maps/dir/?api=1&destination=${destination}&travelmode=driving`, '_blank');
+                    },
+                    { enableHighAccuracy: true, timeout: 8000 }
+                );
             },
 
             updateCounts() {
@@ -458,7 +540,7 @@
                     if (this.online && data.counts.ready > prevReady && this.soundEnabled) {
                         const newest = data.orders.find(o => o.status === 'ready');
                         this.playNotificationSound();
-                        this.showToast('New Order Ready!', newest ? `Order #${newest.id} from ${newest.customer_name} is ready for pickup.` : 'A new order is ready for pickup.');
+                        this.showToast('New Order Ready!', newest ? `Order #${newest.id} is ready for pickup.` : 'A new order is ready for pickup.');
                     }
                     this.$nextTick(() => lucide.createIcons());
                 } catch (e) {
@@ -490,7 +572,14 @@
                     });
                     const data = await res.json();
                     if (res.ok) {
-                        order.status = 'out_for_delivery';
+                        // Replace with the fresh full order object returned by the
+                        // server (now includes customer_name, phone, etc.)
+                        if (data.order) {
+                            const idx = this.orders.findIndex(o => o.id === order.id);
+                            if (idx !== -1) this.orders[idx] = data.order;
+                        } else {
+                            order.status = 'out_for_delivery';
+                        }
                         this.updateCounts();
                         this.showToast('Order Accepted', `Order #${order.id} is now your active delivery.`);
                     } else {
