@@ -275,11 +275,16 @@
                             </div>
                         </div>
 
-                        <!-- Order Destination / Table Info if present -->
-                        <div x-show="order.delivery_address" class="px-4 py-2.5 bg-[#191722] border-b border-[#2a2731] flex items-center gap-2 text-xs text-stone-300 min-w-0">
-                            <i data-lucide="map-pin" class="w-3.5 h-3.5 text-[#b08d57] shrink-0"></i>
-                            <span class="truncate flex-1 min-w-0" x-text="order.delivery_address"></span>
-                        </div>
+                        <!-- Order Image Preview Display (Replaces Location Address) -->
+                        <template x-if="getOrderImage(order)">
+                            <div class="w-full h-40 bg-[#0f0e13] border-b border-[#2a2731] overflow-hidden relative group">
+                                <img :src="getOrderImage(order)" 
+                                     :alt="'Order #' + order.id" 
+                                     class="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
+                                     loading="lazy">
+                                <div class="absolute inset-0 bg-gradient-to-t from-[#14131a] via-transparent to-transparent opacity-60 pointer-events-none"></div>
+                            </div>
+                        </template>
 
                         <!-- Special Order-level Note (Highlighted & Separated) -->
                         <div x-show="order.special_note" class="px-4 py-3 bg-amber-500/10 border-b border-amber-500/30 text-xs min-w-0">
@@ -302,12 +307,12 @@
                                         <span class="text-xs font-bold text-stone-400 shrink-0" x-text="'$' + (Number(item.subtotal) || 0).toFixed(2)"></span>
                                     </div>
 
-                                    <!-- Item-specific Special Instructions and Extras (Clear, Line-by-Line Presentation) -->
+                                    <!-- Item-specific Special Instructions and Extras -->
                                     <div x-data="{ details: getItemDetails(item) }" 
                                          x-show="details.hasContent || item.special_note" 
                                          class="pt-2.5 border-t border-[#1e1c25] space-y-2.5 min-w-0 w-full overflow-hidden">
                                         
-                                        <!-- Extras & Add-ons Section (Each on its own line) -->
+                                        <!-- Extras & Add-ons Section -->
                                         <template x-if="details.extras && details.extras.length > 0">
                                             <div class="space-y-1.5 min-w-0 w-full">
                                                 <div class="flex items-center gap-1.5 font-black uppercase text-[10px] text-emerald-400 tracking-wider">
@@ -325,7 +330,7 @@
                                             </div>
                                         </template>
 
-                                        <!-- Special Instructions & Notes Section (Each on its own line) -->
+                                        <!-- Special Instructions & Notes Section -->
                                         <template x-if="details.notes && details.notes.length > 0">
                                             <div class="space-y-1.5 min-w-0 w-full">
                                                 <div class="flex items-center gap-1.5 font-black uppercase text-[10px] text-amber-400 tracking-wider">
@@ -343,7 +348,7 @@
                                             </div>
                                         </template>
 
-                                        <!-- Raw Text Fallback (Clean Formatted Box) -->
+                                        <!-- Raw Text Fallback -->
                                         <template x-if="!details.hasContent && item.special_note">
                                             <div class="bg-amber-500/10 border border-amber-500/30 rounded-lg p-2.5 min-w-0 w-full overflow-hidden">
                                                 <div class="flex items-center gap-1.5 font-bold uppercase text-[10px] text-amber-400 tracking-wider mb-1">
@@ -460,6 +465,31 @@
                 return this.orders.filter(o => o.status === this.activeTab);
             },
 
+            // Safe image resolver: checks order image/image_url/photo or first item's image
+            getOrderImage(order) {
+                if (!order) return null;
+                const rawImg = order.image || order.image_url || order.photo || order.thumbnail || order.food_image;
+                if (rawImg && typeof rawImg === 'string' && rawImg.trim()) {
+                    return (rawImg.startsWith('http://') || rawImg.startsWith('https://') || rawImg.startsWith('/') || rawImg.startsWith('data:')) 
+                        ? rawImg 
+                        : `/storage/${rawImg}`;
+                }
+                
+                // Fallback to first order item's image if available
+                if (order.items && Array.isArray(order.items) && order.items.length > 0) {
+                    const itemWithImg = order.items.find(i => i.image || i.image_url || i.item_image || i.photo);
+                    if (itemWithImg) {
+                        const itemSrc = itemWithImg.image || itemWithImg.image_url || itemWithImg.item_image || itemWithImg.photo;
+                        if (itemSrc && typeof itemSrc === 'string' && itemSrc.trim()) {
+                            return (itemSrc.startsWith('http://') || itemSrc.startsWith('https://') || itemSrc.startsWith('/') || itemSrc.startsWith('data:')) 
+                                ? itemSrc 
+                                : `/storage/${itemSrc}`;
+                        }
+                    }
+                }
+                return null;
+            },
+
             updateCounts() {
                 this.counts = {
                     pending: this.orders.filter(o => o.status === 'pending').length,
@@ -481,7 +511,6 @@
                     const str = String(entry).trim();
                     if (!str) return;
 
-                    // If entry contains explicit "Note:", route it to notes
                     if (/^(notes?|instructions?|special note):\s*/i.test(str)) {
                         const cleaned = str.replace(/^(notes?|instructions?|special note):\s*/i, '').trim();
                         if (cleaned) notes.push(cleaned);
@@ -561,7 +590,6 @@
                     if (res.ok) {
                         const data = await res.json();
                         
-                        // Check if new pending orders arrived to trigger alert
                         const previousPendingCount = this.counts.pending;
                         this.orders = data.orders;
                         this.counts = data.counts;
@@ -627,8 +655,8 @@
                     const osc = ctx.createOscillator();
                     const gain = ctx.createGain();
                     osc.type = 'sine';
-                    osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
-                    osc.frequency.setValueAtTime(880, ctx.currentTime + 0.15); // A5
+                    osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+                    osc.frequency.setValueAtTime(880, ctx.currentTime + 0.15);
                     gain.gain.setValueAtTime(0.15, ctx.currentTime);
                     gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
                     osc.connect(gain);
