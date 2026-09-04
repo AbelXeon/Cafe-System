@@ -270,7 +270,7 @@
                             </div>
 
                             <div class="text-right">
-                                <span class="text-sm font-black text-[#b08d57]" x-text="'$' + order.total_amount.toFixed(2)"></span>
+                                <span class="text-sm font-black text-[#b08d57]" x-text="'$' + (Number(order.total_amount) || 0).toFixed(2)"></span>
                                 <span class="text-[10px] text-stone-500 block uppercase" x-text="order.order_type.replace('_', ' ')"></span>
                             </div>
                         </div>
@@ -283,7 +283,7 @@
 
                         <!-- Special Order-level Note (Highlighted & Separated) -->
                         <div x-show="order.special_note" class="px-4 py-3 bg-amber-500/10 border-b border-amber-500/30 text-xs">
-                            <div class="flex items-center gap-1.5 font-extrabold uppercase text-[11px] text-amber-400 tracking-wider mb-1">
+                            <div class="flex items-center gap-1.5 font-extrabold uppercase text-[11px] text-amber-400 tracking-wider mb-1.5">
                                 <i data-lucide="alert-triangle" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i>
                                 <span>Special Order Note:</span>
                             </div>
@@ -291,26 +291,68 @@
                         </div>
 
                         <!-- Order Itemized List -->
-                        <div class="p-4 sm:p-5 space-y-3.5 flex-1 overflow-y-auto max-h-72 custom-scroll">
+                        <div class="p-4 sm:p-5 space-y-3 flex-1 overflow-y-auto max-h-80 custom-scroll">
                             <template x-for="item in order.items" :key="item.id">
-                                <div class="bg-[#0f0e13] border border-[#2a2731] rounded-xl p-3.5 flex flex-col justify-between">
+                                <div class="bg-[#0f0e13] border border-[#2a2731] rounded-xl p-3.5 flex flex-col justify-between gap-2.5">
                                     <div class="flex items-start justify-between gap-3">
                                         <div class="flex items-center gap-2.5 min-w-0">
                                             <span class="w-6 h-6 rounded-lg bg-[#b08d57] text-[#0f0e13] font-black text-xs flex items-center justify-center shrink-0" x-text="item.quantity + 'x'"></span>
                                             <span class="text-sm font-bold text-white truncate" x-text="item.name"></span>
                                         </div>
-                                        <span class="text-xs font-bold text-stone-400 shrink-0" x-text="'$' + item.subtotal.toFixed(2)"></span>
+                                        <span class="text-xs font-bold text-stone-400 shrink-0" x-text="'$' + (Number(item.subtotal) || 0).toFixed(2)"></span>
                                     </div>
 
-                                    <!-- Item-specific Special Instructions and Extras on their own clear lines -->
-                                    <div x-show="item.special_note" class="mt-3 pt-2.5 border-t border-[#1e1c25]">
-                                        <div class="bg-amber-500/10 border border-amber-500/30 rounded-lg p-2.5">
-                                            <div class="flex items-center gap-1.5 font-bold uppercase text-[10px] text-amber-400 tracking-wider mb-1">
-                                                <i data-lucide="file-text" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i>
-                                                <span>Note & Extras:</span>
+                                    <!-- Item-specific Special Instructions and Extras (Clear, Line-by-Line Presentation) -->
+                                    <div x-data="{ details: getItemDetails(item) }" 
+                                         x-show="details.hasContent || item.special_note" 
+                                         class="pt-2.5 border-t border-[#1e1c25] space-y-2.5">
+                                        
+                                        <!-- Extras & Add-ons Section (Each on its own line) -->
+                                        <template x-if="details.extras && details.extras.length > 0">
+                                            <div class="space-y-1.5">
+                                                <div class="flex items-center gap-1.5 font-black uppercase text-[10px] text-emerald-400 tracking-wider">
+                                                    <i data-lucide="plus-circle" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i>
+                                                    <span>Extras & Add-ons</span>
+                                                </div>
+                                                <div class="space-y-1">
+                                                    <template x-for="(extra, idx) in details.extras" :key="idx">
+                                                        <div class="flex items-center gap-2 text-xs font-bold text-emerald-300 bg-emerald-950/40 border border-emerald-500/30 px-2.5 py-1.5 rounded-lg shadow-sm">
+                                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"></span>
+                                                            <span class="leading-snug" x-text="extra"></span>
+                                                        </div>
+                                                    </template>
+                                                </div>
                                             </div>
-                                            <p class="text-xs font-medium text-amber-200 bg-[#0f0e13]/80 p-2 rounded-md border border-amber-500/20 leading-relaxed whitespace-pre-line" x-text="item.special_note"></p>
-                                        </div>
+                                        </template>
+
+                                        <!-- Special Instructions & Notes Section (Each on its own line) -->
+                                        <template x-if="details.notes && details.notes.length > 0">
+                                            <div class="space-y-1.5">
+                                                <div class="flex items-center gap-1.5 font-black uppercase text-[10px] text-amber-400 tracking-wider">
+                                                    <i data-lucide="file-text" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i>
+                                                    <span>Special Instructions</span>
+                                                </div>
+                                                <div class="space-y-1">
+                                                    <template x-for="(noteLine, nIdx) in details.notes" :key="nIdx">
+                                                        <div class="flex items-start gap-2 text-xs font-semibold text-amber-200 bg-amber-950/40 border border-amber-500/30 px-2.5 py-1.5 rounded-lg leading-relaxed shadow-sm">
+                                                            <i data-lucide="corner-down-right" class="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5"></i>
+                                                            <span class="flex-1" x-text="noteLine"></span>
+                                                        </div>
+                                                    </template>
+                                                </div>
+                                            </div>
+                                        </template>
+
+                                        <!-- Raw Text Fallback (Clean Formatted Box) -->
+                                        <template x-if="!details.hasContent && item.special_note">
+                                            <div class="bg-amber-500/10 border border-amber-500/30 rounded-lg p-2.5">
+                                                <div class="flex items-center gap-1.5 font-bold uppercase text-[10px] text-amber-400 tracking-wider mb-1">
+                                                    <i data-lucide="file-text" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i>
+                                                    <span>Item Note</span>
+                                                </div>
+                                                <p class="text-xs font-semibold text-amber-200 bg-[#0f0e13]/80 p-2 rounded-md border border-amber-500/20 leading-relaxed whitespace-pre-line" x-text="item.special_note"></p>
+                                            </div>
+                                        </template>
                                     </div>
                                 </div>
                             </template>
@@ -424,6 +466,75 @@
                     preparing: this.orders.filter(o => o.status === 'preparing').length,
                     ready: this.orders.filter(o => o.status === 'ready').length,
                     completed: this.orders.filter(o => o.status === 'completed').length,
+                };
+            },
+
+            // Helper to clean and split extras & notes into individual distinct lines
+            getItemDetails(item) {
+                if (!item) return { hasContent: false, extras: [], notes: [] };
+
+                let extras = [];
+                let notes = [];
+
+                // 1. Explicit item.extras property (if passed as array or delimited string)
+                if (item.extras) {
+                    if (Array.isArray(item.extras)) {
+                        item.extras.forEach(e => {
+                            const val = typeof e === 'object' ? (e.name || e.title || JSON.stringify(e)) : e;
+                            if (val) extras.push(String(val).trim());
+                        });
+                    } else if (typeof item.extras === 'string' && item.extras.trim()) {
+                        item.extras.split(/[\r\n,]+/).forEach(e => {
+                            if (e.trim()) extras.push(e.trim());
+                        });
+                    }
+                }
+
+                // 2. Parse special_note, note, or instructions string
+                const noteRaw = item.special_note || item.note || item.instructions || item.special_instructions || '';
+                if (noteRaw && typeof noteRaw === 'string' && noteRaw.trim()) {
+                    const lines = noteRaw.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+                    
+                    lines.forEach(line => {
+                        // Check for explicit "Extras:" or "Addons:" label
+                        if (/^(extras?|add\-?ons?):\s*/i.test(line)) {
+                            const cleaned = line.replace(/^(extras?|add\-?ons?):\s*/i, '').trim();
+                            cleaned.split(/[,;|]+/).forEach(part => {
+                                if (part.trim()) extras.push(part.trim());
+                            });
+                        } 
+                        // Check for explicit "Note:" or "Instructions:" label
+                        else if (/^(notes?|instructions?|special note):\s*/i.test(line)) {
+                            const cleaned = line.replace(/^(notes?|instructions?|special note):\s*/i, '').trim();
+                            if (cleaned) notes.push(cleaned);
+                        } 
+                        // Line starts with bullet, plus, or dash (typically an extra item)
+                        else if (/^[+•\-\*]\s*/.test(line)) {
+                            extras.push(line.replace(/^[+•\-\*]\s*/, '').trim());
+                        } 
+                        // Comma separated list of modifications (e.g. "Extra Cheese, Extra Bacon, No Onions")
+                        else if (line.includes(',') && /(extra|add|no |without|sub|\+)/i.test(line)) {
+                            line.split(',').forEach(sub => {
+                                const s = sub.trim();
+                                if (s) {
+                                    if (/(extra|add|no |without|sub|\+)/i.test(s)) {
+                                        extras.push(s);
+                                    } else {
+                                        notes.push(s);
+                                    }
+                                }
+                            });
+                        } 
+                        else {
+                            notes.push(line);
+                        }
+                    });
+                }
+
+                return {
+                    hasContent: extras.length > 0 || notes.length > 0,
+                    extras: [...new Set(extras)],
+                    notes: [...new Set(notes)]
                 };
             },
 
