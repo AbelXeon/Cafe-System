@@ -76,7 +76,7 @@
     </div>
 
     <div class="flex items-center gap-2">
-        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
         <span class="text-xs font-bold text-stone-300">Live</span>
     </div>
 </header>
@@ -200,7 +200,7 @@
                 <h1 class="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center gap-3">
                     <span>Live Kitchen Feed</span>
                     <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#b08d57]/15 border border-[#b08d57]/30 text-[#b08d57]">
-                        <span class="w-2 h-2 rounded-full bg-[#b08d57] animate-pulse"></span>
+                        <span class="w-2 h-2 rounded-full bg-[#b08d57]"></span>
                         Auto-refreshing (6s)
                     </span>
                 </h1>
@@ -217,7 +217,7 @@
                 <button @click="activeTab = 'pending'"
                     :class="activeTab === 'pending' ? 'bg-amber-500 text-black font-bold' : 'bg-[#14131a] text-amber-400/80 border border-[#2a2731]'"
                     class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition shrink-0 flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+                    <span class="w-2 h-2 rounded-full bg-amber-400"></span>
                     Incoming (<span x-text="counts.pending"></span>)
                 </button>
                 <button @click="activeTab = 'preparing'"
@@ -281,16 +281,19 @@
                             <span class="truncate" x-text="order.delivery_address"></span>
                         </div>
 
-                        <!-- Special Order-level Note -->
-                        <div x-show="order.special_note" class="px-4 py-2 bg-amber-500/10 border-b border-amber-500/20 text-xs text-amber-300 flex items-start gap-2">
-                            <i data-lucide="alert-circle" class="w-4 h-4 shrink-0 mt-0.5"></i>
-                            <span class="leading-tight font-medium" x-text="'General Note: ' + order.special_note"></span>
+                        <!-- Special Order-level Note (Highlighted & Separated) -->
+                        <div x-show="order.special_note" class="px-4 py-3 bg-amber-500/10 border-b border-amber-500/30 text-xs">
+                            <div class="flex items-center gap-1.5 font-extrabold uppercase text-[11px] text-amber-400 tracking-wider mb-1">
+                                <i data-lucide="alert-triangle" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i>
+                                <span>Special Order Note:</span>
+                            </div>
+                            <div class="bg-[#0f0e13]/90 text-amber-200 font-semibold p-2.5 rounded-lg border border-amber-500/25 leading-relaxed whitespace-pre-line" x-text="order.special_note"></div>
                         </div>
 
                         <!-- Order Itemized List -->
-                        <div class="p-4 sm:p-5 space-y-3 flex-1 overflow-y-auto max-h-72 custom-scroll">
+                        <div class="p-4 sm:p-5 space-y-3.5 flex-1 overflow-y-auto max-h-72 custom-scroll">
                             <template x-for="item in order.items" :key="item.id">
-                                <div class="bg-[#0f0e13] border border-[#2a2731] rounded-xl p-3 flex flex-col justify-between">
+                                <div class="bg-[#0f0e13] border border-[#2a2731] rounded-xl p-3.5 flex flex-col justify-between">
                                     <div class="flex items-start justify-between gap-3">
                                         <div class="flex items-center gap-2.5 min-w-0">
                                             <span class="w-6 h-6 rounded-lg bg-[#b08d57] text-[#0f0e13] font-black text-xs flex items-center justify-center shrink-0" x-text="item.quantity + 'x'"></span>
@@ -299,13 +302,15 @@
                                         <span class="text-xs font-bold text-stone-400 shrink-0" x-text="'$' + item.subtotal.toFixed(2)"></span>
                                     </div>
 
-                                    <!-- Item-specific Special Instructions and Extras -->
-                                    <div x-show="item.special_note" class="mt-2 text-xs bg-[#14131a] border border-[#2a2731] rounded-lg p-2 text-[#b08d57] leading-relaxed">
-                                        <div class="flex items-center gap-1.5 font-bold uppercase text-[10px] text-stone-400 mb-0.5">
-                                            <i data-lucide="sparkles" class="w-3 h-3 text-[#b08d57]"></i>
-                                            <span>Customer Note & Extras</span>
+                                    <!-- Item-specific Special Instructions and Extras on their own clear lines -->
+                                    <div x-show="item.special_note" class="mt-3 pt-2.5 border-t border-[#1e1c25]">
+                                        <div class="bg-amber-500/10 border border-amber-500/30 rounded-lg p-2.5">
+                                            <div class="flex items-center gap-1.5 font-bold uppercase text-[10px] text-amber-400 tracking-wider mb-1">
+                                                <i data-lucide="file-text" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i>
+                                                <span>Note & Extras:</span>
+                                            </div>
+                                            <p class="text-xs font-medium text-amber-200 bg-[#0f0e13]/80 p-2 rounded-md border border-amber-500/20 leading-relaxed whitespace-pre-line" x-text="item.special_note"></p>
                                         </div>
-                                        <p x-text="item.special_note"></p>
                                     </div>
                                 </div>
                             </template>
