@@ -40,6 +40,16 @@ Route::middleware(['auth', 'role:staff'])->prefix('staff')->name('staff.')->grou
     Route::patch('/orders/{order}/status', [StaffController::class, 'updateStatus'])->name('orders.status');
 });
 
+
+Route::middleware(['auth', 'role:delivery'])->prefix('delivery')->name('delivery.')->group(function () {
+    Route::get('/dashboard', [DeliveryController::class, 'dashboard'])->name('dashboard');
+    Route::get('/orders/live', [DeliveryController::class, 'getLiveOrders'])->name('orders.live');
+    Route::post('/orders/{order}/accept', [DeliveryController::class, 'acceptOrder'])->name('orders.accept');
+    Route::post('/orders/{order}/decline', [DeliveryController::class, 'declineOrder'])->name('orders.decline');
+    Route::post('/orders/{order}/delivered', [DeliveryController::class, 'markDelivered'])->name('orders.delivered');
+    Route::post('/online', [DeliveryController::class, 'toggleOnline'])->name('online.toggle');
+});
+
 Route::middleware(['auth', 'role:customer'])->prefix('user')->name('user.')->group(function () {
     Route::get('/dashboard', [UsersController::class, 'dashboard'])->name('dashboard');
     Route::post('/orders', [UsersController::class, 'storeOrder'])->name('orders.store');
