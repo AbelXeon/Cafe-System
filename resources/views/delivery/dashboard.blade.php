@@ -12,9 +12,9 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.5/dist/cdn.min.js"></script>
 
     <!-- Fonts & Icons -->
-    <link rel="preconnect" href__="https://fonts.googleapis.com">
-    <link rel="preconnect" href__="https://fonts.gstatic.com" crossorigin>
-    <link href__="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
@@ -231,6 +231,16 @@
             <button @click="toggleOnline()" class="text-xs font-bold text-amber-300 hover:text-amber-200 underline">Go Online</button>
         </div>
 
+        <!-- Active Delivery Alert banner when on other views -->
+        <div x-show="hasActiveDelivery" x-cloak
+             class="bg-sky-500/10 border-b border-sky-500/30 px-4 sm:px-6 lg:px-8 py-2.5 flex items-center justify-between gap-3 shrink-0">
+            <p class="text-xs text-sky-400 font-semibold flex items-center gap-2">
+                <i data-lucide="info" class="w-4 h-4"></i>
+                You have an active delivery in progress. Complete it before accepting another order.
+            </p>
+            <button @click="activeTab = 'out_for_delivery'" class="text-xs font-bold text-sky-300 hover:text-sky-200 underline">View Active Delivery</button>
+        </div>
+
         <!-- Orders Grid -->
         <div class="flex-1 overflow-y-auto custom-scroll p-4 sm:p-6 lg:p-8">
             <div class="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-5">
@@ -238,7 +248,8 @@
                 <template x-for="order in filteredOrders" :key="order.id">
                     <div class="bg-[#14131a] border rounded-2xl overflow-hidden flex flex-col shadow-xl transition-all duration-200 min-w-0"
                          :class="{
-                            'border-amber-500/60 ring-1 ring-amber-500/30': order.status === 'ready',
+                            'border-amber-500/60 ring-1 ring-amber-500/30': order.status === 'ready' && !hasActiveDelivery,
+                            'border-[#2a2731] opacity-50 grayscale-[40%]': order.status === 'ready' && hasActiveDelivery,
                             'border-sky-500/60 ring-1 ring-sky-500/30': order.status === 'out_for_delivery',
                             'border-emerald-500/60': order.status === 'delivered',
                             'border-[#2a2731] opacity-80': order.status === 'cancelled'
@@ -290,7 +301,8 @@
                                     <div class="min-w-0 flex-1">
                                         <p class="text-[10px] uppercase font-bold tracking-wider text-stone-500">Delivery Area</p>
                                         <p class="text-sm text-white leading-snug break-words" x-text="order.address_text || 'Address will be shown on acceptance'"></p>
-                                        <p class="text-[11px] text-stone-500 mt-1">Accept the order to see customer details, exact location, and item notes.</p>
+                                        <p x-show="!hasActiveDelivery" class="text-[11px] text-stone-500 mt-1">Accept the order to see customer details, exact location, and item notes.</p>
+                                        <p x-show="hasActiveDelivery" class="text-[11px] text-amber-400/90 font-medium mt-1">Complete your active delivery to accept this order.</p>
                                     </div>
                                 </div>
                             </div>
@@ -313,12 +325,12 @@
                                         <p class="text-sm font-bold text-white truncate" x-text="order.customer_name"></p>
                                         <div class="flex items-center gap-2 mt-1" x-show="order.customer_phone">
                                             <i data-lucide="phone" class="w-3.5 h-3.5 text-stone-500"></i>
-                                            <a :href__="'tel:' + (order.customer_phone || '')"
+                                            <a :href="'tel:' + (order.customer_phone || '')"
                                                class="text-xs font-semibold text-[#b08d57] hover:text-[#c9a36b] transition"
                                                x-text="order.customer_phone"></a>
                                         </div>
                                     </div>
-                                    <a x-show="order.customer_phone" :href__="'tel:' + (order.customer_phone || '')"
+                                    <a x-show="order.customer_phone" :href="'tel:' + (order.customer_phone || '')"
                                        class="shrink-0 inline-flex items-center gap-1.5 text-xs font-bold bg-[#b08d57] text-[#0f0e13] px-3 py-2 rounded-xl hover:bg-[#c9a36b] transition">
                                         <i data-lucide="phone-call" class="w-3.5 h-3.5"></i><span>Call</span>
                                     </a>
@@ -384,13 +396,17 @@
                             <template x-if="order.status === 'ready'">
                                 <div class="w-full flex gap-2">
                                     <button @click="declineOrder(order)"
-                                            class="w-1/3 bg-[#1e1c25] hover:bg-rose-500/15 hover:text-rose-400 text-stone-300 font-bold text-xs py-3 rounded-xl transition flex items-center justify-center gap-2 border border-[#2a2731]">
+                                            :disabled="hasActiveDelivery"
+                                            class="w-1/3 text-stone-300 font-bold text-xs py-3 rounded-xl transition flex items-center justify-center gap-2 border border-[#2a2731] disabled:opacity-40 disabled:cursor-not-allowed"
+                                            :class="hasActiveDelivery ? 'bg-[#18171f] text-stone-600' : 'bg-[#1e1c25] hover:bg-rose-500/15 hover:text-rose-400'">
                                         <i data-lucide="x" class="w-4 h-4"></i><span>Decline</span>
                                     </button>
                                     <button @click="acceptOrder(order)"
-                                            :disabled="actionId === order.id"
-                                            class="flex-1 bg-[#b08d57] hover:bg-[#c9a36b] text-[#0f0e13] font-extrabold text-xs py-3 rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-[#b08d57]/10 disabled:opacity-50">
-                                        <i data-lucide="check" class="w-4 h-4 stroke-[3]"></i><span>Accept Order</span>
+                                            :disabled="actionId === order.id || hasActiveDelivery"
+                                            class="flex-1 font-extrabold text-xs py-3 rounded-xl transition flex items-center justify-center gap-2 shadow-lg disabled:opacity-40 disabled:cursor-not-allowed"
+                                            :class="hasActiveDelivery ? 'bg-stone-800 text-stone-500 border border-[#2a2731]' : 'bg-[#b08d57] hover:bg-[#c9a36b] text-[#0f0e13] shadow-[#b08d57]/10'">
+                                        <i :data-lucide="hasActiveDelivery ? 'lock' : 'check'" class="w-4 h-4 stroke-[2.5]"></i>
+                                        <span x-text="hasActiveDelivery ? 'Delivery in Progress' : 'Accept Order'"></span>
                                     </button>
                                 </div>
                             </template>
@@ -454,6 +470,11 @@
                 setTimeout(() => lucide.createIcons(), 50);
             },
 
+            // Returns true if driver is currently delivering an accepted order
+            get hasActiveDelivery() {
+                return this.orders.some(o => o.status === 'out_for_delivery');
+            },
+
             get filteredOrders() {
                 if (this.activeTab === 'all') return this.orders;
                 return this.orders.filter(o => o.status === this.activeTab);
@@ -490,14 +511,12 @@
 
             /**
              * Opens live turn-by-turn directions FROM the driver's current GPS
-             * position TO the drop-off. Google/Apple Maps draws the route line
-             * between the two points and keeps updating as the driver moves.
+             * position TO the drop-off.
              */
             navigateTo(order) {
                 const destination = `${order.latitude},${order.longitude}`;
 
                 if (!navigator.geolocation) {
-                    // No geolocation support — fall back to destination-only directions
                     window.open(`https://www.google.com/maps/dir/?api=1&destination=${destination}&travelmode=driving`, '_blank');
                     return;
                 }
@@ -509,7 +528,6 @@
                         window.open(url, '_blank');
                     },
                     () => {
-                        // Permission denied or failed — fall back to destination-only
                         this.showToast('Location Unavailable', 'Could not get your current position. Opening destination only.');
                         window.open(`https://www.google.com/maps/dir/?api=1&destination=${destination}&travelmode=driving`, '_blank');
                     },
@@ -564,6 +582,12 @@
             },
 
             async acceptOrder(order) {
+                // Disallow accepting another delivery while one is active
+                if (this.hasActiveDelivery) {
+                    this.showToast('Delivery in Progress', 'Please mark your current delivery as complete before accepting a new one.');
+                    return;
+                }
+
                 this.actionId = order.id;
                 try {
                     const res = await fetch(ACCEPT_URL(order.id), {
@@ -572,8 +596,6 @@
                     });
                     const data = await res.json();
                     if (res.ok) {
-                        // Replace with the fresh full order object returned by the
-                        // server (now includes customer_name, phone, etc.)
                         if (data.order) {
                             const idx = this.orders.findIndex(o => o.id === order.id);
                             if (idx !== -1) this.orders[idx] = data.order;
@@ -595,7 +617,7 @@
             },
 
             async declineOrder(order) {
-                // Just remove from the driver's view; order stays ready for others
+                if (this.hasActiveDelivery) return;
                 this.orders = this.orders.filter(o => o.id !== order.id);
                 this.updateCounts();
                 this.showToast('Order Declined', `Order #${order.id} skipped.`);
