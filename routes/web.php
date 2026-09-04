@@ -50,8 +50,10 @@ Route::middleware(['auth', 'role:delivery'])->prefix('delivery')->name('delivery
     Route::post('/online', [DeliveryController::class, 'toggleOnline'])->name('online.toggle');
 });
 
+// Customer Routes
 Route::middleware(['auth', 'role:customer'])->prefix('user')->name('user.')->group(function () {
     Route::get('/dashboard', [UsersController::class, 'dashboard'])->name('dashboard');
+    Route::get('/orders/live', [UsersController::class, 'getLiveOrders'])->name('orders.live');
     Route::post('/orders', [UsersController::class, 'storeOrder'])->name('orders.store');
     Route::post('/addresses', [SavedLocationController::class, 'store'])->name('addresses.store');
     Route::delete('/addresses/{savedLocation}', [SavedLocationController::class, 'destroy'])->name('addresses.destroy');

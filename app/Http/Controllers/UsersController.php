@@ -53,7 +53,27 @@ class UsersController extends Controller
 
         $addresses = SavedLocation::where('user_id', $request->user()->id)->get();
 
-        return view('user.Dashboard', compact('categories', 'menuData', 'addresses', 'extras'));
+        // Fetch user orders
+        $userOrders = Order::with(['items.product'])
+            ->where('user_id', $request->user()->id)
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(fn ($order) => $this->formatOrderForUser($order));
+
+        return view('user.Dashboard', compact('categories', 'menuData', 'addresses', 'extras', 'userOrders'));
+    }
+
+    public function getLiveOrders(Request $request)
+    {
+        $orders = Order::with(['items.product'])
+            ->where('user_id', $request->user()->id)
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(fn ($order) => $this->formatOrderForUser($order));
+
+        return response()->json([
+            'orders' => $orders,
+        ]);
     }
 
     public function storeOrder(Request $request)
@@ -92,7 +112,7 @@ class UsersController extends Controller
 
         $order = Order::create([
             'user_id'          => $request->user()->id,
-            'order_type'       => 'dine_in',
+            'order_type'       => $deliveryAddress ? 'delivery' : 'dine_in',
             'special_note'     => null,
             'subtotal'         => $subtotal,
             'extra_total'      => 0,
@@ -118,6 +138,57 @@ class UsersController extends Controller
             ]);
         }
 
-        return response()->json(['success' => true, 'order' => $order->load('items')]);
+        $formatted = $this->formatOrderForUser($order->fresh(['items.product']));
+
+        return response()->json(['success' => true, 'order' => $formatted]);
+    }
+
+    protected function formatOrderForUser($order)
+    {
+        // Calculate step index (1 to 5)
+        // 1 = pending / received
+        // 2 = preparing / accepted / in_kitchen / in_progress
+        // 3 = ready / awaiting_pickup
+        // 4 = out_for_delivery / on_the_way
+        // 5 = delivered / completed
+        $step = 1;
+        $statusKey = strtolower($order->status ?? 'pending');
+
+        if (in_array($statusKey, ['preparing', 'accepted', 'in_kitchen', 'in_progress', 'cooking'])) {
+            $step = 2;
+        } elseif (in_array($statusKey, ['ready', 'packed', 'ready_for_pickup'])) {
+            $step = 3;
+        } elseif (in_array($statusKey, ['out_for_delivery', 'on_way', 'picked_up'])) {
+            $step = 4;
+        } elseif (in_array($statusKey, ['delivered', 'completed'])) {
+            $step = 5;
+        } elseif (in_array($statusKey, ['cancelled', 'rejected'])) {
+            $step = 0;
+        }
+
+        return [
+            'id'               => $order->id,
+            'status'           => $order->status,
+            'status_step'      => $step,
+            'order_type'       => $order->order_type ?? 'delivery',
+            'total_amount'     => (float) $order->total_amount,
+            'special_note'     => $order->special_note,
+            'delivery_address' => $order->delivery_address,
+            'latitude'         => $order->latitude,
+            'longitude'        => $order->longitude,
+            'created_at'       => optional($order->created_at)->format('M d, Y • h:i A'),
+            'time_ago'         => $order->created_at?->diffForHumans(),
+            'items'            => $order->items->map(function ($item) {
+                return [
+                    'id'           => $item->id,
+                    'name'         => $item->product?->name ?? $item->name ?? 'Menu Item',
+                    'quantity'     => $item->quantity,
+                    'unit_price'   => (float) $item->unit_price,
+                    'subtotal'     => (float) $item->subtotal,
+                    'special_note' => $item->special_note,
+                    'image'        => $item->product?->image ? asset('storage/' . $item->product->image) : null,
+                ];
+            }),
+        ];
     }
 }
