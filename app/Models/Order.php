@@ -19,6 +19,7 @@ class Order extends Model
         'delivery_address',
         'latitude',
         'longitude',
+        'delivery_user_id',
     ];
 
     protected function casts(): array
