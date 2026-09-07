@@ -73,4 +73,8 @@ class Order extends Model
     {
         return $this->hasMany(ChatMessage::class);
     }
+    public function deliveryUser()
+{
+    return $this->belongsTo(User::class, 'delivery_user_id');
+}
 }
