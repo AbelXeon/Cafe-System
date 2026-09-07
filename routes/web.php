@@ -14,25 +14,20 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChatController;
 
-
-
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+Route::post('/register', [AuthController::class, 'register'])->name('register.submit');
 
-
+// Admin Routes
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::post('/products', [AdminController::class, 'storeProduct'])->name('products.store');
     Route::post('/staff', [AdminController::class, 'storeStaff'])->name('staff.store');
     Route::post('/extras', [AdminController::class, 'storeExtra'])->name('extras.store');
 });
-
-
-Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-Route::post('/register', [AuthController::class, 'register'])->name('register.submit');
-
 
 // Staff / Kitchen Routes
 Route::middleware(['auth', 'role:staff'])->prefix('staff')->name('staff.')->group(function () {
@@ -41,7 +36,7 @@ Route::middleware(['auth', 'role:staff'])->prefix('staff')->name('staff.')->grou
     Route::patch('/orders/{order}/status', [StaffController::class, 'updateStatus'])->name('orders.status');
 });
 
-
+// Delivery Routes
 Route::middleware(['auth', 'role:delivery'])->prefix('delivery')->name('delivery.')->group(function () {
     Route::get('/dashboard', [DeliveryController::class, 'dashboard'])->name('dashboard');
     Route::get('/orders/live', [DeliveryController::class, 'getLiveOrders'])->name('orders.live');
@@ -50,19 +45,21 @@ Route::middleware(['auth', 'role:delivery'])->prefix('delivery')->name('delivery
     Route::post('/orders/{order}/delivered', [DeliveryController::class, 'markDelivered'])->name('orders.delivered');
     Route::post('/online', [DeliveryController::class, 'toggleOnline'])->name('online.toggle');
 
-    // Chat (driver side) — list of conversations, message history, sending
+    // Chat (driver side)
     Route::get('/chats', [ChatController::class, 'driverConversations'])->name('chats.index');
     Route::get('/chats/{order}/messages', [ChatController::class, 'messages'])->name('chats.messages');
     Route::post('/chats/{order}/messages', [ChatController::class, 'send'])->name('chats.send');
 });
 
+// Customer Routes
 Route::middleware(['auth', 'role:customer'])->prefix('user')->name('user.')->group(function () {
     Route::get('/dashboard', [UsersController::class, 'dashboard'])->name('dashboard');
+    Route::get('/orders/live', [UsersController::class, 'getLiveOrders'])->name('orders.live'); // <-- Re-added here
     Route::post('/orders', [UsersController::class, 'storeOrder'])->name('orders.store');
     Route::post('/addresses', [SavedLocationController::class, 'store'])->name('addresses.store');
     Route::delete('/addresses/{savedLocation}', [SavedLocationController::class, 'destroy'])->name('addresses.destroy');
 
-    // Chat (customer side) — list of conversations, message history, sending
+    // Chat (customer side)
     Route::get('/chats', [ChatController::class, 'customerConversations'])->name('chats.index');
     Route::get('/chats/{order}/messages', [ChatController::class, 'messages'])->name('chats.messages');
     Route::post('/chats/{order}/messages', [ChatController::class, 'send'])->name('chats.send');
