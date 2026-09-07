@@ -7,7 +7,7 @@ use App\Models\OrderDelivery;
 
 class ChatMessage extends Model
 {
-    protected $fillable = ['order_delivery_id', 'sender_id', 'message'];
+    protected $fillable = ['order_id', 'sender_id', 'message'];
 
     public function orderDelivery()
     {
