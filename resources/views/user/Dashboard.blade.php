@@ -922,7 +922,7 @@
         </div>
     </div>
 
-    <!-- SECTION: Chat Support -->
+    <!-- SECTION: Chat  -->
     <div id="section-chat" class="page-section hidden flex-1 overflow-y-auto p-4 sm:p-8 lg:p-12 custom-scroll bg-[#14131a]/40 w-full">
         <div class="max-w-3xl mx-auto pb-16">
             <div class="mb-6 sm:mb-8">
