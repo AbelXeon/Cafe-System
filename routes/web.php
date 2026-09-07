@@ -12,6 +12,7 @@ use App\Http\Controllers\SavedLocationController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ChatController;
 
 
 
@@ -48,13 +49,21 @@ Route::middleware(['auth', 'role:delivery'])->prefix('delivery')->name('delivery
     Route::post('/orders/{order}/decline', [DeliveryController::class, 'declineOrder'])->name('orders.decline');
     Route::post('/orders/{order}/delivered', [DeliveryController::class, 'markDelivered'])->name('orders.delivered');
     Route::post('/online', [DeliveryController::class, 'toggleOnline'])->name('online.toggle');
+
+    // Chat (driver side) — list of conversations, message history, sending
+    Route::get('/chats', [ChatController::class, 'driverConversations'])->name('chats.index');
+    Route::get('/chats/{order}/messages', [ChatController::class, 'messages'])->name('chats.messages');
+    Route::post('/chats/{order}/messages', [ChatController::class, 'send'])->name('chats.send');
 });
 
-// Customer Routes
 Route::middleware(['auth', 'role:customer'])->prefix('user')->name('user.')->group(function () {
     Route::get('/dashboard', [UsersController::class, 'dashboard'])->name('dashboard');
-    Route::get('/orders/live', [UsersController::class, 'getLiveOrders'])->name('orders.live');
     Route::post('/orders', [UsersController::class, 'storeOrder'])->name('orders.store');
     Route::post('/addresses', [SavedLocationController::class, 'store'])->name('addresses.store');
     Route::delete('/addresses/{savedLocation}', [SavedLocationController::class, 'destroy'])->name('addresses.destroy');
+
+    // Chat (customer side) — list of conversations, message history, sending
+    Route::get('/chats', [ChatController::class, 'customerConversations'])->name('chats.index');
+    Route::get('/chats/{order}/messages', [ChatController::class, 'messages'])->name('chats.messages');
+    Route::post('/chats/{order}/messages', [ChatController::class, 'send'])->name('chats.send');
 });

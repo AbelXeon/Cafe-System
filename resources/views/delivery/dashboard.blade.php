@@ -27,6 +27,7 @@
         .side-link { color: #a8a29e; transition: all 0.15s ease-in-out; }
         .side-link:hover { color: #f5f5f4; background: #1e1c25; }
         .side-link.active { background: #b08d57; color: #0f0e13; font-weight: 700; }
+        .cd-input:focus { border-color: #b08d57; box-shadow: 0 0 0 3px rgba(176, 141, 87, 0.18); }
     </style>
 </head>
 <body class="bg-[#0f0e13] text-stone-200 h-screen overflow-hidden selection:bg-[#b08d57] selection:text-[#0f0e13]" x-data="deliveryApp()" x-init="init()">
@@ -129,33 +130,40 @@
             <nav class="px-4 pb-4 space-y-1 overflow-y-auto custom-scroll">
                 <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-stone-500 block mb-1">Delivery Queue</span>
 
-                <button @click="activeTab = 'all'; mobileNavOpen = false" :class="activeTab === 'all' ? 'active' : ''" class="side-link w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-semibold flex items-center justify-between">
+                <button @click="showChat = false; activeTab = 'all'; mobileNavOpen = false" :class="(activeTab === 'all' && !showChat) ? 'active' : ''" class="side-link w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-semibold flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <i data-lucide="layers" class="w-4 h-4"></i><span>All Orders</span>
                     </div>
                     <span class="text-xs px-2 py-0.5 rounded-full font-bold" :class="activeTab === 'all' ? 'bg-[#0f0e13] text-[#b08d57]' : 'bg-[#1e1c25] text-stone-400'" x-text="orders.length"></span>
                 </button>
 
-                <button @click="activeTab = 'ready'; mobileNavOpen = false" :class="activeTab === 'ready' ? 'active' : ''" class="side-link w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-semibold flex items-center justify-between">
+                <button @click="showChat = false; activeTab = 'ready'; mobileNavOpen = false" :class="(activeTab === 'ready' && !showChat) ? 'active' : ''" class="side-link w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-semibold flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <i data-lucide="bell-ring" class="w-4 h-4"></i><span>Incoming</span>
                     </div>
                     <span class="text-xs px-2 py-0.5 rounded-full font-bold" :class="activeTab === 'ready' ? 'bg-[#0f0e13] text-amber-500' : 'bg-amber-500/20 text-amber-400'" x-text="counts.ready"></span>
                 </button>
 
-                <button @click="activeTab = 'out_for_delivery'; mobileNavOpen = false" :class="activeTab === 'out_for_delivery' ? 'active' : ''" class="side-link w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-semibold flex items-center justify-between">
+                <button @click="showChat = false; activeTab = 'out_for_delivery'; mobileNavOpen = false" :class="(activeTab === 'out_for_delivery' && !showChat) ? 'active' : ''" class="side-link w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-semibold flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <i data-lucide="bike" class="w-4 h-4"></i><span>Out for Delivery</span>
                     </div>
                     <span class="text-xs px-2 py-0.5 rounded-full font-bold" :class="activeTab === 'out_for_delivery' ? 'bg-[#0f0e13] text-sky-400' : 'bg-sky-500/20 text-sky-400'" x-text="counts.out_for_delivery"></span>
                 </button>
 
-                <button @click="activeTab = 'delivered'; mobileNavOpen = false" :class="activeTab === 'delivered' ? 'active' : ''" class="side-link w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-semibold flex items-center justify-between">
+                <button @click="showChat = false; activeTab = 'delivered'; mobileNavOpen = false" :class="(activeTab === 'delivered' && !showChat) ? 'active' : ''" class="side-link w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-semibold flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <i data-lucide="check-circle-2" class="w-4 h-4"></i><span>Delivered</span>
                     </div>
                     <span class="text-xs px-2 py-0.5 rounded-full font-bold" :class="activeTab === 'delivered' ? 'bg-[#0f0e13] text-emerald-400' : 'bg-emerald-500/20 text-emerald-400'" x-text="counts.delivered"></span>
                 </button>
+
+                <div class="pt-3 mt-3 border-t border-[#1e1c25]">
+                    <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-stone-500 block mb-1">Support</span>
+                    <button @click="showChat = true; mobileNavOpen = false" :class="showChat ? 'active' : ''" class="side-link w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-3">
+                        <i data-lucide="message-square" class="w-4 h-4"></i><span>Chat</span>
+                    </button>
+                </div>
 
                 <div class="pt-3 mt-3 border-t border-[#1e1c25]">
                     <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-stone-500 block mb-1">Sound Alert</span>
@@ -188,8 +196,8 @@
         </div>
     </aside>
 
-    <!-- Main -->
-    <main class="flex-1 flex flex-col min-h-0 bg-[#14131a]/40 w-full overflow-hidden">
+    <!-- Main: Orders view -->
+    <main x-show="!showChat" class="flex-1 flex flex-col min-h-0 bg-[#14131a]/40 w-full overflow-hidden">
 
         <!-- Header Bar -->
         <div class="bg-[#0f0e13]/98 backdrop-blur-xl border-b border-[#2a2731] px-4 sm:px-6 lg:px-8 py-4 shrink-0 flex flex-wrap items-center justify-between gap-4">
@@ -441,6 +449,96 @@
             </div>
         </div>
     </main>
+
+    <!-- Chat panel -->
+    <div x-show="showChat" x-cloak class="flex-1 min-h-0 bg-[#14131a]/40 w-full" x-data="chatApp('driver')" x-init="init()">
+        <div class="flex h-full w-full">
+
+            <!-- Conversation List (left pane) -->
+            <div class="w-full sm:w-80 border-r border-[#1e1c25] flex-col shrink-0"
+                 :class="mobileView === 'thread' ? 'hidden sm:flex' : 'flex'">
+                <div class="p-4 sm:p-5 border-b border-[#1e1c25] shrink-0">
+                    <h1 class="text-lg sm:text-xl font-bold text-white tracking-tight">Chat</h1>
+                    <p class="text-stone-500 text-xs mt-0.5">Talk to the customer while delivering their order</p>
+                </div>
+                <div class="flex-1 overflow-y-auto custom-scroll">
+                    <template x-for="conv in conversations" :key="conv.order_id">
+                        <button @click="openConversation(conv)"
+                            class="w-full text-left px-4 py-3.5 border-b border-[#1e1c25]/60 hover:bg-[#1e1c25] transition"
+                            :class="activeOrderId === conv.order_id ? 'bg-[#1e1c25]' : ''">
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="text-sm font-bold text-white truncate" x-text="'Order #' + conv.order_id + ' · ' + conv.other_party"></span>
+                                <span class="w-2 h-2 rounded-full shrink-0" :class="conv.can_chat ? 'bg-emerald-400' : 'bg-stone-600'"></span>
+                            </div>
+                            <p class="text-xs text-stone-500 truncate mt-1" x-text="conv.last_message || 'No messages yet'"></p>
+                        </button>
+                    </template>
+                    <div x-show="conversations.length === 0" class="p-6 text-center text-stone-500 text-xs">
+                        No chats yet. Accept an order to start delivering and chatting with the customer.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Thread (right pane) -->
+            <div class="flex-1 flex-col min-h-0"
+                 :class="mobileView === 'list' ? 'hidden sm:flex' : 'flex'">
+
+                <template x-if="!activeOrderId">
+                    <div class="flex-1 flex flex-col items-center justify-center text-center p-6">
+                        <div class="w-14 h-14 rounded-2xl bg-[#14131a] border border-[#2a2731] flex items-center justify-center text-stone-500 mb-3">
+                            <i data-lucide="message-square" class="w-7 h-7"></i>
+                        </div>
+                        <p class="text-stone-500 text-sm">Select a conversation to start chatting</p>
+                    </div>
+                </template>
+
+                <template x-if="activeOrderId">
+                    <div class="flex-1 flex flex-col min-h-0">
+                        <div class="p-4 border-b border-[#1e1c25] flex items-center gap-3 shrink-0">
+                            <button @click="backToList()" class="sm:hidden p-1.5 -ml-1 rounded-lg text-stone-400 hover:text-white hover:bg-[#1e1c25] transition">
+                                <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                            </button>
+                            <div class="min-w-0 flex-1">
+                                <p class="text-sm font-bold text-white truncate" x-text="'Order #' + activeOrderId"></p>
+                            </div>
+                            <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded-md shrink-0"
+                                  :class="canSend ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' : 'bg-stone-800 text-stone-500 border border-[#2a2731]'"
+                                  x-text="canSend ? 'Active' : 'Closed'"></span>
+                        </div>
+
+                        <div x-ref="messageList" class="flex-1 overflow-y-auto custom-scroll p-4 space-y-3">
+                            <template x-for="msg in messages" :key="msg.id">
+                                <div class="flex" :class="msg.is_me ? 'justify-end' : 'justify-start'">
+                                    <div class="max-w-[75%] rounded-2xl px-3.5 py-2.5 text-sm"
+                                         :class="msg.is_me ? 'bg-[#b08d57] text-[#0f0e13] font-medium' : 'bg-[#1e1c25] text-stone-200'">
+                                        <p x-text="msg.message" class="break-words"></p>
+                                        <span class="block text-[10px] mt-1 opacity-70" x-text="msg.created_at"></span>
+                                    </div>
+                                </div>
+                            </template>
+                            <div x-show="!loading && messages.length === 0" class="text-center text-stone-500 text-xs py-8">
+                                No messages yet. Say hello!
+                            </div>
+                        </div>
+
+                        <div class="p-3 sm:p-4 border-t border-[#1e1c25] shrink-0">
+                            <div x-show="!canSend" class="text-xs text-stone-500 text-center py-2">
+                                This chat is closed. Messaging is only available while the order is out for delivery.
+                            </div>
+                            <form x-show="canSend" @submit.prevent="send()" class="flex items-center gap-2">
+                                <input x-model="draft" type="text" placeholder="Type a message..."
+                                    class="cd-input flex-1 bg-[#0f0e13] border border-[#2a2731] rounded-xl px-4 py-2.5 text-sm text-white placeholder-stone-600 focus:outline-none transition">
+                                <button type="submit" :disabled="sending || !draft.trim()"
+                                    class="w-11 h-11 rounded-xl bg-[#b08d57] hover:bg-[#c9a36b] disabled:opacity-50 text-[#0f0e13] flex items-center justify-center transition shrink-0">
+                                    <i data-lucide="send" class="w-4 h-4"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -451,11 +549,14 @@
     const DECLINE_URL = (id) => `{{ url('/delivery/orders') }}/${id}/decline`;
     const DELIVERED_URL = (id) => `{{ url('/delivery/orders') }}/${id}/delivered`;
     const TOGGLE_ONLINE_URL = "{{ route('delivery.online.toggle') }}";
+    const CHAT_LIST_URL = "{{ route('delivery.chats.index') }}";
+    const CHAT_BASE_URL = "{{ url('/delivery/chats') }}";
     const CSRF_TOKEN = document.querySelector('meta[name="csrf-token"]').content;
 
     function deliveryApp() {
         return {
             mobileNavOpen: false,
+            showChat: false,
             orders: INITIAL_ORDERS || [],
             activeTab: 'all',
             actionId: null,
@@ -670,6 +771,126 @@
                     osc.start(); osc.stop(ctx.currentTime + 0.4);
                 } catch (e) {}
             }
+        };
+    }
+
+    /**
+     * Real-time chat (Laravel Echo + Reverb).
+     * Conversation opens once the driver accepts an order, closes on delivery.
+     */
+    function chatApp(role) {
+        return {
+            role,
+            conversations: [],
+            activeOrderId: null,
+            messages: [],
+            canSend: false,
+            draft: '',
+            loading: false,
+            sending: false,
+            mobileView: 'list',
+            channel: null,
+            pollTimer: null,
+
+            init() {
+                this.loadConversations();
+                this.pollTimer = setInterval(() => this.loadConversations(), 15000);
+            },
+
+            async loadConversations() {
+                try {
+                    const res = await fetch(CHAT_LIST_URL, { headers: { 'Accept': 'application/json' } });
+                    if (!res.ok) return;
+                    const data = await res.json();
+                    this.conversations = data.conversations;
+
+                    if (this.activeOrderId) {
+                        const current = this.conversations.find(c => c.order_id === this.activeOrderId);
+                        if (current) this.canSend = current.can_chat;
+                    }
+                } catch (e) {
+                    console.error('Failed loading conversations', e);
+                }
+            },
+
+            async openConversation(conv) {
+                this.activeOrderId = conv.order_id;
+                this.mobileView = 'thread';
+                this.loading = true;
+                this.messages = [];
+
+                try {
+                    const res = await fetch(`${CHAT_BASE_URL}/${conv.order_id}/messages`, { headers: { 'Accept': 'application/json' } });
+                    const data = await res.json();
+                    if (res.ok) {
+                        this.messages = data.messages;
+                        this.canSend = data.can_send;
+                    }
+                } catch (e) {
+                    console.error('Failed loading messages', e);
+                } finally {
+                    this.loading = false;
+                    this.$nextTick(() => { this.scrollToBottom(); lucide.createIcons(); });
+                }
+
+                this.subscribeToChannel(conv.order_id);
+            },
+
+            backToList() {
+                this.mobileView = 'list';
+            },
+
+            subscribeToChannel(orderId) {
+                if (!window.Echo) return;
+
+                if (this.channel) {
+                    window.Echo.leave(this.channel.name);
+                }
+
+                this.channel = window.Echo.private(`order.${orderId}.chat`)
+                    .listen('.message.sent', (e) => {
+                        if (e.order_id !== this.activeOrderId) return;
+                        this.messages.push(e);
+                        this.$nextTick(() => this.scrollToBottom());
+                        this.loadConversations();
+                    });
+            },
+
+            async send() {
+                const text = this.draft.trim();
+                if (!text || !this.canSend || this.sending) return;
+
+                this.sending = true;
+                try {
+                    const res = await fetch(`${CHAT_BASE_URL}/${this.activeOrderId}/messages`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': CSRF_TOKEN,
+                            'Accept': 'application/json',
+                        },
+                        body: JSON.stringify({ message: text }),
+                    });
+                    const data = await res.json();
+                    if (res.ok) {
+                        this.messages.push(data.sent);
+                        this.draft = '';
+                        this.$nextTick(() => this.scrollToBottom());
+                        this.loadConversations();
+                    } else {
+                        alert(data.message || 'Could not send message.');
+                    }
+                } catch (e) {
+                    alert('Network error while sending message.');
+                } finally {
+                    this.sending = false;
+                }
+            },
+
+            scrollToBottom() {
+                const el = this.$refs.messageList;
+                if (el) el.scrollTop = el.scrollHeight;
+            },
         };
     }
 
