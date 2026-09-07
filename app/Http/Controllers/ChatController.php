@@ -6,6 +6,7 @@ use App\Events\ChatMessageSent;
 use App\Models\ChatMessage;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ChatController extends Controller
 {
@@ -15,7 +16,7 @@ class ChatController extends Controller
      */
     public function customerConversations()
     {
-        $userId = auth()->id();
+        $userId = Auth::id();
 
         $orders = Order::with('deliveryUser')
             ->where('user_id', $userId)
@@ -32,7 +33,7 @@ class ChatController extends Controller
      */
     public function driverConversations()
     {
-        $userId = auth()->id();
+        $userId = Auth::id();
 
         $orders = Order::with('user')
             ->where('delivery_user_id', $userId)
@@ -105,7 +106,7 @@ class ChatController extends Controller
 
         $chatMessage = ChatMessage::create([
             'order_id'  => $order->id,
-            'sender_id' => auth()->id(),
+            'sender_id' => Auth::id(),
             'message'   => $data['message'],
         ]);
 
@@ -124,7 +125,7 @@ class ChatController extends Controller
             'id'          => $m->id,
             'sender_id'   => $m->sender_id,
             'sender_name' => $m->sender->fullname ?? $m->sender->name ?? 'User',
-            'is_me'       => $m->sender_id === auth()->id(),
+            'is_me'       => $m->sender_id === Auth::id(),
             'message'     => $m->message,
             'created_at'  => $m->created_at->format('H:i'),
         ];
@@ -132,7 +133,7 @@ class ChatController extends Controller
 
     protected function authorizeParticipant(Order $order)
     {
-        $userId = auth()->id();
+        $userId = Auth::id();
         abort_unless(
             $userId === $order->user_id || $userId === $order->delivery_user_id,
             403,
