@@ -1,6 +1,5 @@
 <!-- SECTION: Real-Time Chat Support (Permanent Split on PC, Responsive on Mobile) -->
-<template x-if="showChat">
-<div class="flex-1 flex h-full min-h-0 bg-[#14131a]/40 w-full overflow-hidden" x-data="chatApp('driver')" x-init="init()">
+<div x-show="showChat" x-cloak class="flex-1 flex h-full min-h-0 bg-[#14131a]/40 w-full overflow-hidden" x-data="chatApp('driver')" x-init="init()">
     <div class="flex h-full w-full overflow-hidden">
 
         <!-- Conversation List (Left Pane) -->
@@ -125,4 +124,3 @@
         </div>
     </div>
 </div>
-</template>

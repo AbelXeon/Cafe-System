@@ -340,14 +340,35 @@
             pollTimer: null,
 
             init() {
-                this.loadConversations();
-                this.pollTimer = setInterval(() => this.loadConversations(), 10000);
+                // The component stays mounted for the whole page session (it's
+                // x-show, not x-if) -- only the poll timer and the Echo
+                // subscription turn on/off with the tab. That avoids tearing
+                // down this.messages while an Echo callback or a fetch is
+                // still in flight, which is what caused the "_x_effects" /
+                // "cannot read properties of undefined" crash flood.
+                this.$watch('showChat', (value) => {
+                    if (value) {
+                        this.startLive();
+                    } else {
+                        this.stopLive();
+                    }
+                });
+
+                if (this.showChat) {
+                    this.startLive();
+                }
             },
 
-            // Alpine calls this automatically when the component is removed
-            // from the DOM (i.e. when showChat flips back to false and the
-            // x-if in section-chat.blade.php tears the element down).
-            destroy() {
+            startLive() {
+                if (this.pollTimer) return; // already running
+                this.loadConversations();
+                this.pollTimer = setInterval(() => this.loadConversations(), 10000);
+                if (this.activeOrderId) {
+                    this.subscribeToChannel(this.activeOrderId);
+                }
+            },
+
+            stopLive() {
                 if (this.pollTimer) {
                     clearInterval(this.pollTimer);
                     this.pollTimer = null;
