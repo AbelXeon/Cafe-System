@@ -9,13 +9,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Order;
 
 class DeliveryController extends Controller
 {
     public function dashboard()
     {
-        $driverId = auth()->id();
+        $driverId = Auth::id();
 
         $orders = $this->driverOrders($driverId)->get()->map(fn ($o) => $this->formatOrder($o));
 
@@ -29,7 +30,7 @@ class DeliveryController extends Controller
      */
     public function getLiveOrders()
     {
-        $driverId = auth()->id();
+        $driverId = Auth::id();
 
         $orders = $this->driverOrders($driverId)->get()->map(fn ($o) => $this->formatOrder($o));
 
@@ -57,7 +58,7 @@ class DeliveryController extends Controller
 
         $order->update([
             'status'            => 'out_for_delivery',
-            'delivery_user_id'  => auth()->id(),
+            'delivery_user_id'  => Auth::id(),
         ]);
 
         return response()->json([
@@ -79,7 +80,7 @@ class DeliveryController extends Controller
      */
     public function markDelivered(Request $request, Order $order)
     {
-        if ($order->delivery_user_id !== auth()->id()) {
+        if ($order->delivery_user_id !== Auth::id()) {
             return response()->json(['message' => 'This order is not assigned to you.'], 403);
         }
 
