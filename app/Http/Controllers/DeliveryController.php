@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rules\Password;
 use App\Models\Order;
 
 class DeliveryController extends Controller
@@ -25,9 +26,6 @@ class DeliveryController extends Controller
         return view('delivery.dashboard', compact('orders', 'online'));
     }
 
-    /**
-     * Polled every few seconds by the frontend.
-     */
     public function getLiveOrders()
     {
         $driverId = Auth::id();
@@ -47,9 +45,6 @@ class DeliveryController extends Controller
         ]);
     }
 
-    /**
-     * Driver accepts an incoming (ready) order.
-     */
     public function acceptOrder(Request $request, Order $order)
     {
         if ($order->status !== 'ready') {
@@ -67,17 +62,11 @@ class DeliveryController extends Controller
         ]);
     }
 
-    /**
-     * Driver declines — order stays "ready" and available to other drivers.
-     */
     public function declineOrder(Request $request, Order $order)
     {
         return response()->json(['message' => 'Order skipped.']);
     }
 
-    /**
-     * Driver marks the order as delivered.
-     */
     public function markDelivered(Request $request, Order $order)
     {
         if ($order->delivery_user_id !== Auth::id()) {
@@ -92,9 +81,6 @@ class DeliveryController extends Controller
         ]);
     }
 
-    /**
-     * Toggle the driver's online/offline status (stored in session).
-     */
     public function toggleOnline(Request $request)
     {
         $current = Session::get('delivery_online', false);
@@ -104,10 +90,66 @@ class DeliveryController extends Controller
     }
 
     /**
-     * Base query for the orders this driver should see.
-     * NOTE: adjust relationship/column names (user, delivery_user_id)
-     *       to match your actual Order model.
+     * Update Driver Profile details (Name, Phone, Email)
      */
+    public function updateProfile(Request $request)
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        $data = $request->validate([
+            'name'  => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
+            'phone' => ['nullable', 'string', 'max:25'],
+        ]);
+
+        // Support both name or fullname column
+        if (\Schema::hasColumn('users', 'fullname')) {
+            $user->fullname = $data['name'];
+        }
+        $user->name = $data['name'];
+        $user->email = $data['email'];
+
+        if (\Schema::hasColumn('users', 'phone')) {
+            $user->phone = $data['phone'] ?? null;
+        }
+
+        $user->save();
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Courier profile updated successfully.',
+            'user'    => [
+                'name'  => $user->fullname ?? $user->name,
+                'email' => $user->email,
+                'phone' => $user->phone ?? null,
+            ]
+        ]);
+    }
+
+    /**
+     * Update Driver Password
+     */
+    public function updatePassword(Request $request)
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        $validated = $request->validate([
+            'current_password' => ['required', 'current_password'],
+            'password'         => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        $user->update([
+            'password' => Hash::make($validated['password']),
+        ]);
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Password updated successfully.',
+        ]);
+    }
+
     protected function driverOrders($driverId)
     {
         return Order::with(['items', 'user'])
@@ -121,11 +163,6 @@ class DeliveryController extends Controller
             ->orderBy('created_at', 'desc');
     }
 
-    /**
-     * Shape an order for the frontend.
-     * Delivery address/lat/lng live directly on the orders table,
-     * so no location relation is needed here.
-     */
     protected function formatOrder($order)
     {
         $customer = $order->user;
@@ -139,12 +176,10 @@ class DeliveryController extends Controller
             'created_at'     => optional($order->created_at)->format('M d, H:i'),
             'time_ago'       => $order->created_at?->diffForHumans(),
 
-            // customer info
             'customer_name'  => $customer?->fullname ?? $customer?->name ?? 'Customer',
             'customer_phone' => $customer?->phone ?? null,
             'customer_email' => $customer?->email ?? null,
 
-            // delivery destination (columns on the order itself)
             'address_text'   => $order->delivery_address,
             'latitude'       => $order->latitude,
             'longitude'      => $order->longitude,

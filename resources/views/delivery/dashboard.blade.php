@@ -81,10 +81,15 @@
     @include('delivery.partials.sidebar')
 
     <!-- 2. Include Dispatch Queue -->
-    @include('delivery.partials.section-orders')
+    <div x-show="activeView === 'orders'" class="flex-1 flex min-h-0 h-full overflow-hidden">
+        @include('delivery.partials.section-orders')
+    </div>
 
     <!-- 3. Include Driver Chat Support -->
     @include('delivery.partials.section-chat')
+
+    <!-- 4. Include Driver Account Settings -->
+    @include('delivery.partials.section-profile')
 
 </div>
 
@@ -100,10 +105,14 @@
     const CHAT_BASE_URL = "{{ url('/delivery/chats') }}";
     const CSRF_TOKEN = document.querySelector('meta[name="csrf-token"]').content;
     const CURRENT_USER_ID = {{ Auth::id() }};
+    const PROFILE_UPDATE_URL = "{{ route('delivery.profile.update') }}";
+    const PASSWORD_UPDATE_URL = "{{ route('delivery.password.update') }}";
+
 
     function deliveryApp() {
         return {
             mobileNavOpen: false,
+            activeView: 'orders', // 'orders' | 'chat' | 'profile'
             showChat: false,
             orders: INITIAL_ORDERS || [],
             activeTab: 'all',
@@ -117,6 +126,12 @@
                 this.updateCounts();
                 setInterval(() => this.fetchLiveOrders(), 6000);
                 setTimeout(() => lucide.createIcons(), 50);
+            },
+
+            showSection(view) {
+                this.activeView = view;
+                this.showChat = (view === 'chat');
+                this.$nextTick(() => lucide.createIcons());
             },
 
             get hasActiveDelivery() {
@@ -427,7 +442,6 @@
 
                 window.Echo.private(newChannelName)
                     .listen('.message.sent', (e) => {
-                        // Instantly update sidebar snippet without network lag
                         const conv = this.conversations.find(c => c.order_id === e.order_id);
                         if (conv) {
                             conv.last_message = e.message;
@@ -457,7 +471,6 @@
                 const now = new Date();
                 const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
 
-                // ⚡ 1. INSTANT 0ms Optimistic UI update for Chat Bubble
                 const optimisticMsg = {
                     temp_id: tempId,
                     message: text,
@@ -469,7 +482,6 @@
                 this.messages.push(optimisticMsg);
                 this.draft = '';
 
-                // ⚡ 2. Instant Local update for left conversation snippet
                 const activeConv = this.conversations.find(c => c.order_id === this.activeOrderId);
                 if (activeConv) {
                     activeConv.last_message = text;
@@ -512,6 +524,105 @@
                 const el = this.$refs.messageList;
                 if (el) el.scrollTop = el.scrollHeight;
             },
+        };
+    }
+
+    /**
+     * Driver Profile & Security Component
+     */
+    function driverProfileApp() {
+        return {
+            savingProfile: false,
+            savingPassword: false,
+            showPasswords: false,
+            profileError: '',
+            passwordError: '',
+
+            profileForm: {
+                name: @json(Auth::user()->fullname ?? Auth::user()->name ?? ''),
+                email: @json(Auth::user()->email ?? ''),
+                phone: @json(Auth::user()->phone ?? ''),
+            },
+
+            passwordForm: {
+                current_password: '',
+                password: '',
+                password_confirmation: ''
+            },
+
+            init() {
+                this.$nextTick(() => lucide.createIcons());
+            },
+
+            async saveProfile() {
+                this.savingProfile = true;
+                this.profileError = '';
+
+                try {
+                    const res = await fetch(PROFILE_UPDATE_URL, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': CSRF_TOKEN,
+                            'Accept': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            name: this.profileForm.name,
+                            email: this.profileForm.email,
+                            phone: this.profileForm.phone
+                        })
+                    });
+
+                    const data = await res.json();
+
+                    if (res.ok) {
+                        alert('Courier profile updated successfully!');
+                    } else {
+                        this.profileError = data.message || (data.errors ? Object.values(data.errors).flat().join(' ') : 'Could not update profile.');
+                    }
+                } catch (e) {
+                    this.profileError = 'Network error while updating profile.';
+                } finally {
+                    this.savingProfile = false;
+                    this.$nextTick(() => lucide.createIcons());
+                }
+            },
+
+            async updatePassword() {
+                if (this.passwordForm.password !== this.passwordForm.password_confirmation) {
+                    this.passwordError = 'New password and confirmation do not match.';
+                    return;
+                }
+
+                this.savingPassword = true;
+                this.passwordError = '';
+
+                try {
+                    const res = await fetch(PASSWORD_UPDATE_URL, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': CSRF_TOKEN,
+                            'Accept': 'application/json',
+                        },
+                        body: JSON.stringify(this.passwordForm)
+                    });
+
+                    const data = await res.json();
+
+                    if (res.ok) {
+                        this.passwordForm = { current_password: '', password: '', password_confirmation: '' };
+                        alert('Password updated successfully!');
+                    } else {
+                        this.passwordError = data.message || (data.errors ? Object.values(data.errors).flat().join(' ') : 'Current password was incorrect.');
+                    }
+                } catch (e) {
+                    this.passwordError = 'Network error while updating password.';
+                } finally {
+                    this.savingPassword = false;
+                    this.$nextTick(() => lucide.createIcons());
+                }
+            }
         };
     }
 

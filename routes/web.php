@@ -36,6 +36,8 @@ Route::middleware(['auth', 'role:staff'])->prefix('staff')->name('staff.')->grou
     Route::patch('/orders/{order}/status', [StaffController::class, 'updateStatus'])->name('orders.status');
 });
 
+
+
 // Delivery Routes
 Route::middleware(['auth', 'role:delivery'])->prefix('delivery')->name('delivery.')->group(function () {
     Route::get('/dashboard', [DeliveryController::class, 'dashboard'])->name('dashboard');
@@ -45,11 +47,16 @@ Route::middleware(['auth', 'role:delivery'])->prefix('delivery')->name('delivery
     Route::post('/orders/{order}/delivered', [DeliveryController::class, 'markDelivered'])->name('orders.delivered');
     Route::post('/online', [DeliveryController::class, 'toggleOnline'])->name('online.toggle');
 
+    // Driver Profile & Password Settings
+    Route::patch('/profile', [DeliveryController::class, 'updateProfile'])->name('profile.update');
+    Route::put('/password', [DeliveryController::class, 'updatePassword'])->name('password.update');
+
     // Chat (driver side)
     Route::get('/chats', [ChatController::class, 'driverConversations'])->name('chats.index');
     Route::get('/chats/{order}/messages', [ChatController::class, 'messages'])->name('chats.messages');
     Route::post('/chats/{order}/messages', [ChatController::class, 'send'])->name('chats.send');
 });
+
 
 // Customer Routes
 Route::middleware(['auth', 'role:customer'])->prefix('user')->name('user.')->group(function () {
@@ -63,7 +70,7 @@ Route::middleware(['auth', 'role:customer'])->prefix('user')->name('user.')->gro
      Route::patch('/profile', [UsersController::class, 'updateProfile'])->name('profile.update');
     Route::put('/password', [UsersController::class, 'updatePassword'])->name('password.update');
 
-    
+
     // Chat (customer side)
     Route::get('/chats', [ChatController::class, 'customerConversations'])->name('chats.index');
     Route::get('/chats/{order}/messages', [ChatController::class, 'messages'])->name('chats.messages');

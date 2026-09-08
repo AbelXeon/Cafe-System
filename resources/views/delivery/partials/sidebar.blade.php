@@ -51,56 +51,64 @@
         <nav class="px-4 pb-4 space-y-1 overflow-y-auto custom-scroll">
             <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-stone-500 block mb-1">Delivery Queue</span>
 
-            <button @click="showChat = false; activeTab = 'all'; mobileNavOpen = false" 
-                    :class="(activeTab === 'all' && !showChat) ? 'active' : ''" 
+            <button @click="showSection('orders'); activeTab = 'all'; mobileNavOpen = false" 
+                    :class="(activeView === 'orders' && activeTab === 'all') ? 'active' : ''" 
                     class="side-link w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-semibold flex items-center justify-between cursor-pointer">
                 <div class="flex items-center gap-3">
                     <i data-lucide="layers" class="w-4 h-4"></i><span>All Orders</span>
                 </div>
-                <span class="text-xs px-2 py-0.5 rounded-full font-bold" :class="(activeTab === 'all' && !showChat) ? 'bg-[#0f0e13] text-[#b08d57]' : 'bg-[#1e1c25] text-stone-400'" x-text="orders.length"></span>
+                <span class="text-xs px-2 py-0.5 rounded-full font-bold" :class="(activeView === 'orders' && activeTab === 'all') ? 'bg-[#0f0e13] text-[#b08d57]' : 'bg-[#1e1c25] text-stone-400'" x-text="orders.length"></span>
             </button>
 
-            <button @click="showChat = false; activeTab = 'ready'; mobileNavOpen = false" 
-                    :class="(activeTab === 'ready' && !showChat) ? 'active' : ''" 
+            <button @click="showSection('orders'); activeTab = 'ready'; mobileNavOpen = false" 
+                    :class="(activeView === 'orders' && activeTab === 'ready') ? 'active' : ''" 
                     class="side-link w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-semibold flex items-center justify-between cursor-pointer">
                 <div class="flex items-center gap-3">
                     <i data-lucide="bell-ring" class="w-4 h-4"></i><span>Incoming</span>
                 </div>
-                <span class="text-xs px-2 py-0.5 rounded-full font-bold" :class="(activeTab === 'ready' && !showChat) ? 'bg-[#0f0e13] text-amber-500' : 'bg-amber-500/20 text-amber-400'" x-text="counts.ready"></span>
+                <span class="text-xs px-2 py-0.5 rounded-full font-bold" :class="(activeView === 'orders' && activeTab === 'ready') ? 'bg-[#0f0e13] text-amber-500' : 'bg-amber-500/20 text-amber-400'" x-text="counts.ready"></span>
             </button>
 
-            <button @click="showChat = false; activeTab = 'out_for_delivery'; mobileNavOpen = false" 
-                    :class="(activeTab === 'out_for_delivery' && !showChat) ? 'active' : ''" 
+            <button @click="showSection('orders'); activeTab = 'out_for_delivery'; mobileNavOpen = false" 
+                    :class="(activeView === 'orders' && activeTab === 'out_for_delivery') ? 'active' : ''" 
                     class="side-link w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-semibold flex items-center justify-between cursor-pointer">
                 <div class="flex items-center gap-3">
                     <i data-lucide="bike" class="w-4 h-4"></i><span>Out for Delivery</span>
                 </div>
-                <span class="text-xs px-2 py-0.5 rounded-full font-bold" :class="(activeTab === 'out_for_delivery' && !showChat) ? 'bg-[#0f0e13] text-sky-400' : 'bg-sky-500/20 text-sky-400'" x-text="counts.out_for_delivery"></span>
+                <span class="text-xs px-2 py-0.5 rounded-full font-bold" :class="(activeView === 'orders' && activeTab === 'out_for_delivery') ? 'bg-[#0f0e13] text-sky-400' : 'bg-sky-500/20 text-sky-400'" x-text="counts.out_for_delivery"></span>
             </button>
 
-            <button @click="showChat = false; activeTab = 'delivered'; mobileNavOpen = false" 
-                    :class="(activeTab === 'delivered' && !showChat) ? 'active' : ''" 
+            <button @click="showSection('orders'); activeTab = 'delivered'; mobileNavOpen = false" 
+                    :class="(activeView === 'orders' && activeTab === 'delivered') ? 'active' : ''" 
                     class="side-link w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-semibold flex items-center justify-between cursor-pointer">
                 <div class="flex items-center gap-3">
                     <i data-lucide="check-circle-2" class="w-4 h-4"></i><span>Delivered</span>
                 </div>
-                <span class="text-xs px-2 py-0.5 rounded-full font-bold" :class="(activeTab === 'delivered' && !showChat) ? 'bg-[#0f0e13] text-emerald-400' : 'bg-emerald-500/20 text-emerald-400'" x-text="counts.delivered"></span>
+                <span class="text-xs px-2 py-0.5 rounded-full font-bold" :class="(activeView === 'orders' && activeTab === 'delivered') ? 'bg-[#0f0e13] text-emerald-400' : 'bg-emerald-500/20 text-emerald-400'" x-text="counts.delivered"></span>
             </button>
 
             <div class="pt-3 mt-3 border-t border-[#1e1c25]">
-                <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-stone-500 block mb-1">Support</span>
-                <button @click="showChat = true; mobileNavOpen = false" 
-                        :class="showChat ? 'active' : ''" 
+                <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-stone-500 block mb-1">Communication</span>
+                <button @click="showSection('chat'); mobileNavOpen = false" 
+                        :class="activeView === 'chat' ? 'active' : ''" 
                         class="side-link w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-3 cursor-pointer">
                     <i data-lucide="message-square" class="w-4 h-4"></i><span>Chat Support</span>
                 </button>
             </div>
 
             <div class="pt-3 mt-3 border-t border-[#1e1c25]">
-                <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-stone-500 block mb-1">Sound Alert</span>
-                <button @click="toggleSound()" class="side-link w-full text-left px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center justify-between cursor-pointer">
+                <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-stone-500 block mb-1">Settings & Profile</span>
+                
+                <!-- Account Settings Tab -->
+                <button @click="showSection('profile'); mobileNavOpen = false" 
+                        :class="activeView === 'profile' ? 'active' : ''" 
+                        class="side-link w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-3 cursor-pointer">
+                    <i data-lucide="user-cog" class="w-4 h-4"></i><span>Account Settings</span>
+                </button>
+
+                <button @click="toggleSound()" class="side-link w-full text-left px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center justify-between cursor-pointer mt-1">
                     <div class="flex items-center gap-2.5">
-                        <i :data-lucide="soundEnabled ? 'volume-2' : 'volume-x'" class="w-4 h-4"></i><span>Audio Notification</span>
+                        <i :data-lucide="soundEnabled ? 'volume-2' : 'volume-x'" class="w-4 h-4"></i><span>Audio Alerts</span>
                     </div>
                     <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded" :class="soundEnabled ? 'bg-emerald-500/20 text-emerald-400' : 'bg-stone-800 text-stone-500'" x-text="soundEnabled ? 'ON' : 'OFF'"></span>
                 </button>
