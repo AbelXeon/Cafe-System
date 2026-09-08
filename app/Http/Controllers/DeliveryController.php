@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rules\Password;
 use App\Models\Order;
 
@@ -89,9 +90,7 @@ class DeliveryController extends Controller
         return response()->json(['online' => ! $current]);
     }
 
-    /**
-     * Update Driver Profile details (Name, Phone, Email)
-     */
+    
     public function updateProfile(Request $request)
     {
         /** @var \App\Models\User $user */
@@ -104,13 +103,13 @@ class DeliveryController extends Controller
         ]);
 
         // Support both name or fullname column
-        if (\Schema::hasColumn('users', 'fullname')) {
+        if (Schema::hasColumn('users', 'fullname')) {
             $user->fullname = $data['name'];
         }
         $user->name = $data['name'];
         $user->email = $data['email'];
 
-        if (\Schema::hasColumn('users', 'phone')) {
+        if (Schema::hasColumn('users', 'phone')) {
             $user->phone = $data['phone'] ?? null;
         }
 
@@ -127,9 +126,7 @@ class DeliveryController extends Controller
         ]);
     }
 
-    /**
-     * Update Driver Password
-     */
+    
     public function updatePassword(Request $request)
     {
         /** @var \App\Models\User $user */

@@ -112,7 +112,7 @@
     function deliveryApp() {
         return {
             mobileNavOpen: false,
-            activeView: 'orders', // 'orders' | 'chat' | 'profile'
+            activeView: 'orders', 
             showChat: false,
             orders: INITIAL_ORDERS || [],
             activeTab: 'all',
