@@ -99,6 +99,7 @@
     const CHAT_LIST_URL = "{{ route('delivery.chats.index') }}";
     const CHAT_BASE_URL = "{{ url('/delivery/chats') }}";
     const CSRF_TOKEN = document.querySelector('meta[name="csrf-token"]').content;
+    const CURRENT_USER_ID = {{ Auth::id() }};
 
     function deliveryApp() {
         return {
@@ -315,6 +316,14 @@
 
     /**
      * Ultra-Fast Driver Real-Time Chat (Instant Optimistic UI + WebSockets)
+     *
+     * FIX (2026-09-08): this component now only mounts when showChat is true
+     * (section-chat.blade.php uses x-if instead of x-show for this). That means
+     * init() -- and the 10s poll it starts -- no longer fires on every page load
+     * regardless of whether the driver ever opens the chat tab. The destroy()
+     * method below is the other half of that fix: Alpine calls it automatically
+     * when x-if removes the component from the DOM, so the poll timer and the
+     * Echo channel subscription get cleaned up instead of leaking.
      */
     function chatApp(role) {
         return {
@@ -333,6 +342,20 @@
             init() {
                 this.loadConversations();
                 this.pollTimer = setInterval(() => this.loadConversations(), 10000);
+            },
+
+            // Alpine calls this automatically when the component is removed
+            // from the DOM (i.e. when showChat flips back to false and the
+            // x-if in section-chat.blade.php tears the element down).
+            destroy() {
+                if (this.pollTimer) {
+                    clearInterval(this.pollTimer);
+                    this.pollTimer = null;
+                }
+                if (window.Echo && this.currentChannelName) {
+                    window.Echo.leave(this.currentChannelName);
+                    this.currentChannelName = null;
+                }
             },
 
             async loadConversations() {
@@ -401,10 +424,17 @@
                 window.Echo.private(newChannelName)
                     .listen('.message.sent', (e) => {
                         if (e.order_id !== this.activeOrderId) return;
-                        
-                        const exists = this.messages.some(m => m.id && m.id === e.id);
+
+                        // Never trust is_me off the wire — the broadcast payload is
+                        // built once server-side (in the sender's request context)
+                        // and fanned out to everyone on the channel unchanged, so a
+                        // server-computed is_me would read "true" for every
+                        // recipient. Compute it locally instead.
+                        const incoming = { ...e, is_me: e.sender_id === CURRENT_USER_ID };
+
+                        const exists = this.messages.some(m => m.id && m.id === incoming.id);
                         if (!exists) {
-                            this.messages.push(e);
+                            this.messages.push(incoming);
                             this.$nextTick(() => {
                                 this.scrollToBottom();
                                 lucide.createIcons();

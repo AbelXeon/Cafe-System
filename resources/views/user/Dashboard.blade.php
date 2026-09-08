@@ -139,6 +139,7 @@
     const CHAT_LIST_URL = "{{ route('user.chats.index') }}";
     const CHAT_BASE_URL = "{{ url('/user/chats') }}";
     const CSRF_TOKEN = document.querySelector('meta[name="csrf-token"]').content;
+    const CURRENT_USER_ID = {{ Auth::id() }};
 
     document.addEventListener('alpine:init', () => {
         Alpine.store('toast', {
@@ -329,6 +330,12 @@
             }, 80);
         }
         setTimeout(() => lucide.createIcons(), 50);
+
+        // FIX (2026-09-08): lets components that only need to be "live" while
+        // their section is visible (chat's poll + websocket subscription) know
+        // when they've been shown or hidden, instead of running in the
+        // background from page load regardless of which tab is open.
+        window.dispatchEvent(new CustomEvent('section:changed', { detail: { target } }));
     }
 
     sideLinks.forEach(link => {
@@ -555,6 +562,13 @@
 
     /**
      * Ultra-Fast Real-Time Chat (Instant Optimistic UI + WebSockets)
+     *
+     * FIX (2026-09-08): this component used to call init() -> loadConversations()
+     * and start a 10s poll the instant the page loaded, even though "hidden" here
+     * is just a CSS class -- Alpine mounts x-data regardless of it. Now it stays
+     * idle until the chat section is actually shown (listens for the
+     * 'section:changed' event dispatched by showSection()), and stops polling /
+     * leaves its Echo channel the moment the user navigates to another tab.
      */
     function chatApp(role) {
         return {
@@ -571,8 +585,41 @@
             pollTimer: null,
 
             init() {
+                window.addEventListener('section:changed', (e) => {
+                    const target = e && e.detail ? e.detail.target : null;
+                    if (target === 'chat') {
+                        this.startLive();
+                    } else {
+                        this.stopLive();
+                    }
+                });
+
+                // Covers the edge case where chat is somehow the section
+                // already visible at page load instead of the default 'menu'.
+                const chatSection = document.getElementById('section-chat');
+                if (chatSection && !chatSection.classList.contains('hidden')) {
+                    this.startLive();
+                }
+            },
+
+            startLive() {
+                if (this.pollTimer) return; // already running, don't double it up
                 this.loadConversations();
                 this.pollTimer = setInterval(() => this.loadConversations(), 10000);
+                if (this.activeOrderId) {
+                    this.subscribeToChannel(this.activeOrderId);
+                }
+            },
+
+            stopLive() {
+                if (this.pollTimer) {
+                    clearInterval(this.pollTimer);
+                    this.pollTimer = null;
+                }
+                if (window.Echo && this.currentChannelName) {
+                    window.Echo.leave(this.currentChannelName);
+                    this.currentChannelName = null;
+                }
             },
 
             async loadConversations() {
@@ -641,10 +688,15 @@
                 window.Echo.private(newChannelName)
                     .listen('.message.sent', (e) => {
                         if (e.order_id !== this.activeOrderId) return;
-                        
-                        const exists = this.messages.some(m => m.id && m.id === e.id);
+
+                        // Never trust is_me off the wire -- see ChatMessageSent::broadcastWith(),
+                        // the payload is built once server-side and fanned out unchanged to
+                        // everyone on the channel. Compute it locally instead.
+                        const incoming = { ...e, is_me: e.sender_id === CURRENT_USER_ID };
+
+                        const exists = this.messages.some(m => m.id && m.id === incoming.id);
                         if (!exists) {
-                            this.messages.push(e);
+                            this.messages.push(incoming);
                             this.$nextTick(() => {
                                 this.scrollToBottom();
                                 lucide.createIcons();
