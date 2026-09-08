@@ -9,6 +9,9 @@ use App\Models\Product;
 use App\Models\Extra;
 use App\Models\SavedLocation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 
 class UsersController extends Controller
 {
@@ -143,14 +146,61 @@ class UsersController extends Controller
         return response()->json(['success' => true, 'order' => $formatted]);
     }
 
+    /**
+     * Update customer profile info (Name, Email, Phone)
+     */
+    public function updateProfile(Request $request)
+    {
+        $user = $request->user();
+
+        $validated = $request->validate([
+            'name'  => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
+            'phone' => ['nullable', 'string', 'max:30'],
+        ]);
+
+        $user->name = $validated['name'];
+        // Also support fullname if your User model uses fullname
+        if (in_array('fullname', $user->getFillable()) || isset($user->fullname)) {
+            $user->fullname = $validated['name'];
+        }
+        $user->email = $validated['email'];
+        $user->phone = $validated['phone'] ?? null;
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Profile updated successfully!',
+            'user'    => [
+                'name'  => $user->name,
+                'email' => $user->email,
+                'phone' => $user->phone,
+            ]
+        ]);
+    }
+
+    /**
+     * Update customer password
+     */
+    public function updatePassword(Request $request)
+    {
+        $validated = $request->validate([
+            'current_password' => ['required', 'current_password'],
+            'password'         => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        $request->user()->update([
+            'password' => Hash::make($validated['password']),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Password updated successfully!',
+        ]);
+    }
+
     protected function formatOrderForUser($order)
     {
-        // Calculate step index (1 to 5)
-        // 1 = pending / received
-        // 2 = preparing / accepted / in_kitchen / in_progress
-        // 3 = ready / awaiting_pickup
-        // 4 = out_for_delivery / on_the_way
-        // 5 = delivered / completed
         $step = 1;
         $statusKey = strtolower($order->status ?? 'pending');
 

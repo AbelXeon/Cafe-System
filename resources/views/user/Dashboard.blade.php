@@ -140,6 +140,8 @@
     const CHAT_BASE_URL = "{{ url('/user/chats') }}";
     const CSRF_TOKEN = document.querySelector('meta[name="csrf-token"]').content;
     const CURRENT_USER_ID = {{ Auth::id() }};
+    const PROFILE_UPDATE_URL = "{{ route('user.profile.update') }}";
+    const PASSWORD_UPDATE_URL = "{{ route('user.password.update') }}";
 
     document.addEventListener('alpine:init', () => {
         Alpine.store('toast', {
@@ -1130,9 +1132,140 @@
         };
     }
 
+    /**
+     * Account Profile, Security & Preferences Manager
+     */
+    function profileApp() {
+        return {
+            savingProfile: false,
+            savingPassword: false,
+            showPasswords: false,
+            profileError: '',
+            passwordError: '',
+
+            profileForm: {
+                name: @json(Auth::user()->name ?? Auth::user()->fullname ?? ''),
+                email: @json(Auth::user()->email ?? ''),
+                phone: @json(Auth::user()->phone ?? ''),
+            },
+
+            passwordForm: {
+                current_password: '',
+                password: '',
+                password_confirmation: ''
+            },
+
+            preferences: {
+                sound: localStorage.getItem('cd_pref_sound') !== 'false',
+                chatAlerts: localStorage.getItem('cd_pref_chat_alerts') !== 'false'
+            },
+
+            init() {
+                this.$nextTick(() => lucide.createIcons());
+            },
+
+            savePreferences() {
+                localStorage.setItem('cd_pref_sound', this.preferences.sound);
+                localStorage.setItem('cd_pref_chat_alerts', this.preferences.chatAlerts);
+                Alpine.store('toast').trigger('Preferences Saved', 'Your app notification settings have been updated.');
+            },
+
+            toggleSoundChime() {
+                this.preferences.sound = !this.preferences.sound;
+                this.savePreferences();
+                if (this.preferences.sound) {
+                    try {
+                        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+                        osc.frequency.setValueAtTime(880, ctx.currentTime + 0.15);
+                        gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
+                        osc.connect(gain); gain.connect(ctx.destination);
+                        osc.start(); osc.stop(ctx.currentTime + 0.35);
+                    } catch (e) {}
+                }
+            },
+
+            async saveProfile() {
+                this.savingProfile = true;
+                this.profileError = '';
+
+                try {
+                    const res = await fetch(PROFILE_UPDATE_URL, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': CSRF_TOKEN,
+                            'Accept': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            name: this.profileForm.name,
+                            email: this.profileForm.email,
+                            phone: this.profileForm.phone
+                        })
+                    });
+
+                    const data = await res.json();
+
+                    if (res.ok) {
+                        Alpine.store('toast').trigger('Profile Updated!', 'Your personal information was saved successfully.');
+                    } else {
+                        this.profileError = data.message || (data.errors ? Object.values(data.errors).flat().join(' ') : 'Could not update profile details.');
+                    }
+                } catch (e) {
+                    this.profileError = 'Network error while updating profile.';
+                } finally {
+                    this.savingProfile = false;
+                    this.$nextTick(() => lucide.createIcons());
+                }
+            },
+
+            async updatePassword() {
+                if (this.passwordForm.password !== this.passwordForm.password_confirmation) {
+                    this.passwordError = 'New password and confirmation do not match.';
+                    return;
+                }
+
+                this.savingPassword = true;
+                this.passwordError = '';
+
+                try {
+                    const res = await fetch(PASSWORD_UPDATE_URL, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': CSRF_TOKEN,
+                            'Accept': 'application/json',
+                        },
+                        body: JSON.stringify(this.passwordForm)
+                    });
+
+                    const data = await res.json();
+
+                    if (res.ok) {
+                        this.passwordForm = { current_password: '', password: '', password_confirmation: '' };
+                        Alpine.store('toast').trigger('Password Changed!', 'Your account security credentials have been updated.');
+                    } else {
+                        this.passwordError = data.message || (data.errors ? Object.values(data.errors).flat().join(' ') : 'Current password was incorrect.');
+                    }
+                } catch (e) {
+                    this.passwordError = 'Network error while updating password.';
+                } finally {
+                    this.savingPassword = false;
+                    this.$nextTick(() => lucide.createIcons());
+                }
+            }
+        };
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
         lucide.createIcons();
     });
+
+
 </script>
 </body>
 </html>
