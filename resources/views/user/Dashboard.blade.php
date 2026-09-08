@@ -580,8 +580,6 @@
                     }
                 });
 
-                // Covers the edge case where chat is somehow the section
-                // already visible at page load instead of the default 'menu'.
                 const chatSection = document.getElementById('section-chat');
                 if (chatSection && !chatSection.classList.contains('hidden')) {
                     this.startLive();
@@ -589,7 +587,7 @@
             },
 
             startLive() {
-                if (this.pollTimer) return; // already running, don't double it up
+                if (this.pollTimer) return;
                 this.loadConversations();
                 this.pollTimer = setInterval(() => this.loadConversations(), 10000);
                 if (this.activeOrderId) {
@@ -673,11 +671,18 @@
 
                 window.Echo.private(newChannelName)
                     .listen('.message.sent', (e) => {
+                        // Instant update for sidebar without lag
+                        const conv = this.conversations.find(c => c.order_id === e.order_id);
+                        if (conv) {
+                            conv.last_message = e.message;
+                            conv.last_at = e.created_at;
+                        }
+
                         if (e.order_id !== this.activeOrderId) return;
 
                         const incoming = { ...e, is_me: e.sender_id === CURRENT_USER_ID };
 
-                        const exists = this.messages.some(m => m.id && m.id === incoming.id);
+                        const exists = this.messages.some(m => (m.id && m.id === incoming.id) || (m.temp_id && m.message === incoming.message));
                         if (!exists) {
                             this.messages.push(incoming);
                             this.$nextTick(() => {
@@ -685,7 +690,6 @@
                                 lucide.createIcons();
                             });
                         }
-                        this.loadConversations();
                     });
             },
 
@@ -697,7 +701,7 @@
                 const now = new Date();
                 const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
 
-                // ⚡ INSTANT 0ms Optimistic UI update
+                // ⚡ 1. INSTANT 0ms Optimistic UI update
                 const optimisticMsg = {
                     temp_id: tempId,
                     message: text,
@@ -708,6 +712,14 @@
 
                 this.messages.push(optimisticMsg);
                 this.draft = '';
+
+                // ⚡ 2. Instant local snippet update
+                const activeConv = this.conversations.find(c => c.order_id === this.activeOrderId);
+                if (activeConv) {
+                    activeConv.last_message = text;
+                    activeConv.last_at = timeStr;
+                }
+
                 this.$nextTick(() => {
                     this.scrollToBottom();
                     lucide.createIcons();
@@ -730,7 +742,6 @@
                         if (idx !== -1) {
                             this.messages.splice(idx, 1, data.sent);
                         }
-                        this.loadConversations();
                     } else {
                         optimisticMsg.sending = false;
                         alert(data.message || 'Could not send message.');
@@ -1123,6 +1134,5 @@
         lucide.createIcons();
     });
 </script>
-
 </body>
 </html>

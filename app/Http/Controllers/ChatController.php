@@ -50,7 +50,7 @@ class ChatController extends Controller
             ? ($order->deliveryUser?->fullname ?? $order->deliveryUser?->name ?? 'Driver')
             : ($order->user?->fullname ?? $order->user?->name ?? 'Customer');
 
-        $lastMessage = ChatMessage::where('order_id', $order->id)->latest()->first();
+        $lastMessage = ChatMessage::where('order_id', $order->id)->latest('id')->first();
 
         return [
             'order_id'     => $order->id,
@@ -58,7 +58,7 @@ class ChatController extends Controller
             'status'       => $order->status,
             'can_chat'     => $order->status === 'out_for_delivery',
             'last_message' => $lastMessage?->message,
-            'last_at'      => $lastMessage?->created_at?->diffForHumans(),
+            'last_at'      => $lastMessage?->created_at?->format('H:i'),
         ];
     }
 
@@ -87,8 +87,7 @@ class ChatController extends Controller
     }
 
     /**
-     * Send a message. Only allowed while the order is actively
-     * out for delivery — chat opens on accept, closes on delivery.
+     * Send a message. Ultra-fast broadcast dispatch.
      */
     public function send(Request $request, Order $order)
     {
@@ -110,8 +109,10 @@ class ChatController extends Controller
             'message'   => $data['message'],
         ]);
 
+        // Eager load sender relation instantly for 0ms formatting
         $chatMessage->load('sender');
 
+        // Broadcast to receiver via Reverb
         broadcast(new ChatMessageSent($chatMessage))->toOthers();
 
         return response()->json([
@@ -123,6 +124,7 @@ class ChatController extends Controller
     {
         return [
             'id'          => $m->id,
+            'order_id'    => $m->order_id,
             'sender_id'   => $m->sender_id,
             'sender_name' => $m->sender->fullname ?? $m->sender->name ?? 'User',
             'is_me'       => $m->sender_id === Auth::id(),

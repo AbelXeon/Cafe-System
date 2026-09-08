@@ -329,7 +329,6 @@
             pollTimer: null,
 
             init() {
-                
                 this.$watch('showChat', (value) => {
                     if (value) {
                         this.startLive();
@@ -428,10 +427,18 @@
 
                 window.Echo.private(newChannelName)
                     .listen('.message.sent', (e) => {
+                        // Instantly update sidebar snippet without network lag
+                        const conv = this.conversations.find(c => c.order_id === e.order_id);
+                        if (conv) {
+                            conv.last_message = e.message;
+                            conv.last_at = e.created_at;
+                        }
+
                         if (e.order_id !== this.activeOrderId) return;
+                        
                         const incoming = { ...e, is_me: e.sender_id === CURRENT_USER_ID };
 
-                        const exists = this.messages.some(m => m.id && m.id === incoming.id);
+                        const exists = this.messages.some(m => (m.id && m.id === incoming.id) || (m.temp_id && m.message === incoming.message));
                         if (!exists) {
                             this.messages.push(incoming);
                             this.$nextTick(() => {
@@ -439,7 +446,6 @@
                                 lucide.createIcons();
                             });
                         }
-                        this.loadConversations();
                     });
             },
 
@@ -451,7 +457,7 @@
                 const now = new Date();
                 const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
 
-                // ⚡ INSTANT 0ms Optimistic UI update
+                // ⚡ 1. INSTANT 0ms Optimistic UI update for Chat Bubble
                 const optimisticMsg = {
                     temp_id: tempId,
                     message: text,
@@ -462,6 +468,14 @@
 
                 this.messages.push(optimisticMsg);
                 this.draft = '';
+
+                // ⚡ 2. Instant Local update for left conversation snippet
+                const activeConv = this.conversations.find(c => c.order_id === this.activeOrderId);
+                if (activeConv) {
+                    activeConv.last_message = text;
+                    activeConv.last_at = timeStr;
+                }
+
                 this.$nextTick(() => {
                     this.scrollToBottom();
                     lucide.createIcons();
@@ -484,7 +498,6 @@
                         if (idx !== -1) {
                             this.messages.splice(idx, 1, data.sent);
                         }
-                        this.loadConversations();
                     } else {
                         optimisticMsg.sending = false;
                         alert(data.message || 'Could not send message.');
