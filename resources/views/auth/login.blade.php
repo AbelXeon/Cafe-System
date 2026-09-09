@@ -9,11 +9,10 @@
     <!-- Laravel Vite Bundled Tailwind CSS & JS -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-    <!-- Google Font & Lucide Icons -->
+    <!-- Google Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=M+PLUS+1p&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
         body { font-family: 'M PLUS 1p', sans-serif; }
@@ -192,8 +191,12 @@
                 <!-- Burger -->
                 <div class="group relative rounded-2xl overflow-hidden bg-[#0f0e13] border border-[#1e1c25] h-80 flex flex-col justify-end p-5">
                     <img
-                        src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=80"
+                        src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=60&fm=webp"
                         alt=""
+                        width="600"
+                        height="320"
+                        loading="lazy"
+                        decoding="async"
                         class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:scale-105 transition duration-500 ease-out"
                     >
                     <div class="absolute inset-0 bg-gradient-to-t from-[#0f0e13] via-[#0f0e13]/40 to-transparent"></div>
@@ -206,8 +209,12 @@
                 <!-- Pizza -->
                 <div class="group relative rounded-2xl overflow-hidden bg-[#0f0e13] border border-[#1e1c25] h-80 flex flex-col justify-end p-5">
                     <img
-                        src="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=600&q=80"
+                        src="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=600&q=60&fm=webp"
                         alt=""
+                        width="600"
+                        height="320"
+                        loading="lazy"
+                        decoding="async"
                         class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:scale-105 transition duration-500 ease-out"
                     >
                     <div class="absolute inset-0 bg-gradient-to-t from-[#0f0e13] via-[#0f0e13]/40 to-transparent"></div>
@@ -220,8 +227,12 @@
                 <!-- Beverage -->
                 <div class="group relative rounded-2xl overflow-hidden bg-[#0f0e13] border border-[#1e1c25] h-80 flex flex-col justify-end p-5">
                     <img
-                        src="https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=600&q=80"
+                        src="https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=600&q=60&fm=webp"
                         alt=""
+                        width="600"
+                        height="320"
+                        loading="lazy"
+                        decoding="async"
                         class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:scale-105 transition duration-500 ease-out"
                     >
                     <div class="absolute inset-0 bg-gradient-to-t from-[#0f0e13] via-[#0f0e13]/40 to-transparent"></div>
@@ -245,9 +256,12 @@
 
     </main>
 
-    <!-- Script -->
-    <script>
-        lucide.createIcons();
+    <!-- Lucide: pinned version, deferred, loaded right before it's used -->
+    <script src="https://unpkg.com/lucide@0.474.0/dist/umd/lucide.js" defer></script>
+    <script defer>
+        window.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+        });
 
         function togglePasswordVisibility() {
             const passwordInput = document.getElementById('password');
