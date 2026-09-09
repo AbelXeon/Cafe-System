@@ -9,11 +9,10 @@
     <!-- Laravel Vite Bundled Tailwind CSS & JS -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-    <!-- Google Font & Lucide Icons -->
+    <!-- Google Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -176,7 +175,8 @@
             <div class="grid grid-cols-3 gap-4 my-8">
 
                 <div class="group relative rounded-2xl overflow-hidden bg-[#0f0e13] border border-[#1e1c25] h-72 flex flex-col justify-end p-4">
-                    <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=80" alt=""
+                    <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=60&fm=webp" alt=""
+                        width="600" height="288" loading="lazy" decoding="async"
                         class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:scale-105 transition duration-500 ease-out">
                     <div class="absolute inset-0 bg-gradient-to-t from-[#0f0e13] via-[#0f0e13]/40 to-transparent"></div>
                     <div class="relative z-10">
@@ -186,7 +186,8 @@
                 </div>
 
                 <div class="group relative rounded-2xl overflow-hidden bg-[#0f0e13] border border-[#1e1c25] h-72 flex flex-col justify-end p-4">
-                    <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=600&q=80" alt=""
+                    <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=600&q=60&fm=webp" alt=""
+                        width="600" height="288" loading="lazy" decoding="async"
                         class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:scale-105 transition duration-500 ease-out">
                     <div class="absolute inset-0 bg-gradient-to-t from-[#0f0e13] via-[#0f0e13]/40 to-transparent"></div>
                     <div class="relative z-10">
@@ -196,7 +197,8 @@
                 </div>
 
                 <div class="group relative rounded-2xl overflow-hidden bg-[#0f0e13] border border-[#1e1c25] h-72 flex flex-col justify-end p-4">
-                    <img src="https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=600&q=80" alt=""
+                    <img src="https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=600&q=60&fm=webp" alt=""
+                        width="600" height="288" loading="lazy" decoding="async"
                         class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:scale-105 transition duration-500 ease-out">
                     <div class="absolute inset-0 bg-gradient-to-t from-[#0f0e13] via-[#0f0e13]/40 to-transparent"></div>
                     <div class="relative z-10">
@@ -218,8 +220,12 @@
 
     </main>
 
-    <script>
-        lucide.createIcons();
+    <!-- Lucide: pinned version, deferred, loaded right before it's used -->
+    <script src="https://unpkg.com/lucide@0.474.0/dist/umd/lucide.js" defer></script>
+    <script defer>
+        window.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+        });
 
         function togglePasswordVisibility(inputId, iconId) {
             const input = document.getElementById(inputId);
