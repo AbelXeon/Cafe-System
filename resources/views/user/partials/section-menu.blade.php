@@ -38,7 +38,7 @@
                          @click="openModal(product)">
 
                         <div class="relative w-full h-40 sm:h-44 bg-[#0f0e13] overflow-hidden">
-                            <img :src="product.image" :alt="product.name" class="w-full h-full object-cover group-hover:scale-105 transition duration-300 ease-out">
+                            <img :src="product.image" :alt="product.name" loading="lazy" decoding="async" class="w-full h-full object-cover group-hover:scale-105 transition duration-300 ease-out">
                             <div class="absolute top-3 right-3 bg-[#0f0e13]/85 backdrop-blur-md px-2.5 py-1 rounded-lg border border-[#2a2731]">
                                 <span class="text-[#b08d57] font-extrabold text-sm" x-text="'$' + product.price.toFixed(2)"></span>
                             </div>
@@ -282,7 +282,7 @@
         <div class="flex-1 overflow-y-auto p-4 space-y-3 custom-scroll">
             <template x-for="item in $store.cart.items" :key="item.id + (item.note || '') + (item.extrasText || '')">
                 <div class="bg-[#14131a] border border-[#2a2731] rounded-xl p-3 flex gap-3 items-center">
-                    <img :src="item.image" class="w-14 h-14 object-cover rounded-lg bg-[#0f0e13] shrink-0">
+                    <img :src="item.image" loading="lazy" decoding="async" class="w-14 h-14 object-cover rounded-lg bg-[#0f0e13] shrink-0">
                     <div class="flex-1 min-w-0">
                         <div class="flex items-start justify-between gap-1">
                             <p class="text-white text-xs font-bold truncate" x-text="item.name"></p>
