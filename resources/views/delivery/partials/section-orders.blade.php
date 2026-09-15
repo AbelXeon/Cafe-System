@@ -6,9 +6,7 @@
         <div>
             <h1 class="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center gap-3">
                 <span>Delivery Dispatch</span>
-                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#b08d57]/15 border border-[#b08d57]/30 text-[#b08d57]">
-                    <span class="w-2 h-2 rounded-full bg-[#b08d57] animate-pulse"></span>Auto-refreshing (6s)
-                </span>
+          
             </h1>
             <p class="text-stone-500 text-xs mt-0.5">Accept incoming orders, navigate to drop-offs, and mark deliveries complete</p>
         </div>
