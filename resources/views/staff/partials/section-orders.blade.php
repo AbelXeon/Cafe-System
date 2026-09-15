@@ -1,6 +1,5 @@
 <!-- Main Kitchen Orders Area -->
-<main class="flex-1 flex flex-col min-h-0 bg-[#14131a]/40 w-full overflow-hidden">
-
+<main x-show="currentView === 'orders'" class="flex-1 flex flex-col min-h-0 bg-[#14131a]/40 w-full overflow-hidden">
     <!-- Header Bar -->
     <div class="bg-[#0f0e13]/98 backdrop-blur-xl border-b border-[#2a2731] px-4 sm:px-6 lg:px-8 py-4 shrink-0 flex flex-wrap items-center justify-between gap-4">
         <div>

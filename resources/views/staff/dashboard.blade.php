@@ -17,7 +17,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <!-- Lucide Icons: pinned version, deferred so it doesn't block initial paint -->
+    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@0.474.0/dist/umd/lucide.js" defer></script>
 
     <style>
@@ -83,7 +83,6 @@
     </div>
 </header>
 
-
 <div class="flex h-[calc(100vh-57px)] lg:h-full w-full relative">
 
     <!-- 1. Kitchen Sidebar Navigation -->
@@ -118,7 +117,6 @@
             stockFilter: 'all',
             stockTogglingId: null,
 
-            // Raw Stock items list
             products: (INITIAL_PRODUCTS || []).map(p => ({
                 id: p.id,
                 name: p.name,
@@ -156,7 +154,6 @@
             init() {
                 this.updateCounts();
                 
-                // Polling for live orders every 6 seconds
                 setInterval(() => {
                     this.fetchLiveOrders();
                 }, 6000);
