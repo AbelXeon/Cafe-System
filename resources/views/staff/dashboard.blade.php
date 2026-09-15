@@ -85,13 +85,10 @@
 
 <div class="flex h-[calc(100vh-57px)] lg:h-full w-full relative">
 
-    <!-- 1. Kitchen Sidebar Navigation -->
     @include('staff.partials.sidebar')
 
-    <!-- 2. Orders Queue Stream -->
     @include('staff.partials.section-orders')
 
-    <!-- 3. Menu Stock & 86'd Items Table -->
     @include('staff.partials.section-stock')
 
 </div>
