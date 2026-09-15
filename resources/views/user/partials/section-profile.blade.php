@@ -166,46 +166,6 @@
             </form>
         </div>
 
-        <!-- Preferences & Audio Notifications Card -->
-        <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl p-5 sm:p-7 shadow-xl">
-            <div class="flex items-center gap-3 pb-5 border-b border-[#1e1c25]">
-                <div class="w-10 h-10 rounded-xl bg-[#b08d57]/20 border border-[#b08d57]/30 flex items-center justify-center text-[#b08d57]">
-                    <i data-lucide="bell-ring" class="w-5 h-5"></i>
-                </div>
-                <div>
-                    <h3 class="text-base sm:text-lg font-bold text-white">App & Sound Preferences</h3>
-                    <p class="text-xs text-stone-500">Configure how you receive order status updates</p>
-                </div>
-            </div>
-
-            <div class="mt-5 space-y-4">
-                <div class="flex items-center justify-between p-3.5 bg-[#0f0e13] border border-[#2a2731] rounded-xl">
-                    <div class="pr-4">
-                        <h4 class="text-sm font-semibold text-white">Order Status Sound Chimes</h4>
-                        <p class="text-xs text-stone-500 mt-0.5">Play an instant sound notification when your order moves to kitchen or out for delivery</p>
-                    </div>
-                    <button type="button" @click="toggleSoundChime()"
-                        class="w-12 h-6 flex items-center rounded-full p-1 transition-colors duration-200 ease-in-out cursor-pointer"
-                        :class="preferences.sound ? 'bg-[#b08d57]' : 'bg-[#2a2731]'">
-                        <div class="bg-[#0f0e13] w-4 h-4 rounded-full shadow-md transform transition-transform duration-200 ease-in-out"
-                             :class="preferences.sound ? 'translate-x-6' : 'translate-x-0'"></div>
-                    </button>
-                </div>
-
-                <div class="flex items-center justify-between p-3.5 bg-[#0f0e13] border border-[#2a2731] rounded-xl">
-                    <div class="pr-4">
-                        <h4 class="text-sm font-semibold text-white">Instant Courier Chat Alerts</h4>
-                        <p class="text-xs text-stone-500 mt-0.5">Automatically show toast notifications when a driver sends you a message</p>
-                    </div>
-                    <button type="button" @click="preferences.chatAlerts = !preferences.chatAlerts; savePreferences()"
-                        class="w-12 h-6 flex items-center rounded-full p-1 transition-colors duration-200 ease-in-out cursor-pointer"
-                        :class="preferences.chatAlerts ? 'bg-[#b08d57]' : 'bg-[#2a2731]'">
-                        <div class="bg-[#0f0e13] w-4 h-4 rounded-full shadow-md transform transition-transform duration-200 ease-in-out"
-                             :class="preferences.chatAlerts ? 'translate-x-6' : 'translate-x-0'"></div>
-                    </button>
-                </div>
-            </div>
-        </div>
 
         <!-- Danger Zone / Sign Out -->
         <div class="bg-[#14131a] border border-rose-900/30 rounded-2xl p-5 sm:p-7 shadow-xl">
