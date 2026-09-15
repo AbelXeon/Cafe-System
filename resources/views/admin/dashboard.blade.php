@@ -9,14 +9,16 @@
     <!-- Laravel Vite Bundled Tailwind CSS & JS -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-    <!-- Google Fonts & Lucide Icons -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
 
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Lucide Icons: pinned version, deferred so it doesn't block initial paint -->
+    <script src="https://unpkg.com/lucide@0.474.0/dist/umd/lucide.js" defer></script>
+
+    <!-- Chart.js: pinned version, deferred so it doesn't block initial paint -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js" defer></script>
 
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -666,7 +668,7 @@ document.getElementById('product-form').addEventListener('submit', function (e) 
         row.setAttribute('data-status', p.is_available ? 'available' : 'unavailable');
         
         row.innerHTML = `
-            <td class="py-3 px-4 sm:px-5"><img src="/storage/${p.image}" class="w-10 h-10 object-cover rounded-lg bg-[#0f0e13]"></td>
+            <td class="py-3 px-4 sm:px-5"><img src="/storage/${p.image}" loading="lazy" decoding="async" class="w-10 h-10 object-cover rounded-lg bg-[#0f0e13]"></td>
             <td class="px-4 sm:px-5 text-white font-medium whitespace-nowrap">${p.name}</td>
             <td class="px-4 sm:px-5 text-stone-400 whitespace-nowrap">${p.category.name}</td>
             <td class="px-4 sm:px-5 text-[#b08d57] font-bold whitespace-nowrap">${Number(p.price).toFixed(2)} ETB</td>
