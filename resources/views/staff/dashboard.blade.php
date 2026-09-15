@@ -12,11 +12,13 @@
     <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.5/dist/cdn.min.js"></script>
 
-    <!-- Fonts & Icons -->
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Lucide Icons: pinned version, deferred so it doesn't block initial paint -->
+    <script src="https://unpkg.com/lucide@0.474.0/dist/umd/lucide.js" defer></script>
 
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
