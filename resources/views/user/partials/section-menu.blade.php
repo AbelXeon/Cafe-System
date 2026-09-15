@@ -1,3 +1,4 @@
+
 <!-- SECTION 1: Menu Catalog -->
 <div id="section-menu" class="page-section flex flex-1 min-h-0 bg-[#14131a]/40 w-full">
     <main class="flex-1 overflow-y-auto custom-scroll pb-24 lg:pb-8 relative" x-data="menuApp()" x-init="init()">
@@ -97,8 +98,8 @@
                             </div>
                             <p class="text-stone-400 text-xs sm:text-sm mt-2 leading-relaxed" x-text="modalProduct.description"></p>
 
-                            <!-- Extras / Add-ons Section -->
-                            <div class="mt-6 border-t border-[#2a2731] pt-4" x-show="extras.length > 0">
+                            <!-- Extras / Add-ons Section (ONLY VISIBLE FOR FOOD CATEGORIES) -->
+                            <div class="mt-6 border-t border-[#2a2731] pt-4" x-show="extras.length > 0 && allowsExtras(modalProduct)">
                                 <div class="flex items-center justify-between mb-3">
                                     <div class="flex items-center gap-2">
                                         <i data-lucide="sparkles" class="w-4 h-4 text-[#b08d57]"></i>

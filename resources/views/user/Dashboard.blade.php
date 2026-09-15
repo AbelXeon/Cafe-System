@@ -436,6 +436,31 @@
                 });
             },
 
+            // Only actual food items are allowed to have extras.
+            // Excludes: drink, soft drink, juice, bakery/beckery, and cake.
+            allowsExtras(product) {
+                if (!product) return false;
+                const cat = (product.category || '').toLowerCase().trim();
+                
+                const excludedCategories = [
+                    'drink',
+                    'drinks',
+                    'soft drink',
+                    'soft drinks',
+                    'juice',
+                    'juices',
+                    'bakery',
+                    'beckery',
+                    'bakeries',
+                    'cake',
+                    'cakes',
+                    'beverage',
+                    'beverages'
+                ];
+
+                return !excludedCategories.some(ex => cat === ex || cat.includes(ex));
+            },
+
             get visibleProducts() {
                 if (this.activeCategory === 'All') {
                     return this.products;
@@ -470,6 +495,9 @@
             },
 
             get modalExtrasUnitTotal() {
+                if (!this.modalProduct || !this.allowsExtras(this.modalProduct)) {
+                    return 0;
+                }
                 return this.extras.reduce((sum, extra) => {
                     return sum + (extra.price * (this.selectedExtras[extra.id] || 0));
                 }, 0);
@@ -481,10 +509,13 @@
             },
 
             addToCartFromModal() {
-                const chosenExtras = this.extras.filter(e => (this.selectedExtras[e.id] || 0) > 0);
                 let extrasText = '';
-                if (chosenExtras.length > 0) {
-                    extrasText = 'Extras: ' + chosenExtras.map(e => `${e.name} (x${this.selectedExtras[e.id]})`).join(', ');
+
+                if (this.allowsExtras(this.modalProduct)) {
+                    const chosenExtras = this.extras.filter(e => (this.selectedExtras[e.id] || 0) > 0);
+                    if (chosenExtras.length > 0) {
+                        extrasText = 'Extras: ' + chosenExtras.map(e => `${e.name} (x${this.selectedExtras[e.id]})`).join(', ');
+                    }
                 }
 
                 const calculatedUnitPrice = this.modalProduct.price + this.modalExtrasUnitTotal;
@@ -675,7 +706,6 @@
 
                 window.Echo.private(newChannelName)
                     .listen('.message.sent', (e) => {
-                        // Instant update for sidebar without lag
                         const conv = this.conversations.find(c => c.order_id === e.order_id);
                         if (conv) {
                             conv.last_message = e.message;
@@ -705,7 +735,6 @@
                 const now = new Date();
                 const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
 
-                // ⚡ 1. INSTANT 0ms Optimistic UI update
                 const optimisticMsg = {
                     temp_id: tempId,
                     message: text,
@@ -717,7 +746,6 @@
                 this.messages.push(optimisticMsg);
                 this.draft = '';
 
-                // ⚡ 2. Instant local snippet update
                 const activeConv = this.conversations.find(c => c.order_id === this.activeOrderId);
                 if (activeConv) {
                     activeConv.last_message = text;
@@ -1266,8 +1294,6 @@
     document.addEventListener('DOMContentLoaded', () => {
         lucide.createIcons();
     });
-
-
 </script>
 </body>
 </html>
