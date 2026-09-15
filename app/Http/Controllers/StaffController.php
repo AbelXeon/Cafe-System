@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\OrderStatusHistory;
+use App\Models\Product;
+use App\Models\Extra;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,7 +14,10 @@ class StaffController extends Controller
     public function dashboard()
     {
         $orders = $this->fetchFormattedOrders();
-        return view('staff.dashboard', compact('orders'));
+        $products = Product::with('category')->orderBy('name')->get();
+        $extras = Extra::orderBy('name')->get();
+
+        return view('staff.dashboard', compact('orders', 'products', 'extras'));
     }
 
     public function getLiveOrders()
@@ -49,6 +54,30 @@ class StaffController extends Controller
             'success' => true,
             'message' => "Order #{$order->id} status changed from {$oldStatus} to {$order->status}.",
             'order'   => $order
+        ]);
+    }
+
+    public function toggleProductAvailability(Product $product)
+    {
+        $product->is_available = !$product->is_available;
+        $product->save();
+
+        return response()->json([
+            'success' => true,
+            'is_available' => (bool)$product->is_available,
+            'message' => $product->name . ' is now ' . ($product->is_available ? 'Available' : 'Marked as Sold Out / Out of Stock.')
+        ]);
+    }
+
+    public function toggleExtraAvailability(Extra $extra)
+    {
+        $extra->is_available = !$extra->is_available;
+        $extra->save();
+
+        return response()->json([
+            'success' => true,
+            'is_available' => (bool)$extra->is_available,
+            'message' => $extra->name . ' is now ' . ($extra->is_available ? 'Available' : 'Marked as Sold Out.')
         ]);
     }
 

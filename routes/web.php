@@ -29,12 +29,20 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/extras', [AdminController::class, 'storeExtra'])->name('extras.store');
 });
 
+
+
 // Staff / Kitchen Routes
 Route::middleware(['auth', 'role:staff'])->prefix('staff')->name('staff.')->group(function () {
     Route::get('/dashboard', [StaffController::class, 'dashboard'])->name('dashboard');
     Route::get('/orders/live', [StaffController::class, 'getLiveOrders'])->name('orders.live');
     Route::patch('/orders/{order}/status', [StaffController::class, 'updateStatus'])->name('orders.status');
+
+    // Item Availability / Out-of-Stock (86) Toggles
+    Route::patch('/products/{product}/toggle-availability', [StaffController::class, 'toggleProductAvailability'])->name('products.toggle');
+    Route::patch('/extras/{extra}/toggle-availability', [StaffController::class, 'toggleExtraAvailability'])->name('extras.toggle');
 });
+
+
 
 
 
@@ -56,6 +64,8 @@ Route::middleware(['auth', 'role:delivery'])->prefix('delivery')->name('delivery
     Route::get('/chats/{order}/messages', [ChatController::class, 'messages'])->name('chats.messages');
     Route::post('/chats/{order}/messages', [ChatController::class, 'send'])->name('chats.send');
 });
+
+
 
 
 // Customer Routes
