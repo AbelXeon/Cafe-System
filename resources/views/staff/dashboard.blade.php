@@ -35,7 +35,8 @@
 </head>
 <body class="bg-[#0f0e13] text-stone-200 h-screen overflow-hidden selection:bg-[#b08d57] selection:text-[#0f0e13]" x-data="staffApp()" x-init="init()">
 
-<!-- Toast Notification -->
+
+    
 <div x-show="toast.visible"
      x-cloak
      x-transition:enter="transform ease-out duration-300 transition"
