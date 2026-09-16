@@ -86,3 +86,11 @@ Route::middleware(['auth', 'role:customer'])->prefix('user')->name('user.')->gro
     Route::get('/chats/{order}/messages', [ChatController::class, 'messages'])->name('chats.messages');
     Route::post('/chats/{order}/messages', [ChatController::class, 'send'])->name('chats.send');
 });
+
+
+Route::post('/login', [ApiAuthController::class, 'login']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/menu', [ApiMenuController::class, 'index']);
+    // etc.
+});
