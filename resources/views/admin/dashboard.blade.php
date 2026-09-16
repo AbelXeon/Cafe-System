@@ -84,100 +84,238 @@ function initCharts() {
     const categoryCounts = @json($categoryCounts);
 
     // 1. Revenue & Orders Trend Chart
-    const revCtx = document.getElementById('revenueTrendChart')?.getContext('2d');
-    if (revCtx) {
-        if (revenueChartInstance) revenueChartInstance.destroy();
+const revCtx = document.getElementById('revenueTrendChart')?.getContext('2d');
 
-        const goldGradient = revCtx.createLinearGradient(0, 0, 0, 300);
-        goldGradient.addColorStop(0, 'rgba(176, 141, 87, 0.45)');
-        goldGradient.addColorStop(1, 'rgba(176, 141, 87, 0.0)');
+if (revCtx) {
+    if (revenueChartInstance) {
+        revenueChartInstance.destroy();
+    }
 
-        revenueChartInstance = new Chart(revCtx, {
-            type: 'line',
-            data: {
-                labels: chartLabels,
-                datasets: [
-                    {
-                        label: 'Revenue (ETB)',
-                        data: chartRevenue,
-                        borderColor: '#b08d57',
-                        backgroundColor: goldGradient,
-                        borderWidth: 2.5,
-                        fill: true,
-                        tension: 0.35,
-                        pointBackgroundColor: '#b08d57',
-                        pointBorderColor: '#0f0e13',
-                        pointHoverRadius: 6,
-                        yAxisID: 'y'
-                    },
-                    {
-                        label: 'Orders Count',
-                        data: chartOrders,
-                        borderColor: '#a855f7',
-                        backgroundColor: 'transparent',
-                        borderWidth: 2,
-                        borderDash: [5, 5],
-                        pointBackgroundColor: '#a855f7',
-                        pointHoverRadius: 6,
-                        tension: 0.35,
-                        yAxisID: 'y1'
-                    }
-                ]
+    const goldGradient = revCtx.createLinearGradient(0, 0, 0, 300);
+
+    goldGradient.addColorStop(
+        0,
+        'rgba(176, 141, 87, 0.45)'
+    );
+
+    goldGradient.addColorStop(
+        1,
+        'rgba(176, 141, 87, 0.0)'
+    );
+
+
+    revenueChartInstance = new Chart(revCtx, {
+        type: 'line',
+
+        data: {
+            labels: chartLabels,
+
+            datasets: [
+                {
+                    label: 'Revenue (ETB)',
+
+                    // REAL DAILY REVENUE
+                    data: chartRevenue,
+
+                    borderColor: '#b08d57',
+                    backgroundColor: goldGradient,
+
+                    borderWidth: 2.5,
+                    fill: true,
+
+                    tension: 0.35,
+
+                    pointBackgroundColor: '#b08d57',
+                    pointBorderColor: '#0f0e13',
+
+                    pointRadius: 3,
+                    pointHoverRadius: 7,
+
+                    yAxisID: 'y'
+                },
+
+                {
+                    label: 'Orders Count',
+
+                    // DAILY ORDER COUNT
+                    data: chartOrders,
+
+                    borderColor: '#a855f7',
+                    backgroundColor: 'transparent',
+
+                    borderWidth: 2,
+                    borderDash: [5, 5],
+
+                    pointBackgroundColor: '#a855f7',
+                    pointBorderColor: '#0f0e13',
+
+                    pointRadius: 3,
+                    pointHoverRadius: 7,
+
+                    tension: 0.35,
+
+                    yAxisID: 'y1'
+                }
+            ]
+        },
+
+
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+
+            interaction: {
+                mode: 'index',
+                intersect: false
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: { mode: 'index', intersect: false },
-                plugins: {
-                    legend: {
-                        labels: { color: '#a8a29e', font: { family: 'Plus Jakarta Sans', size: 11, weight: '600' } }
-                    },
-                    tooltip: {
-                        backgroundColor: '#14131a',
-                        titleColor: '#fff',
-                        bodyColor: '#a8a29e',
-                        borderColor: '#2a2731',
-                        borderWidth: 1,
-                        padding: 10,
-                        cornerRadius: 10,
-                        callbacks: {
-                            label: function(context) {
-                                let label = context.dataset.label || '';
-                                if (label) label += ': ';
-                                if (context.datasetIndex === 0) {
-                                    label += Number(context.parsed.y).toLocaleString() + ' ETB';
-                                } else {
-                                    label += context.parsed.y;
-                                }
-                                return label;
-                            }
+
+
+            plugins: {
+
+                legend: {
+                    labels: {
+                        color: '#a8a29e',
+
+                        font: {
+                            family: 'Plus Jakarta Sans',
+                            size: 11,
+                            weight: '600'
                         }
                     }
                 },
-                scales: {
-                    x: {
-                        grid: { color: '#1e1c25' },
-                        ticks: { color: '#78716c', font: { size: 11 } }
-                    },
-                    y: {
-                        position: 'left',
-                        grid: { color: '#1e1c25' },
-                        ticks: {
-                            color: '#78716c',
-                            font: { size: 11 },
-                            callback: (v) => v.toLocaleString() + ' ETB'
+
+
+                tooltip: {
+                    backgroundColor: '#14131a',
+                    titleColor: '#fff',
+                    bodyColor: '#a8a29e',
+
+                    borderColor: '#2a2731',
+                    borderWidth: 1,
+
+                    padding: 10,
+                    cornerRadius: 10,
+
+                    callbacks: {
+
+                        label: function(context) {
+
+                            let label = context.dataset.label || '';
+
+                            if (label) {
+                                label += ': ';
+                            }
+
+
+                            // Revenue tooltip
+                            if (context.datasetIndex === 0) {
+
+                                const revenue = Number(
+                                    context.parsed.y || 0
+                                );
+
+                                label +=
+                                    revenue.toLocaleString(
+                                        undefined,
+                                        {
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2
+                                        }
+                                    ) + ' ETB';
+
+                            }
+
+                            // Orders tooltip
+                            else {
+
+                                label += Number(
+                                    context.parsed.y || 0
+                                ).toLocaleString();
+                            }
+
+
+                            return label;
                         }
+                    }
+                }
+            },
+
+
+            scales: {
+
+                x: {
+                    grid: {
+                        color: '#1e1c25'
                     },
-                    y1: {
-                        position: 'right',
-                        grid: { drawOnChartArea: false },
-                        ticks: { color: '#a855f7', font: { size: 11 }, precision: 0 }
+
+                    ticks: {
+                        color: '#78716c',
+
+                        font: {
+                            size: 11
+                        }
+                    }
+                },
+
+
+                // GOLD REVENUE AXIS
+                y: {
+
+                    position: 'left',
+
+                    beginAtZero: true,
+
+                    grid: {
+                        color: '#1e1c25'
+                    },
+
+                    ticks: {
+
+                        color: '#78716c',
+
+                        font: {
+                            size: 11
+                        },
+
+                        callback: function(value) {
+
+                            return Number(value).toLocaleString() + ' ETB';
+                        }
+                    }
+                },
+
+
+                // PURPLE ORDERS AXIS
+                y1: {
+
+                    position: 'right',
+
+                    beginAtZero: true,
+
+                    grid: {
+                        drawOnChartArea: false
+                    },
+
+                    ticks: {
+
+                        color: '#a855f7',
+
+                        font: {
+                            size: 11
+                        },
+
+                        precision: 0,
+
+                        callback: function(value) {
+
+                            return Number(value).toLocaleString();
+                        }
                     }
                 }
             }
-        });
-    }
-
+        }
+    });
+}
     // 2. Category Distribution Donut Chart
     const catCtx = document.getElementById('categoryDonutChart')?.getContext('2d');
     if (catCtx) {
