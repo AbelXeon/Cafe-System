@@ -806,9 +806,9 @@ async function submitForm(formEl, url, onSuccess) {
     }
 }
 
-// ==========================================
-// 1. STAFF EDIT CONTROLS
-// ==========================================
+
+
+
 const staffEditContainer = document.getElementById('staff-edit-container');
 const staffEditForm = document.getElementById('staff-edit-form');
 const cancelStaffEditBtn = document.getElementById('cancel-edit-staff-btn');
@@ -903,9 +903,8 @@ if (staffEditForm) {
     });
 }
 
-// ==========================================
-// 2. PRODUCT EDIT CONTROLS
-// ==========================================
+
+
 const productEditContainer = document.getElementById('product-edit-container');
 const productEditForm = document.getElementById('product-edit-form');
 const cancelProductEditBtn = document.getElementById('cancel-edit-product-btn');
@@ -1018,9 +1017,9 @@ if (productEditForm) {
     });
 }
 
-// ==========================================
-// 3. EXTRAS EDIT CONTROLS
-// ==========================================
+
+
+
 const extraEditContainer = document.getElementById('extra-edit-container');
 const extraEditForm = document.getElementById('extra-edit-form');
 const cancelExtraEditBtn = document.getElementById('cancel-edit-extra-btn');
@@ -1105,9 +1104,8 @@ if (extraEditForm) {
     });
 }
 
-// ==========================================
-// 4. CREATE FORM HANDLERS (PRODUCTS, STAFF, EXTRAS)
-// ==========================================
+
+
 document.getElementById('product-form')?.addEventListener('submit', function (e) {
     e.preventDefault();
     submitForm(this, "{{ route('admin.products.store') }}", (data) => {
