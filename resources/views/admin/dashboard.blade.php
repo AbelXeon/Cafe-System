@@ -14,10 +14,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <!-- Lucide Icons: pinned version, deferred so it doesn't block initial paint -->
+    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@0.474.0/dist/umd/lucide.js" defer></script>
 
-    <!-- Chart.js: pinned version, deferred so it doesn't block initial paint -->
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js" defer></script>
 
     <style>
@@ -32,11 +32,44 @@
         .cd-input:focus { border-color: #b08d57; box-shadow: 0 0 0 3px rgba(176, 141, 87, 0.18); }
         .cd-input { background-color: #0f0e13; border: 1px solid #2a2731; }
         .cd-input::placeholder { color: #57534e; }
+        
+        /* Highlight flash on updated rows */
+        @keyframes flashRow {
+            0% { background-color: rgba(176, 141, 87, 0.35); }
+            100% { background-color: transparent; }
+        }
+        .row-highlight {
+            animation: flashRow 2s ease-out;
+        }
+
+        /* Dedicated Pure-CSS Toast Engine (Guaranteed Animation) */
+        #toast-notification {
+            position: fixed !important;
+            bottom: 24px !important;
+            right: 24px !important;
+            z-index: 99999 !important;
+            display: flex !important;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transform: translate3d(0, 32px, 0) scale(0.94);
+            transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), 
+                        transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                        visibility 0.35s !important;
+            pointer-events: none;
+        }
+
+        #toast-notification.toast-active {
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: translate3d(0, 0, 0) scale(1) !important;
+            pointer-events: auto !important;
+        }
     </style>
 </head>
-<body class="bg-[#0f0e13] text-stone-200 h-screen overflow-hidden selection:bg-[#b08d57] selection:text-[#0f0e13]">
+<body class="bg-[#0f0e13] text-stone-200 h-screen overflow-hidden selection:bg-[#b08d57] selection:text-[#0f0e13] relative">
 
-<!-- Mobile Top Navigation Bar (Visible on mobile/tablet < lg) -->
+<!-- Mobile Top Navigation Bar -->
 <header class="lg:hidden bg-[#0f0e13] border-b border-[#1e1c25] px-4 py-3.5 flex items-center justify-between z-30 shrink-0">
     <div class="flex items-center gap-3">
         <button id="open-sidebar-btn" type="button" class="p-2 -ml-2 rounded-xl text-stone-400 hover:text-white hover:bg-[#1e1c25] transition" aria-label="Open Menu">
@@ -56,11 +89,11 @@
 
 <div class="flex h-[calc(100vh-57px)] lg:h-full w-full relative">
 
-    {{-- Sidebar & Navigation Partial --}}
+    {{-- Sidebar Partial --}}
     @include('admin.partials.sidebar')
 
     {{-- Main Content Area --}}
-    <main class="flex-1 p-4 sm:p-6 lg:p-10 overflow-y-auto custom-scroll">
+    <main class="flex-1 p-4 sm:p-6 lg:p-10 overflow-y-auto custom-scroll" id="main-scroll-container">
         @include('admin.partials.section-overview')
         @include('admin.partials.section-products')
         @include('admin.partials.section-staff')
@@ -69,8 +102,69 @@
 
 </div>
 
+<!-- High-Visibility Bottom-Right Toast Notification -->
+<div id="toast-notification" class="gap-3 bg-[#14131a]/95 backdrop-blur-xl border border-[#b08d57]/50 text-stone-200 px-4 py-3.5 rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.85)] max-w-sm">
+    <div id="toast-icon-wrapper" class="w-8 h-8 rounded-xl bg-[#b08d57]/20 border border-[#b08d57]/40 flex items-center justify-center text-[#b08d57] shrink-0">
+        <svg class="w-4 h-4 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+    </div>
+    <div class="flex-1 min-w-0">
+        <h4 id="toast-title" class="text-xs font-bold text-white tracking-wider uppercase">Success</h4>
+        <p id="toast-message" class="text-xs text-stone-400 mt-0.5 truncate">Action completed successfully.</p>
+    </div>
+    <button type="button" id="toast-close-btn" class="text-stone-500 hover:text-stone-200 transition p-1 -mr-1" aria-label="Close notification">
+        <svg class="w-4 h-4 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+    </button>
+</div>
+
 <script>
 const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
+// ---- Toast Notification System ----
+let toastTimeout = null;
+
+function showToast(message, title = 'Success', type = 'success') {
+    const toast = document.getElementById('toast-notification');
+    const toastTitle = document.getElementById('toast-title');
+    const toastMessage = document.getElementById('toast-message');
+    const toastIcon = document.getElementById('toast-icon-wrapper');
+
+    if (!toast) return;
+
+    clearTimeout(toastTimeout);
+
+    toastTitle.textContent = title;
+    toastMessage.textContent = message;
+
+    if (type === 'error') {
+        toastIcon.className = "w-8 h-8 rounded-xl bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-rose-400 shrink-0";
+        toastIcon.innerHTML = `<svg class="w-4 h-4 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>`;
+    } else {
+        toastIcon.className = "w-8 h-8 rounded-xl bg-[#b08d57]/20 border border-[#b08d57]/40 flex items-center justify-center text-[#b08d57] shrink-0";
+        toastIcon.innerHTML = `<svg class="w-4 h-4 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+    }
+
+    // Trigger smooth enter transition
+    toast.classList.add('toast-active');
+
+    // Auto dismiss after 3.8 seconds
+    toastTimeout = setTimeout(() => {
+        hideToast();
+    }, 3800);
+}
+
+function hideToast() {
+    const toast = document.getElementById('toast-notification');
+    if (toast) {
+        toast.classList.remove('toast-active');
+    }
+}
+
+document.getElementById('toast-close-btn')?.addEventListener('click', hideToast);
 
 // ---- Charts Initialization ----
 let revenueChartInstance = null;
@@ -84,238 +178,113 @@ function initCharts() {
     const categoryCounts = @json($categoryCounts);
 
     // 1. Revenue & Orders Trend Chart
-const revCtx = document.getElementById('revenueTrendChart')?.getContext('2d');
+    const revCtx = document.getElementById('revenueTrendChart')?.getContext('2d');
+    if (revCtx) {
+        if (revenueChartInstance) revenueChartInstance.destroy();
 
-if (revCtx) {
-    if (revenueChartInstance) {
-        revenueChartInstance.destroy();
-    }
+        const goldGradient = revCtx.createLinearGradient(0, 0, 0, 300);
+        goldGradient.addColorStop(0, 'rgba(176, 141, 87, 0.45)');
+        goldGradient.addColorStop(1, 'rgba(176, 141, 87, 0.0)');
 
-    const goldGradient = revCtx.createLinearGradient(0, 0, 0, 300);
-
-    goldGradient.addColorStop(
-        0,
-        'rgba(176, 141, 87, 0.45)'
-    );
-
-    goldGradient.addColorStop(
-        1,
-        'rgba(176, 141, 87, 0.0)'
-    );
-
-
-    revenueChartInstance = new Chart(revCtx, {
-        type: 'line',
-
-        data: {
-            labels: chartLabels,
-
-            datasets: [
-                {
-                    label: 'Revenue (ETB)',
-
-                    // REAL DAILY REVENUE
-                    data: chartRevenue,
-
-                    borderColor: '#b08d57',
-                    backgroundColor: goldGradient,
-
-                    borderWidth: 2.5,
-                    fill: true,
-
-                    tension: 0.35,
-
-                    pointBackgroundColor: '#b08d57',
-                    pointBorderColor: '#0f0e13',
-
-                    pointRadius: 3,
-                    pointHoverRadius: 7,
-
-                    yAxisID: 'y'
-                },
-
-                {
-                    label: 'Orders Count',
-
-                    // DAILY ORDER COUNT
-                    data: chartOrders,
-
-                    borderColor: '#a855f7',
-                    backgroundColor: 'transparent',
-
-                    borderWidth: 2,
-                    borderDash: [5, 5],
-
-                    pointBackgroundColor: '#a855f7',
-                    pointBorderColor: '#0f0e13',
-
-                    pointRadius: 3,
-                    pointHoverRadius: 7,
-
-                    tension: 0.35,
-
-                    yAxisID: 'y1'
-                }
-            ]
-        },
-
-
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-
-            interaction: {
-                mode: 'index',
-                intersect: false
+        revenueChartInstance = new Chart(revCtx, {
+            type: 'line',
+            data: {
+                labels: chartLabels,
+                datasets: [
+                    {
+                        label: 'Revenue (ETB)',
+                        data: chartRevenue,
+                        borderColor: '#b08d57',
+                        backgroundColor: goldGradient,
+                        borderWidth: 2.5,
+                        fill: true,
+                        tension: 0.35,
+                        pointBackgroundColor: '#b08d57',
+                        pointBorderColor: '#0f0e13',
+                        pointRadius: 3,
+                        pointHoverRadius: 7,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'Orders Count',
+                        data: chartOrders,
+                        borderColor: '#a855f7',
+                        backgroundColor: 'transparent',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        pointBackgroundColor: '#a855f7',
+                        pointBorderColor: '#0f0e13',
+                        pointRadius: 3,
+                        pointHoverRadius: 7,
+                        tension: 0.35,
+                        yAxisID: 'y1'
+                    }
+                ]
             },
-
-
-            plugins: {
-
-                legend: {
-                    labels: {
-                        color: '#a8a29e',
-
-                        font: {
-                            family: 'Plus Jakarta Sans',
-                            size: 11,
-                            weight: '600'
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#a8a29e',
+                            font: { family: 'Plus Jakarta Sans', size: 11, weight: '600' }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#14131a',
+                        titleColor: '#fff',
+                        bodyColor: '#a8a29e',
+                        borderColor: '#2a2731',
+                        borderWidth: 1,
+                        padding: 10,
+                        cornerRadius: 10,
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) label += ': ';
+                                if (context.datasetIndex === 0) {
+                                    label += Number(context.parsed.y || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ETB';
+                                } else {
+                                    label += Number(context.parsed.y || 0).toLocaleString();
+                                }
+                                return label;
+                            }
                         }
                     }
                 },
-
-
-                tooltip: {
-                    backgroundColor: '#14131a',
-                    titleColor: '#fff',
-                    bodyColor: '#a8a29e',
-
-                    borderColor: '#2a2731',
-                    borderWidth: 1,
-
-                    padding: 10,
-                    cornerRadius: 10,
-
-                    callbacks: {
-
-                        label: function(context) {
-
-                            let label = context.dataset.label || '';
-
-                            if (label) {
-                                label += ': ';
-                            }
-
-
-                            // Revenue tooltip
-                            if (context.datasetIndex === 0) {
-
-                                const revenue = Number(
-                                    context.parsed.y || 0
-                                );
-
-                                label +=
-                                    revenue.toLocaleString(
-                                        undefined,
-                                        {
-                                            minimumFractionDigits: 2,
-                                            maximumFractionDigits: 2
-                                        }
-                                    ) + ' ETB';
-
-                            }
-
-                            // Orders tooltip
-                            else {
-
-                                label += Number(
-                                    context.parsed.y || 0
-                                ).toLocaleString();
-                            }
-
-
-                            return label;
-                        }
-                    }
-                }
-            },
-
-
-            scales: {
-
-                x: {
-                    grid: {
-                        color: '#1e1c25'
+                scales: {
+                    x: {
+                        grid: { color: '#1e1c25' },
+                        ticks: { color: '#78716c', font: { size: 11 } }
                     },
-
-                    ticks: {
-                        color: '#78716c',
-
-                        font: {
-                            size: 11
+                    y: {
+                        position: 'left',
+                        beginAtZero: true,
+                        grid: { color: '#1e1c25' },
+                        ticks: {
+                            color: '#78716c',
+                            font: { size: 11 },
+                            callback: value => Number(value).toLocaleString() + ' ETB'
                         }
-                    }
-                },
-
-
-                // GOLD REVENUE AXIS
-                y: {
-
-                    position: 'left',
-
-                    beginAtZero: true,
-
-                    grid: {
-                        color: '#1e1c25'
                     },
-
-                    ticks: {
-
-                        color: '#78716c',
-
-                        font: {
-                            size: 11
-                        },
-
-                        callback: function(value) {
-
-                            return Number(value).toLocaleString() + ' ETB';
-                        }
-                    }
-                },
-
-
-                // PURPLE ORDERS AXIS
-                y1: {
-
-                    position: 'right',
-
-                    beginAtZero: true,
-
-                    grid: {
-                        drawOnChartArea: false
-                    },
-
-                    ticks: {
-
-                        color: '#a855f7',
-
-                        font: {
-                            size: 11
-                        },
-
-                        precision: 0,
-
-                        callback: function(value) {
-
-                            return Number(value).toLocaleString();
+                    y1: {
+                        position: 'right',
+                        beginAtZero: true,
+                        grid: { drawOnChartArea: false },
+                        ticks: {
+                            color: '#a855f7',
+                            font: { size: 11 },
+                            precision: 0,
+                            callback: value => Number(value).toLocaleString()
                         }
                     }
                 }
             }
-        }
-    });
-}
+        });
+    }
+
     // 2. Category Distribution Donut Chart
     const catCtx = document.getElementById('categoryDonutChart')?.getContext('2d');
     if (catCtx) {
@@ -488,8 +457,8 @@ if (removeImageBtn) {
 }
 
 // ---- Customized Dropdowns Management ----
-function initCustomSelects() {
-    document.querySelectorAll('.custom-select-wrapper').forEach(wrapper => {
+function initCustomSelects(container = document) {
+    container.querySelectorAll('.custom-select-wrapper').forEach(wrapper => {
         if (wrapper.dataset.initialized) return;
         wrapper.dataset.initialized = "true";
 
@@ -585,6 +554,16 @@ function initCustomSelects() {
         document.querySelectorAll('.chevron-icon').forEach(c => c.classList.remove('rotate-180'));
         document.querySelectorAll('.custom-select-trigger').forEach(t => t.classList.remove('border-[#b08d57]', 'ring-2', 'ring-[#b08d57]/20'));
     });
+}
+
+// Helper to manually set custom select value
+function setCustomSelectValue(wrapperId, value) {
+    const wrapper = document.getElementById(wrapperId);
+    if (!wrapper) return;
+    const option = wrapper.querySelector(`.custom-option[data-value="${value}"]`);
+    if (option) {
+        option.click();
+    }
 }
 
 // ---- Reusable DataTable Filter & Buffer Engine ----
@@ -750,7 +729,7 @@ function initAllDataTables() {
 // ---- AJAX Form Submissions ----
 async function submitForm(formEl, url, onSuccess) {
     const errorEl = formEl.querySelector('.form-error');
-    errorEl.textContent = '';
+    if (errorEl) errorEl.textContent = '';
 
     let hasSelectError = false;
     formEl.querySelectorAll('.custom-native-select[required]').forEach(select => {
@@ -765,7 +744,7 @@ async function submitForm(formEl, url, onSuccess) {
     });
 
     if (hasSelectError) {
-        errorEl.textContent = 'Please fill out all required fields.';
+        if (errorEl) errorEl.textContent = 'Please fill out all required fields.';
         return;
     }
 
@@ -781,25 +760,131 @@ async function submitForm(formEl, url, onSuccess) {
 
         if (!res.ok) {
             const firstError = data.errors ? Object.values(data.errors)[0][0] : (data.message || 'Something went wrong.');
-            errorEl.textContent = firstError;
+            if (errorEl) errorEl.textContent = firstError;
+            showToast(firstError, 'Error', 'error');
             return;
         }
 
         onSuccess(data);
-        formEl.reset();
-        resetImagePreview();
     } catch (err) {
-        errorEl.textContent = 'Network error. Try again.';
+        if (errorEl) errorEl.textContent = 'Network error. Try again.';
+        showToast('Network connection failed. Try again.', 'Network Error', 'error');
     }
 }
 
+// ---- Staff Edit Drawer Logic ----
+const editContainer = document.getElementById('staff-edit-container');
+const editForm = document.getElementById('staff-edit-form');
+const cancelEditBtn = document.getElementById('cancel-edit-staff-btn');
+const cancelEditBtnX = document.getElementById('cancel-edit-staff-btn-x');
+
+function openStaffEditor(data) {
+    document.getElementById('edit-staff-id').value = data.id;
+    document.getElementById('edit-staff-fullname').value = data.fullname || '';
+    document.getElementById('edit-staff-username').value = data.username || '';
+    document.getElementById('edit-staff-email').value = data.email || '';
+    document.getElementById('edit-staff-phone').value = data.phone || '';
+    document.getElementById('edit-staff-password').value = '';
+
+    // Set role in the custom dropdown
+    setCustomSelectValue('staff-edit-role-wrapper', data.roleId);
+
+    // Smooth Show Transition
+    editContainer.classList.remove('hidden');
+    requestAnimationFrame(() => {
+        editContainer.classList.remove('opacity-0', '-translate-y-4');
+        editContainer.classList.add('opacity-100', 'translate-y-0');
+    });
+
+    // Scroll to top of staff container smoothly
+    editContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setTimeout(() => lucide.createIcons(), 50);
+}
+
+function closeStaffEditor() {
+    editContainer.classList.remove('opacity-100', 'translate-y-0');
+    editContainer.classList.add('opacity-0', '-translate-y-4');
+    setTimeout(() => {
+        editContainer.classList.add('hidden');
+        editForm.reset();
+        const err = editForm.querySelector('.form-error');
+        if (err) err.textContent = '';
+    }, 280);
+}
+
+if (cancelEditBtn) cancelEditBtn.addEventListener('click', closeStaffEditor);
+if (cancelEditBtnX) cancelEditBtnX.addEventListener('click', closeStaffEditor);
+
+// Attach edit button click delegate
+document.addEventListener('click', (e) => {
+    const editBtn = e.target.closest('.edit-staff-btn');
+    if (editBtn) {
+        openStaffEditor({
+            id: editBtn.dataset.id,
+            fullname: editBtn.dataset.fullname,
+            username: editBtn.dataset.username,
+            email: editBtn.dataset.email,
+            phone: editBtn.dataset.phone,
+            roleId: editBtn.dataset.roleId,
+            roleName: editBtn.dataset.roleName,
+        });
+    }
+});
+
+// ---- Staff Edit Form Submit (PUT via AJAX) ----
+if (editForm) {
+    editForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const staffId = document.getElementById('edit-staff-id').value;
+        const updateUrl = `/admin/staff/${staffId}`;
+
+        submitForm(this, updateUrl, (data) => {
+            const s = data.staff;
+            const targetRow = document.getElementById(`staff-row-${s.id}`);
+
+            if (targetRow) {
+                targetRow.setAttribute('data-fullname', (s.fullname || '').toLowerCase());
+                targetRow.setAttribute('data-username', (s.username || '').toLowerCase());
+                targetRow.setAttribute('data-role', (s.role?.name || '').toLowerCase());
+                targetRow.setAttribute('data-role-id', s.role_id);
+                targetRow.setAttribute('data-email', s.email ?? '');
+                targetRow.setAttribute('data-phone', (s.phone || '').toLowerCase());
+
+                targetRow.querySelector('.staff-name-cell').textContent = s.fullname;
+                targetRow.querySelector('.staff-username-cell').textContent = s.username;
+                targetRow.querySelector('.staff-role-cell').textContent = s.role.name.charAt(0).toUpperCase() + s.role.name.slice(1);
+                targetRow.querySelector('.staff-phone-cell').textContent = s.phone ?? '';
+
+                const btn = targetRow.querySelector('.edit-staff-btn');
+                if (btn) {
+                    btn.dataset.fullname = s.fullname;
+                    btn.dataset.username = s.username;
+                    btn.dataset.email = s.email ?? '';
+                    btn.dataset.phone = s.phone ?? '';
+                    btn.dataset.roleId = s.role_id;
+                    btn.dataset.roleName = s.role.name.charAt(0).toUpperCase() + s.role.name.slice(1);
+                }
+
+                // Row flash animation
+                targetRow.classList.remove('row-highlight');
+                void targetRow.offsetWidth; // trigger reflow
+                targetRow.classList.add('row-highlight');
+            }
+
+            closeStaffEditor();
+            showToast(`Staff member "${s.fullname}" updated successfully!`, 'Updated', 'success');
+            if (staffDataTable) staffDataTable.refresh();
+        });
+    });
+}
+
 // ---- Product Form Submit ----
-document.getElementById('product-form').addEventListener('submit', function (e) {
+document.getElementById('product-form')?.addEventListener('submit', function (e) {
     e.preventDefault();
     submitForm(this, "{{ route('admin.products.store') }}", (data) => {
         const p = data.product;
         const row = document.createElement('tr');
-        row.className = 'data-row border-b border-[#2a2731]/60 hover:bg-[#1e1c25]/40 transition';
+        row.className = 'data-row border-b border-[#2a2731]/60 hover:bg-[#1e1c25]/40 transition row-highlight';
         row.setAttribute('data-name', (p.name || '').toLowerCase());
         row.setAttribute('data-category', (p.category?.name || '').toLowerCase());
         row.setAttribute('data-price', p.price);
@@ -813,42 +898,67 @@ document.getElementById('product-form').addEventListener('submit', function (e) 
             <td class="px-4 sm:px-5 whitespace-nowrap">${p.is_available ? '<span class="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full"><i data-lucide="check" class="w-3 h-3"></i>Yes</span>' : '<span class="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-400 bg-rose-500/10 border border-rose-500/20 px-2.5 py-1 rounded-full"><i data-lucide="x" class="w-3 h-3"></i>No</span>'}</td>
         `;
         document.getElementById('products-table-body').prepend(row);
+        this.reset();
+        resetImagePreview();
         if (productsDataTable) productsDataTable.refresh();
+        showToast(`Product "${p.name}" created!`, 'Created');
         setTimeout(() => lucide.createIcons(), 50);
     });
 });
 
-// ---- Staff Form Submit ----
-document.getElementById('staff-form').addEventListener('submit', function (e) {
+// ---- Staff Create Form Submit ----
+document.getElementById('staff-form')?.addEventListener('submit', function (e) {
     e.preventDefault();
     submitForm(this, "{{ route('admin.staff.store') }}", (data) => {
         const s = data.staff;
         const row = document.createElement('tr');
-        row.className = 'data-row border-b border-[#2a2731]/60 hover:bg-[#1e1c25]/40 transition';
+        row.id = `staff-row-${s.id}`;
+        row.className = 'data-row border-b border-[#2a2731]/60 hover:bg-[#1e1c25]/40 transition row-highlight group/row';
+        row.setAttribute('data-id', s.id);
         row.setAttribute('data-fullname', (s.fullname || '').toLowerCase());
         row.setAttribute('data-username', (s.username || '').toLowerCase());
         row.setAttribute('data-role', (s.role?.name || '').toLowerCase());
+        row.setAttribute('data-role-id', s.role_id);
+        row.setAttribute('data-email', s.email ?? '');
         row.setAttribute('data-phone', (s.phone || '').toLowerCase());
 
+        const roleCap = s.role.name.charAt(0).toUpperCase() + s.role.name.slice(1);
+
         row.innerHTML = `
-            <td class="py-3 px-4 sm:px-5 text-white font-medium whitespace-nowrap">${s.fullname}</td>
-            <td class="px-4 sm:px-5 text-stone-400 whitespace-nowrap">${s.username}</td>
-            <td class="px-4 sm:px-5 whitespace-nowrap"><span class="inline-flex items-center text-xs font-semibold text-[#b08d57] bg-[#b08d57]/10 border border-[#b08d57]/20 px-2.5 py-1 rounded-full">${s.role.name.charAt(0).toUpperCase() + s.role.name.slice(1)}</span></td>
-            <td class="px-4 sm:px-5 text-stone-400 whitespace-nowrap">${s.phone ?? ''}</td>
+            <td class="py-3 px-4 sm:px-5 text-white font-medium whitespace-nowrap staff-name-cell">${s.fullname}</td>
+            <td class="px-4 sm:px-5 text-stone-400 whitespace-nowrap staff-username-cell">${s.username}</td>
+            <td class="px-4 sm:px-5 whitespace-nowrap"><span class="inline-flex items-center text-xs font-semibold text-[#b08d57] bg-[#b08d57]/10 border border-[#b08d57]/20 px-2.5 py-1 rounded-full staff-role-cell">${roleCap}</span></td>
+            <td class="px-4 sm:px-5 text-stone-400 whitespace-nowrap staff-phone-cell">${s.phone ?? ''}</td>
+            <td class="px-4 sm:px-5 text-right whitespace-nowrap">
+                <button type="button" 
+                    class="edit-staff-btn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-stone-300 bg-[#1e1c25] hover:bg-[#b08d57] hover:text-[#0f0e13] border border-[#2a2731] hover:border-[#b08d57] transition-all duration-200 active:scale-95"
+                    data-id="${s.id}"
+                    data-fullname="${s.fullname}"
+                    data-username="${s.username}"
+                    data-email="${s.email ?? ''}"
+                    data-phone="${s.phone ?? ''}"
+                    data-role-id="${s.role_id}"
+                    data-role-name="${roleCap}">
+                    <i data-lucide="square-pen" class="w-3.5 h-3.5"></i>
+                    <span>Edit</span>
+                </button>
+            </td>
         `;
         document.getElementById('staff-table-body').prepend(row);
+        this.reset();
         if (staffDataTable) staffDataTable.refresh();
+        showToast(`Staff account "${s.fullname}" created!`, 'Created');
         setTimeout(() => lucide.createIcons(), 50);
     });
 });
 
 // ---- Extra Form Submit ----
-document.getElementById('extra-form').addEventListener('submit', function (e) {
+document.getElementById('extra-form')?.addEventListener('submit', function (e) {
     e.preventDefault();
     submitForm(this, "{{ route('admin.extras.store') }}", (data) => {
         const ex = data.extra;
         const row = document.createElement('tr');
-        row.className = 'data-row border-b border-[#2a2731]/60 hover:bg-[#1e1c25]/40 transition';
+        row.className = 'data-row border-b border-[#2a2731]/60 hover:bg-[#1e1c25]/40 transition row-highlight';
         row.setAttribute('data-name', (ex.name || '').toLowerCase());
         row.setAttribute('data-price', ex.price);
         row.setAttribute('data-status', ex.is_available ? 'available' : 'unavailable');
@@ -859,7 +969,9 @@ document.getElementById('extra-form').addEventListener('submit', function (e) {
             <td class="px-4 sm:px-5 whitespace-nowrap">${ex.is_available ? '<span class="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full"><i data-lucide="check" class="w-3 h-3"></i>Yes</span>' : '<span class="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-400 bg-rose-500/10 border border-rose-500/20 px-2.5 py-1 rounded-full"><i data-lucide="x" class="w-3 h-3"></i>No</span>'}</td>
         `;
         document.getElementById('extras-table-body').prepend(row);
+        this.reset();
         if (extrasDataTable) extrasDataTable.refresh();
+        showToast(`Extra item "${ex.name}" added!`, 'Created');
         setTimeout(() => lucide.createIcons(), 50);
     });
 });

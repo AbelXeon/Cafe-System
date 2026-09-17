@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Validation\Rule;
 use Carbon\Carbon;
 
 class AdminController extends Controller
@@ -317,6 +318,56 @@ class AdminController extends Controller
         return response()->json([
             'success' => true,
             'staff' => $user->load('role')
+        ]);
+    }
+
+
+    public function updateStaff(Request $request, User $user)
+    {
+        $data = $request->validate([
+            'role_id'  => 'required|exists:roles,id',
+            'fullname' => 'required|string|max:255',
+            'username' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('users', 'username')->ignore($user->id),
+            ],
+            'email'    => [
+                'nullable',
+                'email',
+                Rule::unique('users', 'email')->ignore($user->id),
+            ],
+            'phone'    => 'nullable|string|max:20',
+            'password' => 'nullable|string|min:6',
+        ]);
+
+        $updateData = [
+            'role_id'  => $data['role_id'],
+            'fullname' => $data['fullname'],
+            'username' => $data['username'],
+            'email'    => $data['email'] ?? null,
+            'phone'    => $data['phone'] ?? null,
+        ];
+
+        if (!empty($data['password'])) {
+            $updateData['password'] = Hash::make($data['password']);
+        }
+
+        $user->update($updateData);
+
+        AdminAction::create([
+            'admin_id'    => $request->user()->id,
+            'action'      => 'updated_staff',
+            'target_type' => 'User',
+            'target_id'   => $user->id,
+            'description' => "Updated staff member \"{$user->fullname}\"",
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Staff member updated successfully',
+            'staff'   => $user->load('role')
         ]);
     }
 

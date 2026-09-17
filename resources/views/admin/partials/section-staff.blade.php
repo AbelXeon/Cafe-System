@@ -4,6 +4,105 @@
         <p class="text-stone-500 text-xs sm:text-sm mt-1">Manage your team members and drivers</p>
     </div>
 
+    <!-- Edit Staff Animated Drawer / Box (Appears at the top) -->
+    <div id="staff-edit-container" class="hidden opacity-0 -translate-y-4 transition-all duration-300 ease-out mb-8">
+        <div class="bg-[#14131a] border-2 border-[#b08d57]/60 rounded-2xl p-5 sm:p-6 shadow-2xl shadow-[#b08d57]/10 relative overflow-hidden">
+            <div class="absolute top-0 right-0 left-0 h-1 bg-gradient-to-r from-transparent via-[#b08d57] to-transparent"></div>
+            
+            <div class="flex items-center justify-between pb-4 mb-4 border-b border-[#2a2731]">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-[#b08d57]/20 border border-[#b08d57]/40 flex items-center justify-center text-[#b08d57]">
+                        <i data-lucide="user-cog" class="w-4 h-4"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-white">Edit Staff Member</h3>
+                        <p class="text-xs text-stone-400">Update staff details and credentials below</p>
+                    </div>
+                </div>
+                <button type="button" id="cancel-edit-staff-btn-x" class="p-1.5 rounded-lg text-stone-400 hover:text-white hover:bg-[#1e1c25] transition" title="Cancel">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <form id="staff-edit-form" class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+                <input type="hidden" name="_method" value="PUT">
+                <input type="hidden" id="edit-staff-id" name="staff_id" value="">
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Role</label>
+                    <div class="relative custom-select-wrapper" id="staff-edit-role-wrapper">
+                        <select name="role_id" id="edit-staff-role-select" required class="custom-native-select opacity-0 absolute pointer-events-none h-0 w-0">
+                            <option value="">Select role</option>
+                            @foreach ($roles as $r)
+                                <option value="{{ $r->id }}">{{ ucfirst($r->name) }}</option>
+                            @endforeach
+                        </select>
+                        
+                        <button type="button" class="custom-select-trigger cd-input w-full rounded-xl px-3.5 py-2.5 text-sm text-left flex items-center justify-between transition group hover:border-[#b08d57]/70">
+                            <div class="flex items-center gap-2.5 truncate pr-2">
+                                <div class="w-2 h-2 rounded-full bg-[#b08d57] transition trigger-dot"></div>
+                                <span class="custom-select-label text-white font-semibold truncate" data-placeholder="Select role">Select role</span>
+                            </div>
+                            <div class="w-6 h-6 rounded-lg bg-[#1e1c25] group-hover:bg-[#2a2731] flex items-center justify-center text-stone-400 group-hover:text-stone-200 shrink-0 transition">
+                                <i data-lucide="chevron-down" class="w-3.5 h-3.5 transition-transform duration-300 chevron-icon"></i>
+                            </div>
+                        </button>
+
+                        <div class="custom-select-menu hidden absolute left-0 right-0 top-[calc(100%+6px)] bg-[#14131a]/95 backdrop-blur-xl border border-[#2a2731] rounded-xl p-1.5 shadow-2xl z-50 max-h-56 overflow-y-auto custom-scroll space-y-1">
+                            @foreach ($roles as $r)
+                                <div class="custom-option px-3 py-2.5 rounded-lg text-sm text-stone-300 hover:text-white hover:bg-[#1e1c25] cursor-pointer flex items-center justify-between transition group/opt" data-value="{{ $r->id }}" data-text="{{ ucfirst($r->name) }}">
+                                    <div class="flex items-center gap-2.5">
+                                        <div class="w-2 h-2 rounded-full bg-stone-600 group-hover/opt:bg-[#b08d57] transition dot-indicator"></div>
+                                        <span class="font-medium">{{ ucfirst($r->name) }}</span>
+                                    </div>
+                                    <i data-lucide="check" class="w-4 h-4 text-[#b08d57] hidden check-icon"></i>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Full name</label>
+                    <input type="text" id="edit-staff-fullname" name="fullname" required class="cd-input w-full rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none transition">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Username</label>
+                    <input type="text" id="edit-staff-username" name="username" required class="cd-input w-full rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none transition">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Email</label>
+                    <input type="email" id="edit-staff-email" name="email" class="cd-input w-full rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none transition">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Phone</label>
+                    <input type="text" id="edit-staff-phone" name="phone" class="cd-input w-full rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none transition">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">New Password <span class="text-stone-500 font-normal lowercase">(leave blank to keep current)</span></label>
+                    <input type="password" id="edit-staff-password" name="password" placeholder="••••••••" class="cd-input w-full rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none transition">
+                </div>
+
+                <div class="sm:col-span-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
+                    <p class="text-rose-400 text-xs sm:text-sm form-error" data-form="staff-edit"></p>
+                    <div class="flex items-center gap-2 justify-end">
+                        <button type="button" id="cancel-edit-staff-btn" class="border border-[#2a2731] hover:bg-[#1e1c25] text-stone-300 hover:text-white font-semibold rounded-xl px-4 py-2.5 text-sm transition flex items-center justify-center gap-1.5">
+                            <i data-lucide="x" class="w-4 h-4"></i><span>Cancel</span>
+                        </button>
+                        <button type="submit" class="bg-[#b08d57] hover:bg-[#c9a36b] text-[#0f0e13] font-bold rounded-xl px-5 py-2.5 text-sm transition flex items-center justify-center gap-2 shadow-lg shadow-[#b08d57]/20">
+                            <i data-lucide="check" class="w-4 h-4"></i><span>Save Changes</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Create Staff Form -->
     <form id="staff-form" class="bg-[#14131a] border border-[#2a2731] rounded-2xl p-5 sm:p-6 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 mb-8 shadow-lg">
         <div>
             <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Role</label>
@@ -119,19 +218,40 @@
                         <th class="px-4 sm:px-5 font-semibold">Username</th>
                         <th class="px-4 sm:px-5 font-semibold">Role</th>
                         <th class="px-4 sm:px-5 font-semibold">Phone</th>
+                        <th class="px-4 sm:px-5 font-semibold text-right">Action</th>
                     </tr>
                 </thead>
                 <tbody id="staff-table-body">
                     @foreach ($staff as $s)
-                        <tr class="data-row border-b border-[#2a2731]/60 hover:bg-[#1e1c25]/40 transition"
+                        <tr class="data-row border-b border-[#2a2731]/60 hover:bg-[#1e1c25]/40 transition group/row"
+                            id="staff-row-{{ $s->id }}"
+                            data-id="{{ $s->id }}"
                             data-fullname="{{ strtolower($s->fullname) }}"
                             data-username="{{ strtolower($s->username) }}"
                             data-role="{{ strtolower($s->role->name) }}"
+                            data-role-id="{{ $s->role_id }}"
+                            data-email="{{ $s->email ?? '' }}"
                             data-phone="{{ strtolower($s->phone ?? '') }}">
                             <td class="py-3 px-4 sm:px-5 text-white font-medium whitespace-nowrap staff-name-cell">{{ $s->fullname }}</td>
                             <td class="px-4 sm:px-5 text-stone-400 whitespace-nowrap staff-username-cell">{{ $s->username }}</td>
-                            <td class="px-4 sm:px-5 whitespace-nowrap"><span class="inline-flex items-center text-xs font-semibold text-[#b08d57] bg-[#b08d57]/10 border border-[#b08d57]/20 px-2.5 py-1 rounded-full staff-role-cell">{{ ucfirst($s->role->name) }}</span></td>
+                            <td class="px-4 sm:px-5 whitespace-nowrap">
+                                <span class="inline-flex items-center text-xs font-semibold text-[#b08d57] bg-[#b08d57]/10 border border-[#b08d57]/20 px-2.5 py-1 rounded-full staff-role-cell">{{ ucfirst($s->role->name) }}</span>
+                            </td>
                             <td class="px-4 sm:px-5 text-stone-400 whitespace-nowrap staff-phone-cell">{{ $s->phone }}</td>
+                            <td class="px-4 sm:px-5 text-right whitespace-nowrap">
+                                <button type="button" 
+                                    class="edit-staff-btn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-stone-300 bg-[#1e1c25] hover:bg-[#b08d57] hover:text-[#0f0e13] border border-[#2a2731] hover:border-[#b08d57] transition-all duration-200 active:scale-95"
+                                    data-id="{{ $s->id }}"
+                                    data-fullname="{{ $s->fullname }}"
+                                    data-username="{{ $s->username }}"
+                                    data-email="{{ $s->email ?? '' }}"
+                                    data-phone="{{ $s->phone ?? '' }}"
+                                    data-role-id="{{ $s->role_id }}"
+                                    data-role-name="{{ ucfirst($s->role->name) }}">
+                                    <i data-lucide="square-pen" class="w-3.5 h-3.5"></i>
+                                    <span>Edit</span>
+                                </button>
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>

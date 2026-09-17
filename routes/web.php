@@ -26,6 +26,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::post('/products', [AdminController::class, 'storeProduct'])->name('products.store');
     Route::post('/staff', [AdminController::class, 'storeStaff'])->name('staff.store');
+        Route::put('/staff/{user}', [AdminController::class, 'updateStaff'])->name('staff.update');
+
     Route::post('/extras', [AdminController::class, 'storeExtra'])->name('extras.store');
 });
 
