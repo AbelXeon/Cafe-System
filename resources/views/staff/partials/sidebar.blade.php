@@ -55,7 +55,7 @@
                             class="side-link w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-semibold flex items-center justify-between cursor-pointer">
                         <div class="flex items-center gap-3">
                             <i data-lucide="ban" class="w-4 h-4 text-rose-400"></i>
-                            <span>Menu Stock & 86'd</span>
+                            <span>Menu Stock</span>
                         </div>
                         <span class="text-xs px-2 py-0.5 rounded-full font-bold bg-rose-500/20 text-rose-400" 
                               x-text="outOfStockCount"></span>
