@@ -8,6 +8,8 @@ use App\Models\Product;
 use App\Models\Extra;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Password;
 
 class StaffController extends Controller
 {
@@ -81,6 +83,55 @@ class StaffController extends Controller
         ]);
     }
 
+    public function updateProfile(Request $request)
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        $validated = $request->validate([
+            'name'  => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email,' . $user->id,
+            'phone' => 'nullable|string|max:30',
+        ]);
+
+        $user->fullname = $validated['name'];
+        if (isset($user->name)) {
+            $user->name = $validated['name'];
+        }
+        $user->email = $validated['email'];
+        $user->phone = $validated['phone'];
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Profile updated successfully.',
+            'user'    => [
+                'name'  => $user->fullname ?? $user->name,
+                'email' => $user->email,
+                'phone' => $user->phone
+            ]
+        ]);
+    }
+
+    public function updatePassword(Request $request)
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        $request->validate([
+            'current_password' => 'required|current_password',
+            'password'         => ['required', 'confirmed', Password::min(8)->letters()->mixedCase()->numbers()->symbols()],
+        ]);
+
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Password changed successfully.'
+        ]);
+    }
+
     private function fetchFormattedOrders()
     {
         return Order::with(['user', 'items.product', 'items.extras'])
@@ -90,7 +141,7 @@ class StaffController extends Controller
             ->map(function ($order) {
                 return [
                     'id'               => $order->id,
-                    'customer_name'    => $order->user ? $order->user->fullname : 'Guest Customer',
+                    'customer_name'    => $order->user ? ($order->user->fullname ?? $order->user->name) : 'Guest Customer',
                     'customer_phone'   => $order->user ? $order->user->phone : null,
                     'order_type'       => $order->order_type,
                     'status'           => $order->status,
@@ -112,6 +163,9 @@ class StaffController extends Controller
                             'unit_price'   => (float) $item->unit_price,
                             'subtotal'     => (float) $item->subtotal,
                             'special_note' => $item->special_note,
+                            'extras'       => $item->extras->map(function($e) {
+                                return $e->name ?? $e->title ?? $e;
+                            })->toArray(),
                         ];
                     })
                 ];

@@ -33,7 +33,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 });
 
 
-
 // Staff / Kitchen Routes
 Route::middleware(['auth', 'role:staff'])->prefix('staff')->name('staff.')->group(function () {
     Route::get('/dashboard', [StaffController::class, 'dashboard'])->name('dashboard');
@@ -43,6 +42,10 @@ Route::middleware(['auth', 'role:staff'])->prefix('staff')->name('staff.')->grou
     // Item Availability / Out-of-Stock (86) Toggles
     Route::patch('/products/{product}/toggle-availability', [StaffController::class, 'toggleProductAvailability'])->name('products.toggle');
     Route::patch('/extras/{extra}/toggle-availability', [StaffController::class, 'toggleExtraAvailability'])->name('extras.toggle');
+
+    // Profile & Password Settings
+    Route::patch('/profile', [StaffController::class, 'updateProfile'])->name('profile.update');
+    Route::put('/password', [StaffController::class, 'updatePassword'])->name('password.update');
 });
 
 
