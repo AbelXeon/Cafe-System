@@ -189,6 +189,86 @@
                                 </svg>
                             </button>
                         </div>
+                        <!-- Passwords match / mismatch indicator -->
+                        <div x-show="passwordForm.password_confirmation" x-cloak class="mt-1.5 flex items-center gap-1.5 text-[11px]">
+                            <span x-show="passwordForm.password === passwordForm.password_confirmation" class="text-emerald-400 font-medium flex items-center gap-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                Passwords match
+                            </span>
+                            <span x-show="passwordForm.password !== passwordForm.password_confirmation" class="text-rose-400 font-medium flex items-center gap-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                Passwords do not match
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Password Requirements & Strength Indicator -->
+                <div class="p-3.5 bg-[#0f0e13] border border-[#2a2731] rounded-xl space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold text-stone-400">Password Requirements</span>
+                        <span class="text-[11px] font-semibold transition-colors"
+                            :class="{
+                                'text-stone-500': !passwordForm.password,
+                                'text-rose-400': passwordForm.password && (((passwordForm.password.length >= 8) + (/[a-z]/.test(passwordForm.password) && /[A-Z]/.test(passwordForm.password)) + (/\d/.test(passwordForm.password)) + (/[^A-Za-z0-9]/.test(passwordForm.password))) <= 2),
+                                'text-amber-400': passwordForm.password && (((passwordForm.password.length >= 8) + (/[a-z]/.test(passwordForm.password) && /[A-Z]/.test(passwordForm.password)) + (/\d/.test(passwordForm.password)) + (/[^A-Za-z0-9]/.test(passwordForm.password))) === 3),
+                                'text-emerald-400': passwordForm.password && (((passwordForm.password.length >= 8) + (/[a-z]/.test(passwordForm.password) && /[A-Z]/.test(passwordForm.password)) + (/\d/.test(passwordForm.password)) + (/[^A-Za-z0-9]/.test(passwordForm.password))) === 4)
+                            }"
+                            x-text="!passwordForm.password ? 'Must meet requirements' :
+                                (((passwordForm.password.length >= 8) + (/[a-z]/.test(passwordForm.password) && /[A-Z]/.test(passwordForm.password)) + (/\d/.test(passwordForm.password)) + (/[^A-Za-z0-9]/.test(passwordForm.password))) <= 2 ? 'Weak' :
+                                (((passwordForm.password.length >= 8) + (/[a-z]/.test(passwordForm.password) && /[A-Z]/.test(passwordForm.password)) + (/\d/.test(passwordForm.password)) + (/[^A-Za-z0-9]/.test(passwordForm.password))) === 3 ? 'Medium' : 'Strong Password'))">
+                        </span>
+                    </div>
+
+                    <!-- 4-segment strength bar -->
+                    <div class="grid grid-cols-4 gap-1.5 h-1 w-full">
+                        <div class="h-full rounded-full transition-all duration-300"
+                            :class="passwordForm.password ? (((passwordForm.password.length >= 8) + (/[a-z]/.test(passwordForm.password) && /[A-Z]/.test(passwordForm.password)) + (/\d/.test(passwordForm.password)) + (/[^A-Za-z0-9]/.test(passwordForm.password))) >= 1 ? 'bg-rose-500' : 'bg-[#1e1c25]') : 'bg-[#1e1c25]'"></div>
+                        <div class="h-full rounded-full transition-all duration-300"
+                            :class="passwordForm.password ? (((passwordForm.password.length >= 8) + (/[a-z]/.test(passwordForm.password) && /[A-Z]/.test(passwordForm.password)) + (/\d/.test(passwordForm.password)) + (/[^A-Za-z0-9]/.test(passwordForm.password))) >= 2 ? 'bg-amber-500' : 'bg-[#1e1c25]') : 'bg-[#1e1c25]'"></div>
+                        <div class="h-full rounded-full transition-all duration-300"
+                            :class="passwordForm.password ? (((passwordForm.password.length >= 8) + (/[a-z]/.test(passwordForm.password) && /[A-Z]/.test(passwordForm.password)) + (/\d/.test(passwordForm.password)) + (/[^A-Za-z0-9]/.test(passwordForm.password))) >= 3 ? 'bg-[#b08d57]' : 'bg-[#1e1c25]') : 'bg-[#1e1c25]'"></div>
+                        <div class="h-full rounded-full transition-all duration-300"
+                            :class="passwordForm.password ? (((passwordForm.password.length >= 8) + (/[a-z]/.test(passwordForm.password) && /[A-Z]/.test(passwordForm.password)) + (/\d/.test(passwordForm.password)) + (/[^A-Za-z0-9]/.test(passwordForm.password))) >= 4 ? 'bg-emerald-400' : 'bg-[#1e1c25]') : 'bg-[#1e1c25]'"></div>
+                    </div>
+
+                    <!-- Checklist items -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs pt-1">
+                        <!-- 8+ Chars -->
+                        <div class="flex items-center gap-1.5 transition-colors"
+                            :class="(passwordForm.password || '').length >= 8 ? 'text-emerald-400 font-medium' : 'text-stone-500'">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 shrink-0 transition-transform" :class="(passwordForm.password || '').length >= 8 ? 'text-emerald-400 scale-110' : 'text-stone-600'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            <span>8+ characters</span>
+                        </div>
+
+                        <!-- Uppercase & Lowercase -->
+                        <div class="flex items-center gap-1.5 transition-colors"
+                            :class="(/[a-z]/.test(passwordForm.password || '') && /[A-Z]/.test(passwordForm.password || '')) ? 'text-emerald-400 font-medium' : 'text-stone-500'">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 shrink-0 transition-transform" :class="(/[a-z]/.test(passwordForm.password || '') && /[A-Z]/.test(passwordForm.password || '')) ? 'text-emerald-400 scale-110' : 'text-stone-600'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            <span>Letters (Aa)</span>
+                        </div>
+
+                        <!-- Number -->
+                        <div class="flex items-center gap-1.5 transition-colors"
+                            :class="/\d/.test(passwordForm.password || '') ? 'text-emerald-400 font-medium' : 'text-stone-500'">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 shrink-0 transition-transform" :class="/\d/.test(passwordForm.password || '') ? 'text-emerald-400 scale-110' : 'text-stone-600'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            <span>Number (0-9)</span>
+                        </div>
+
+                        <!-- Special Char -->
+                        <div class="flex items-center gap-1.5 transition-colors"
+                            :class="/[^A-Za-z0-9]/.test(passwordForm.password || '') ? 'text-emerald-400 font-medium' : 'text-stone-500'">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 shrink-0 transition-transform" :class="/[^A-Za-z0-9]/.test(passwordForm.password || '') ? 'text-emerald-400 scale-110' : 'text-stone-600'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            <span>Symbol (!@#$...)</span>
+                        </div>
                     </div>
                 </div>
 
