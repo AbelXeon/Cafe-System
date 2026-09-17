@@ -25,10 +25,11 @@ Route::post('/register', [AuthController::class, 'register'])->name('register.su
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::post('/products', [AdminController::class, 'storeProduct'])->name('products.store');
+    Route::put('/products/{product}', [AdminController::class, 'updateProduct'])->name('products.update');
     Route::post('/staff', [AdminController::class, 'storeStaff'])->name('staff.store');
-        Route::put('/staff/{user}', [AdminController::class, 'updateStaff'])->name('staff.update');
-
+    Route::put('/staff/{user}', [AdminController::class, 'updateStaff'])->name('staff.update');
     Route::post('/extras', [AdminController::class, 'storeExtra'])->name('extras.store');
+    Route::put('/extras/{extra}', [AdminController::class, 'updateExtra'])->name('extras.update');
 });
 
 

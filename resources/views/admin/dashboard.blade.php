@@ -35,14 +35,34 @@
         
         /* Highlight flash on updated rows */
         @keyframes flashRow {
-            0% { background-color: rgba(176, 141, 87, 0.35); }
+            0% { background-color: rgba(176, 141, 87, 0.4); }
             100% { background-color: transparent; }
         }
         .row-highlight {
-            animation: flashRow 2s ease-out;
+            animation: flashRow 1.8s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
 
-        /* Dedicated Pure-CSS Toast Engine (Guaranteed Animation) */
+        /* Generic Edit Drawers CSS Transitions (Products, Staff, Extras) */
+        .edit-drawer-closed {
+            opacity: 0;
+            max-height: 0;
+            transform: translateY(-16px) scale(0.98);
+            overflow: hidden;
+            margin-bottom: 0 !important;
+            pointer-events: none;
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .edit-drawer-open {
+            opacity: 1;
+            max-height: 1000px;
+            transform: translateY(0) scale(1);
+            overflow: visible;
+            margin-bottom: 2rem !important;
+            pointer-events: auto;
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Pure CSS Bottom Right Toast Notification */
         #toast-notification {
             position: fixed !important;
             bottom: 24px !important;
@@ -58,7 +78,6 @@
                         visibility 0.35s !important;
             pointer-events: none;
         }
-
         #toast-notification.toast-active {
             opacity: 1 !important;
             visibility: visible !important;
@@ -124,7 +143,7 @@
 <script>
 const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 
-// ---- Toast Notification System ----
+// ---- Toast Notification Engine ----
 let toastTimeout = null;
 
 function showToast(message, title = 'Success', type = 'success') {
@@ -148,10 +167,8 @@ function showToast(message, title = 'Success', type = 'success') {
         toastIcon.innerHTML = `<svg class="w-4 h-4 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
     }
 
-    // Trigger smooth enter transition
     toast.classList.add('toast-active');
 
-    // Auto dismiss after 3.8 seconds
     toastTimeout = setTimeout(() => {
         hideToast();
     }, 3800);
@@ -177,7 +194,6 @@ function initCharts() {
     const categoryLabels = @json($categoryLabels);
     const categoryCounts = @json($categoryCounts);
 
-    // 1. Revenue & Orders Trend Chart
     const revCtx = document.getElementById('revenueTrendChart')?.getContext('2d');
     if (revCtx) {
         if (revenueChartInstance) revenueChartInstance.destroy();
@@ -285,7 +301,6 @@ function initCharts() {
         });
     }
 
-    // 2. Category Distribution Donut Chart
     const catCtx = document.getElementById('categoryDonutChart')?.getContext('2d');
     if (catCtx) {
         if (categoryChartInstance) categoryChartInstance.destroy();
@@ -377,7 +392,7 @@ navLinks.forEach(link => {
 });
 showSection('overview');
 
-// ---- Image Picker & Preview Handling ----
+// ---- Image Picker & Preview Handling (Create Product) ----
 const imageInput = document.getElementById('product-image-input');
 const dropzone = document.getElementById('image-dropzone');
 const placeholder = document.getElementById('image-placeholder');
@@ -401,11 +416,11 @@ function showImagePreview(file) {
 }
 
 function resetImagePreview() {
-    imageInput.value = '';
-    previewImg.src = '';
-    previewName.textContent = '';
-    previewContainer.classList.add('hidden');
-    placeholder.classList.remove('hidden');
+    if (imageInput) imageInput.value = '';
+    if (previewImg) previewImg.src = '';
+    if (previewName) previewName.textContent = '';
+    if (previewContainer) previewContainer.classList.add('hidden');
+    if (placeholder) placeholder.classList.remove('hidden');
     setTimeout(() => lucide.createIcons(), 50);
 }
 
@@ -453,6 +468,27 @@ if (removeImageBtn) {
     removeImageBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         resetImagePreview();
+    });
+}
+
+// Edit Product Image Picker
+const editProductImageInput = document.getElementById('edit-product-image-input');
+const editImageDropzone = document.getElementById('edit-image-dropzone');
+const editImagePreviewThumb = document.getElementById('edit-image-preview-thumb');
+const editImagePlaceholderText = document.getElementById('edit-image-placeholder-text');
+
+if (editImageDropzone && editProductImageInput) {
+    editImageDropzone.addEventListener('click', () => editProductImageInput.click());
+    editProductImageInput.addEventListener('change', function () {
+        if (this.files && this.files[0]) {
+            const file = this.files[0];
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                editImagePreviewThumb.src = e.target.result;
+                editImagePlaceholderText.textContent = file.name;
+            };
+            reader.readAsDataURL(file);
+        }
     });
 }
 
@@ -556,7 +592,6 @@ function initCustomSelects(container = document) {
     });
 }
 
-// Helper to manually set custom select value
 function setCustomSelectValue(wrapperId, value) {
     const wrapper = document.getElementById(wrapperId);
     if (!wrapper) return;
@@ -643,7 +678,6 @@ function setupDataTable({ searchInputId, clearBtnClass, tableBodyId, emptyStateI
     return { refresh: applyFilter };
 }
 
-// ---- Initialize DataTables ----
 let productsDataTable, staffDataTable, extrasDataTable;
 
 function initAllDataTables() {
@@ -772,11 +806,13 @@ async function submitForm(formEl, url, onSuccess) {
     }
 }
 
-// ---- Staff Edit Drawer Logic ----
-const editContainer = document.getElementById('staff-edit-container');
-const editForm = document.getElementById('staff-edit-form');
-const cancelEditBtn = document.getElementById('cancel-edit-staff-btn');
-const cancelEditBtnX = document.getElementById('cancel-edit-staff-btn-x');
+// ==========================================
+// 1. STAFF EDIT CONTROLS
+// ==========================================
+const staffEditContainer = document.getElementById('staff-edit-container');
+const staffEditForm = document.getElementById('staff-edit-form');
+const cancelStaffEditBtn = document.getElementById('cancel-edit-staff-btn');
+const cancelStaffEditBtnX = document.getElementById('cancel-edit-staff-btn-x');
 
 function openStaffEditor(data) {
     document.getElementById('edit-staff-id').value = data.id;
@@ -786,36 +822,27 @@ function openStaffEditor(data) {
     document.getElementById('edit-staff-phone').value = data.phone || '';
     document.getElementById('edit-staff-password').value = '';
 
-    // Set role in the custom dropdown
     setCustomSelectValue('staff-edit-role-wrapper', data.roleId);
 
-    // Smooth Show Transition
-    editContainer.classList.remove('hidden');
-    requestAnimationFrame(() => {
-        editContainer.classList.remove('opacity-0', '-translate-y-4');
-        editContainer.classList.add('opacity-100', 'translate-y-0');
-    });
-
-    // Scroll to top of staff container smoothly
-    editContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    staffEditContainer.classList.remove('edit-drawer-closed');
+    staffEditContainer.classList.add('edit-drawer-open');
+    staffEditContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
     setTimeout(() => lucide.createIcons(), 50);
 }
 
 function closeStaffEditor() {
-    editContainer.classList.remove('opacity-100', 'translate-y-0');
-    editContainer.classList.add('opacity-0', '-translate-y-4');
+    staffEditContainer.classList.remove('edit-drawer-open');
+    staffEditContainer.classList.add('edit-drawer-closed');
     setTimeout(() => {
-        editContainer.classList.add('hidden');
-        editForm.reset();
-        const err = editForm.querySelector('.form-error');
+        staffEditForm.reset();
+        const err = staffEditForm.querySelector('.form-error');
         if (err) err.textContent = '';
-    }, 280);
+    }, 350);
 }
 
-if (cancelEditBtn) cancelEditBtn.addEventListener('click', closeStaffEditor);
-if (cancelEditBtnX) cancelEditBtnX.addEventListener('click', closeStaffEditor);
+if (cancelStaffEditBtn) cancelStaffEditBtn.addEventListener('click', closeStaffEditor);
+if (cancelStaffEditBtnX) cancelStaffEditBtnX.addEventListener('click', closeStaffEditor);
 
-// Attach edit button click delegate
 document.addEventListener('click', (e) => {
     const editBtn = e.target.closest('.edit-staff-btn');
     if (editBtn) {
@@ -831,9 +858,8 @@ document.addEventListener('click', (e) => {
     }
 });
 
-// ---- Staff Edit Form Submit (PUT via AJAX) ----
-if (editForm) {
-    editForm.addEventListener('submit', function (e) {
+if (staffEditForm) {
+    staffEditForm.addEventListener('submit', function (e) {
         e.preventDefault();
         const staffId = document.getElementById('edit-staff-id').value;
         const updateUrl = `/admin/staff/${staffId}`;
@@ -865,9 +891,8 @@ if (editForm) {
                     btn.dataset.roleName = s.role.name.charAt(0).toUpperCase() + s.role.name.slice(1);
                 }
 
-                // Row flash animation
                 targetRow.classList.remove('row-highlight');
-                void targetRow.offsetWidth; // trigger reflow
+                void targetRow.offsetWidth;
                 targetRow.classList.add('row-highlight');
             }
 
@@ -878,24 +903,248 @@ if (editForm) {
     });
 }
 
-// ---- Product Form Submit ----
+// ==========================================
+// 2. PRODUCT EDIT CONTROLS
+// ==========================================
+const productEditContainer = document.getElementById('product-edit-container');
+const productEditForm = document.getElementById('product-edit-form');
+const cancelProductEditBtn = document.getElementById('cancel-edit-product-btn');
+const cancelProductEditBtnX = document.getElementById('cancel-edit-product-btn-x');
+
+function openProductEditor(data) {
+    document.getElementById('edit-product-id').value = data.id;
+    document.getElementById('edit-product-name').value = data.name || '';
+    document.getElementById('edit-product-price').value = data.price || '';
+    document.getElementById('edit-product-description').value = data.description || '';
+    document.getElementById('edit-product-available').checked = (data.isAvailable === '1');
+    
+    // Set current thumbnail
+    if (editImagePreviewThumb) {
+        editImagePreviewThumb.src = `/storage/${data.image}`;
+    }
+    if (editImagePlaceholderText) {
+        editImagePlaceholderText.textContent = 'Click to replace image...';
+    }
+    if (editProductImageInput) {
+        editProductImageInput.value = '';
+    }
+
+    setCustomSelectValue('edit-product-category-wrapper', data.categoryId);
+
+    productEditContainer.classList.remove('edit-drawer-closed');
+    productEditContainer.classList.add('edit-drawer-open');
+    productEditContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setTimeout(() => lucide.createIcons(), 50);
+}
+
+function closeProductEditor() {
+    productEditContainer.classList.remove('edit-drawer-open');
+    productEditContainer.classList.add('edit-drawer-closed');
+    setTimeout(() => {
+        productEditForm.reset();
+        const err = productEditForm.querySelector('.form-error');
+        if (err) err.textContent = '';
+    }, 350);
+}
+
+if (cancelProductEditBtn) cancelProductEditBtn.addEventListener('click', closeProductEditor);
+if (cancelProductEditBtnX) cancelProductEditBtnX.addEventListener('click', closeProductEditor);
+
+document.addEventListener('click', (e) => {
+    const editBtn = e.target.closest('.edit-product-btn');
+    if (editBtn) {
+        openProductEditor({
+            id: editBtn.dataset.id,
+            name: editBtn.dataset.name,
+            categoryId: editBtn.dataset.categoryId,
+            categoryName: editBtn.dataset.categoryName,
+            price: editBtn.dataset.price,
+            description: editBtn.dataset.description,
+            image: editBtn.dataset.image,
+            isAvailable: editBtn.dataset.isAvailable,
+        });
+    }
+});
+
+if (productEditForm) {
+    productEditForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const productId = document.getElementById('edit-product-id').value;
+        const updateUrl = `/admin/products/${productId}`;
+
+        submitForm(this, updateUrl, (data) => {
+            const p = data.product;
+            const targetRow = document.getElementById(`product-row-${p.id}`);
+
+            if (targetRow) {
+                targetRow.setAttribute('data-name', (p.name || '').toLowerCase());
+                targetRow.setAttribute('data-category', (p.category?.name || '').toLowerCase());
+                targetRow.setAttribute('data-category-id', p.category_id);
+                targetRow.setAttribute('data-price', p.price);
+                targetRow.setAttribute('data-description', p.description ?? '');
+                targetRow.setAttribute('data-image', p.image);
+                targetRow.setAttribute('data-status', p.is_available ? 'available' : 'unavailable');
+
+                targetRow.querySelector('.product-image-cell').src = `/storage/${p.image}?t=${Date.now()}`;
+                targetRow.querySelector('.product-name-cell').textContent = p.name;
+                targetRow.querySelector('.product-cat-cell').textContent = p.category?.name;
+                targetRow.querySelector('.product-price-cell').textContent = `${Number(p.price).toFixed(2)} ETB`;
+                
+                targetRow.querySelector('.product-status-cell').innerHTML = p.is_available 
+                    ? '<span class="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full"><i data-lucide="check" class="w-3 h-3"></i>Yes</span>'
+                    : '<span class="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-400 bg-rose-500/10 border border-rose-500/20 px-2.5 py-1 rounded-full"><i data-lucide="x" class="w-3 h-3"></i>No</span>';
+
+                const btn = targetRow.querySelector('.edit-product-btn');
+                if (btn) {
+                    btn.dataset.name = p.name;
+                    btn.dataset.categoryId = p.category_id;
+                    btn.dataset.categoryName = p.category?.name;
+                    btn.dataset.price = p.price;
+                    btn.dataset.description = p.description ?? '';
+                    btn.dataset.image = p.image;
+                    btn.dataset.isAvailable = p.is_available ? '1' : '0';
+                }
+
+                targetRow.classList.remove('row-highlight');
+                void targetRow.offsetWidth;
+                targetRow.classList.add('row-highlight');
+            }
+
+            closeProductEditor();
+            showToast(`Product "${p.name}" updated successfully!`, 'Updated', 'success');
+            if (productsDataTable) productsDataTable.refresh();
+            setTimeout(() => lucide.createIcons(), 50);
+        });
+    });
+}
+
+// ==========================================
+// 3. EXTRAS EDIT CONTROLS
+// ==========================================
+const extraEditContainer = document.getElementById('extra-edit-container');
+const extraEditForm = document.getElementById('extra-edit-form');
+const cancelExtraEditBtn = document.getElementById('cancel-edit-extra-btn');
+const cancelExtraEditBtnX = document.getElementById('cancel-edit-extra-btn-x');
+
+function openExtraEditor(data) {
+    document.getElementById('edit-extra-id').value = data.id;
+    document.getElementById('edit-extra-name').value = data.name || '';
+    document.getElementById('edit-extra-price').value = data.price || '';
+    document.getElementById('edit-extra-available').checked = (data.isAvailable === '1');
+
+    extraEditContainer.classList.remove('edit-drawer-closed');
+    extraEditContainer.classList.add('edit-drawer-open');
+    extraEditContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setTimeout(() => lucide.createIcons(), 50);
+}
+
+function closeExtraEditor() {
+    extraEditContainer.classList.remove('edit-drawer-open');
+    extraEditContainer.classList.add('edit-drawer-closed');
+    setTimeout(() => {
+        extraEditForm.reset();
+        const err = extraEditForm.querySelector('.form-error');
+        if (err) err.textContent = '';
+    }, 350);
+}
+
+if (cancelExtraEditBtn) cancelExtraEditBtn.addEventListener('click', closeExtraEditor);
+if (cancelExtraEditBtnX) cancelExtraEditBtnX.addEventListener('click', closeExtraEditor);
+
+document.addEventListener('click', (e) => {
+    const editBtn = e.target.closest('.edit-extra-btn');
+    if (editBtn) {
+        openExtraEditor({
+            id: editBtn.dataset.id,
+            name: editBtn.dataset.name,
+            price: editBtn.dataset.price,
+            isAvailable: editBtn.dataset.isAvailable,
+        });
+    }
+});
+
+if (extraEditForm) {
+    extraEditForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const extraId = document.getElementById('edit-extra-id').value;
+        const updateUrl = `/admin/extras/${extraId}`;
+
+        submitForm(this, updateUrl, (data) => {
+            const ex = data.extra;
+            const targetRow = document.getElementById(`extra-row-${ex.id}`);
+
+            if (targetRow) {
+                targetRow.setAttribute('data-name', (ex.name || '').toLowerCase());
+                targetRow.setAttribute('data-price', ex.price);
+                targetRow.setAttribute('data-status', ex.is_available ? 'available' : 'unavailable');
+
+                targetRow.querySelector('.extra-name-cell').textContent = ex.name;
+                targetRow.querySelector('.extra-price-cell').textContent = `${Number(ex.price).toFixed(2)} ETB`;
+                
+                targetRow.querySelector('.extra-status-cell').innerHTML = ex.is_available 
+                    ? '<span class="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full"><i data-lucide="check" class="w-3 h-3"></i>Yes</span>'
+                    : '<span class="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-400 bg-rose-500/10 border border-rose-500/20 px-2.5 py-1 rounded-full"><i data-lucide="x" class="w-3 h-3"></i>No</span>';
+
+                const btn = targetRow.querySelector('.edit-extra-btn');
+                if (btn) {
+                    btn.dataset.name = ex.name;
+                    btn.dataset.price = ex.price;
+                    btn.dataset.isAvailable = ex.is_available ? '1' : '0';
+                }
+
+                targetRow.classList.remove('row-highlight');
+                void targetRow.offsetWidth;
+                targetRow.classList.add('row-highlight');
+            }
+
+            closeExtraEditor();
+            showToast(`Extra item "${ex.name}" updated successfully!`, 'Updated', 'success');
+            if (extrasDataTable) extrasDataTable.refresh();
+            setTimeout(() => lucide.createIcons(), 50);
+        });
+    });
+}
+
+// ==========================================
+// 4. CREATE FORM HANDLERS (PRODUCTS, STAFF, EXTRAS)
+// ==========================================
 document.getElementById('product-form')?.addEventListener('submit', function (e) {
     e.preventDefault();
     submitForm(this, "{{ route('admin.products.store') }}", (data) => {
         const p = data.product;
         const row = document.createElement('tr');
-        row.className = 'data-row border-b border-[#2a2731]/60 hover:bg-[#1e1c25]/40 transition row-highlight';
+        row.id = `product-row-${p.id}`;
+        row.className = 'data-row border-b border-[#2a2731]/60 hover:bg-[#1e1c25]/40 transition row-highlight group/row';
+        row.setAttribute('data-id', p.id);
         row.setAttribute('data-name', (p.name || '').toLowerCase());
         row.setAttribute('data-category', (p.category?.name || '').toLowerCase());
+        row.setAttribute('data-category-id', p.category_id);
         row.setAttribute('data-price', p.price);
+        row.setAttribute('data-description', p.description ?? '');
+        row.setAttribute('data-image', p.image);
         row.setAttribute('data-status', p.is_available ? 'available' : 'unavailable');
         
         row.innerHTML = `
-            <td class="py-3 px-4 sm:px-5"><img src="/storage/${p.image}" loading="lazy" decoding="async" class="w-10 h-10 object-cover rounded-lg bg-[#0f0e13]"></td>
-            <td class="px-4 sm:px-5 text-white font-medium whitespace-nowrap">${p.name}</td>
-            <td class="px-4 sm:px-5 text-stone-400 whitespace-nowrap">${p.category.name}</td>
-            <td class="px-4 sm:px-5 text-[#b08d57] font-bold whitespace-nowrap">${Number(p.price).toFixed(2)} ETB</td>
-            <td class="px-4 sm:px-5 whitespace-nowrap">${p.is_available ? '<span class="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full"><i data-lucide="check" class="w-3 h-3"></i>Yes</span>' : '<span class="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-400 bg-rose-500/10 border border-rose-500/20 px-2.5 py-1 rounded-full"><i data-lucide="x" class="w-3 h-3"></i>No</span>'}</td>
+            <td class="py-3 px-4 sm:px-5"><img src="/storage/${p.image}" class="w-10 h-10 object-cover rounded-lg bg-[#0f0e13] product-image-cell"></td>
+            <td class="px-4 sm:px-5 text-white font-medium whitespace-nowrap product-name-cell">${p.name}</td>
+            <td class="px-4 sm:px-5 text-stone-400 whitespace-nowrap product-cat-cell">${p.category.name}</td>
+            <td class="px-4 sm:px-5 text-[#b08d57] font-bold whitespace-nowrap product-price-cell">${Number(p.price).toFixed(2)} ETB</td>
+            <td class="px-4 sm:px-5 whitespace-nowrap product-status-cell">${p.is_available ? '<span class="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full"><i data-lucide="check" class="w-3 h-3"></i>Yes</span>' : '<span class="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-400 bg-rose-500/10 border border-rose-500/20 px-2.5 py-1 rounded-full"><i data-lucide="x" class="w-3 h-3"></i>No</span>'}</td>
+            <td class="px-4 sm:px-5 text-right whitespace-nowrap">
+                <button type="button" 
+                    class="edit-product-btn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-stone-300 bg-[#1e1c25] hover:bg-[#b08d57] hover:text-[#0f0e13] border border-[#2a2731] hover:border-[#b08d57] transition-all duration-200 active:scale-95"
+                    data-id="${p.id}"
+                    data-name="${p.name}"
+                    data-category-id="${p.category_id}"
+                    data-category-name="${p.category.name}"
+                    data-price="${p.price}"
+                    data-description="${p.description ?? ''}"
+                    data-image="${p.image}"
+                    data-is-available="${p.is_available ? '1' : '0'}">
+                    <i data-lucide="square-pen" class="w-3.5 h-3.5"></i>
+                    <span>Edit</span>
+                </button>
+            </td>
         `;
         document.getElementById('products-table-body').prepend(row);
         this.reset();
@@ -906,7 +1155,6 @@ document.getElementById('product-form')?.addEventListener('submit', function (e)
     });
 });
 
-// ---- Staff Create Form Submit ----
 document.getElementById('staff-form')?.addEventListener('submit', function (e) {
     e.preventDefault();
     submitForm(this, "{{ route('admin.staff.store') }}", (data) => {
@@ -952,21 +1200,33 @@ document.getElementById('staff-form')?.addEventListener('submit', function (e) {
     });
 });
 
-// ---- Extra Form Submit ----
 document.getElementById('extra-form')?.addEventListener('submit', function (e) {
     e.preventDefault();
     submitForm(this, "{{ route('admin.extras.store') }}", (data) => {
         const ex = data.extra;
         const row = document.createElement('tr');
-        row.className = 'data-row border-b border-[#2a2731]/60 hover:bg-[#1e1c25]/40 transition row-highlight';
+        row.id = `extra-row-${ex.id}`;
+        row.className = 'data-row border-b border-[#2a2731]/60 hover:bg-[#1e1c25]/40 transition row-highlight group/row';
+        row.setAttribute('data-id', ex.id);
         row.setAttribute('data-name', (ex.name || '').toLowerCase());
         row.setAttribute('data-price', ex.price);
         row.setAttribute('data-status', ex.is_available ? 'available' : 'unavailable');
 
         row.innerHTML = `
-            <td class="py-3 px-4 sm:px-5 text-white font-medium whitespace-nowrap">${ex.name}</td>
-            <td class="px-4 sm:px-5 text-[#b08d57] font-bold whitespace-nowrap">${Number(ex.price).toFixed(2)} ETB</td>
-            <td class="px-4 sm:px-5 whitespace-nowrap">${ex.is_available ? '<span class="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full"><i data-lucide="check" class="w-3 h-3"></i>Yes</span>' : '<span class="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-400 bg-rose-500/10 border border-rose-500/20 px-2.5 py-1 rounded-full"><i data-lucide="x" class="w-3 h-3"></i>No</span>'}</td>
+            <td class="py-3 px-4 sm:px-5 text-white font-medium whitespace-nowrap extra-name-cell">${ex.name}</td>
+            <td class="px-4 sm:px-5 text-[#b08d57] font-bold whitespace-nowrap extra-price-cell">${Number(ex.price).toFixed(2)} ETB</td>
+            <td class="px-4 sm:px-5 whitespace-nowrap extra-status-cell">${ex.is_available ? '<span class="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full"><i data-lucide="check" class="w-3 h-3"></i>Yes</span>' : '<span class="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-400 bg-rose-500/10 border border-rose-500/20 px-2.5 py-1 rounded-full"><i data-lucide="x" class="w-3 h-3"></i>No</span>'}</td>
+            <td class="px-4 sm:px-5 text-right whitespace-nowrap">
+                <button type="button" 
+                    class="edit-extra-btn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-stone-300 bg-[#1e1c25] hover:bg-[#b08d57] hover:text-[#0f0e13] border border-[#2a2731] hover:border-[#b08d57] transition-all duration-200 active:scale-95"
+                    data-id="${ex.id}"
+                    data-name="${ex.name}"
+                    data-price="${ex.price}"
+                    data-is-available="${ex.is_available ? '1' : '0'}">
+                    <i data-lucide="square-pen" class="w-3.5 h-3.5"></i>
+                    <span>Edit</span>
+                </button>
+            </td>
         `;
         document.getElementById('extras-table-body').prepend(row);
         this.reset();

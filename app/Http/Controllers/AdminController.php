@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Carbon\Carbon;
 
@@ -287,6 +288,50 @@ class AdminController extends Controller
     }
 
 
+    public function updateProduct(Request $request, Product $product)
+    {
+        $data = $request->validate([
+            'category_id'  => 'required|exists:categories,id',
+            'name'         => 'required|string|max:255',
+            'description'  => 'nullable|string',
+            'price'        => 'required|numeric|min:0',
+            'image'        => 'nullable|image|max:4096',
+            'is_available' => 'nullable|boolean',
+        ]);
+
+        $updateData = [
+            'category_id'  => $data['category_id'],
+            'name'         => $data['name'],
+            'description'  => $data['description'] ?? null,
+            'price'        => $data['price'],
+            'is_available' => $request->boolean('is_available', true),
+        ];
+
+        if ($request->hasFile('image')) {
+            if ($product->image && Storage::disk('public')->exists($product->image)) {
+                Storage::disk('public')->delete($product->image);
+            }
+            $updateData['image'] = $request->file('image')->store('products', 'public');
+        }
+
+        $product->update($updateData);
+
+        AdminAction::create([
+            'admin_id'    => $request->user()->id,
+            'action'      => 'updated_product',
+            'target_type' => 'Product',
+            'target_id'   => $product->id,
+            'description' => "Updated product \"{$product->name}\"",
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Product updated successfully',
+            'product' => $product->load('category')
+        ]);
+    }
+
+
     public function storeStaff(Request $request)
     {
         $data = $request->validate([
@@ -400,6 +445,36 @@ class AdminController extends Controller
         return response()->json([
             'success' => true,
             'extra' => $extra
+        ]);
+    }
+
+
+    public function updateExtra(Request $request, Extra $extra)
+    {
+        $data = $request->validate([
+            'name'         => 'required|string|max:255',
+            'price'        => 'required|numeric|min:0',
+            'is_available' => 'nullable|boolean',
+        ]);
+
+        $extra->update([
+            'name'         => $data['name'],
+            'price'        => $data['price'],
+            'is_available' => $request->boolean('is_available', true),
+        ]);
+
+        AdminAction::create([
+            'admin_id'    => $request->user()->id,
+            'action'      => 'updated_extra',
+            'target_type' => 'Extra',
+            'target_id'   => $extra->id,
+            'description' => "Updated extra \"{$extra->name}\"",
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Extra item updated successfully',
+            'extra'   => $extra
         ]);
     }
 }
