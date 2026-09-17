@@ -11,6 +11,7 @@ use App\Models\Product;
 use App\Models\Extra;
 use App\Models\AdminAction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use Carbon\Carbon;
 
 class ApiAdminController extends Controller
@@ -33,10 +34,20 @@ class ApiAdminController extends Controller
             $totalCustomers = User::whereDoesntHave('role', fn($q) => $q->whereIn('name', ['admin', 'staff', 'delivery']))->count();
         }
 
+        // Detect which revenue column this DB actually uses (matches AdminController's logic)
+        $revenueColumn = null;
+        if (class_exists(Order::class)) {
+            if (Schema::hasColumn('orders', 'total_price')) {
+                $revenueColumn = 'total_price';
+            } elseif (Schema::hasColumn('orders', 'total_amount')) {
+                $revenueColumn = 'total_amount';
+            }
+        }
+
         $totalOrders = class_exists(Order::class) ? Order::count() : 0;
         $totalRevenue = 0;
-        if (class_exists(Order::class) && $totalOrders > 0) {
-            $totalRevenue = (float) (Order::whereNotIn('status', ['cancelled', 'failed'])->sum('total_price') ?: 0);
+        if (class_exists(Order::class) && $totalOrders > 0 && $revenueColumn) {
+            $totalRevenue = (float) Order::whereNotIn('status', ['cancelled', 'failed'])->sum($revenueColumn);
         }
 
         // 3. Weekly Revenue Growth
@@ -44,16 +55,16 @@ class ApiAdminController extends Controller
         $lastWeekRevenue = 0;
         $revenueGrowthPercent = 0;
 
-        if (class_exists(Order::class)) {
+        if (class_exists(Order::class) && $revenueColumn) {
             $thisWeekRevenue = Order::whereNotIn('status', ['cancelled', 'failed'])
                 ->where('created_at', '>=', Carbon::now()->startOfWeek())
-                ->sum('total_price') ?: 0;
+                ->sum($revenueColumn) ?: 0;
 
             $lastWeekRevenue = Order::whereNotIn('status', ['cancelled', 'failed'])
                 ->whereBetween('created_at', [
                     Carbon::now()->subWeek()->startOfWeek(),
                     Carbon::now()->subWeek()->endOfWeek()
-                ])->sum('total_price') ?: 0;
+                ])->sum($revenueColumn) ?: 0;
 
             if ($lastWeekRevenue > 0) {
                 $revenueGrowthPercent = round((($thisWeekRevenue - $lastWeekRevenue) / $lastWeekRevenue) * 100, 1);
@@ -62,7 +73,35 @@ class ApiAdminController extends Controller
             }
         }
 
-        // 4. Recent Actions
+        // 4. 7-Day Revenue & Orders Data (for the mobile MiniBarChart)
+        $chartLabels = [];
+        $chartRevenue = [];
+        $chartOrders = [];
+
+        for ($i = 6; $i >= 0; $i--) {
+            $date = Carbon::today()->subDays($i);
+            $chartLabels[] = $date->format('D');
+
+            if (class_exists(Order::class)) {
+                $dayOrders = Order::whereDate('created_at', $date->toDateString());
+
+                $chartOrders[] = (clone $dayOrders)->count();
+
+                if ($revenueColumn) {
+                    $dailyRevenue = (clone $dayOrders)
+                        ->whereNotIn('status', ['cancelled', 'failed'])
+                        ->sum($revenueColumn);
+                    $chartRevenue[] = (float) $dailyRevenue;
+                } else {
+                    $chartRevenue[] = 0.00;
+                }
+            } else {
+                $chartOrders[] = 0;
+                $chartRevenue[] = 0.00;
+            }
+        }
+
+        // 5. Recent Actions
         $recentActions = AdminAction::with('admin')->latest()->take(6)->get()->map(function ($action) {
             return [
                 'id' => $action->id,
@@ -112,7 +151,18 @@ class ApiAdminController extends Controller
                     'is_available' => (bool) $e->is_available,
                 ];
             }),
-            'categories' => $categories->pluck('name'),
+            // FIX: was pluck('name') -> flat strings, no id. Mobile needs {id, name, products_count}.
+            'categories' => $categories->map(function ($c) {
+                return [
+                    'id' => $c->id,
+                    'name' => $c->name,
+                    'products_count' => $c->products_count,
+                ];
+            }),
+            // FIX: these three keys were entirely missing from the API response.
+            'chartLabels' => $chartLabels,
+            'chartRevenue' => $chartRevenue,
+            'chartOrders' => $chartOrders,
             'recentActions' => $recentActions,
         ]);
     }
