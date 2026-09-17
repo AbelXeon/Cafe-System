@@ -297,7 +297,7 @@
                     <button type="submit"
                         class="w-full sm:w-auto bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-400 font-bold text-xs sm:text-sm px-5 py-2.5 rounded-xl transition flex items-center justify-center gap-2 cursor-pointer">
                         <i data-lucide="log-out" class="w-4 h-4"></i>
-                        <span>Sign Out of CraveDash</span>
+                        <span>Sign Out</span>
                     </button>
                 </form>
             </div>
