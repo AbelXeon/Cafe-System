@@ -9,6 +9,9 @@
     <!-- Laravel Vite Bundled Tailwind CSS & JS -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.5/dist/cdn.min.js"></script>
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,6 +25,7 @@
 
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        [x-cloak] { display: none !important; }
         .custom-scroll::-webkit-scrollbar { width: 5px; height: 5px; }
         .custom-scroll::-webkit-scrollbar-track { background: transparent; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #2a2731; border-radius: 9999px; }
@@ -117,6 +121,7 @@
         @include('admin.partials.section-products')
         @include('admin.partials.section-staff')
         @include('admin.partials.section-extras')
+        @include('admin.partials.section-profile')
     </main>
 
 </div>
@@ -142,6 +147,121 @@
 
 <script>
 const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+const ADMIN_PROFILE_UPDATE_URL = "{{ route('admin.profile.update') }}";
+const ADMIN_PASSWORD_UPDATE_URL = "{{ route('admin.password.update') }}";
+const AUTH_ADMIN_DATA = @json(['name' => Auth::user()->fullname ?? Auth::user()->name ?? '', 'email' => Auth::user()->email ?? '', 'phone' => Auth::user()->phone ?? '']);
+
+// ---- Alpine.js Admin Profile Component ----
+function adminProfileApp() {
+    return {
+        savingProfile: false,
+        savingPassword: false,
+        editingProfile: false,
+        _profileSnapshot: null,
+        profileError: '',
+        passwordError: '',
+
+        profileForm: {
+            name: AUTH_ADMIN_DATA.name,
+            email: AUTH_ADMIN_DATA.email,
+            phone: AUTH_ADMIN_DATA.phone
+        },
+
+        passwordForm: {
+            current_password: '',
+            password: '',
+            password_confirmation: ''
+        },
+
+        init() {
+            this.$nextTick(() => lucide.createIcons());
+        },
+
+        enableEdit() {
+            this._profileSnapshot = { ...this.profileForm };
+            this.editingProfile = true;
+            this.$nextTick(() => lucide.createIcons());
+        },
+
+        cancelEdit() {
+            this.profileForm = { ...this._profileSnapshot };
+            this.profileError = '';
+            this.editingProfile = false;
+            this.$nextTick(() => lucide.createIcons());
+        },
+
+        async saveProfile() {
+            this.savingProfile = true;
+            this.profileError = '';
+
+            try {
+                const res = await fetch(ADMIN_PROFILE_UPDATE_URL, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify(this.profileForm)
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    this.editingProfile = false;
+                    showToast('Admin personal profile details saved.', 'Profile Updated', 'success');
+                } else {
+                    this.profileError = data.message || (data.errors ? Object.values(data.errors).flat().join(' ') : 'Could not update profile details.');
+                    showToast(this.profileError, 'Error', 'error');
+                }
+            } catch (e) {
+                this.profileError = 'Network error while updating profile.';
+                showToast('Network error while updating profile.', 'Error', 'error');
+            } finally {
+                this.savingProfile = false;
+                this.$nextTick(() => lucide.createIcons());
+            }
+        },
+
+        async updatePassword() {
+            if (this.passwordForm.password !== this.passwordForm.password_confirmation) {
+                this.passwordError = 'New password and confirmation do not match.';
+                return;
+            }
+
+            this.savingPassword = true;
+            this.passwordError = '';
+
+            try {
+                const res = await fetch(ADMIN_PASSWORD_UPDATE_URL, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify(this.passwordForm)
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    this.passwordForm = { current_password: '', password: '', password_confirmation: '' };
+                    showToast('Your administrative password was updated successfully.', 'Password Changed', 'success');
+                } else {
+                    this.passwordError = data.message || (data.errors ? Object.values(data.errors).flat().join(' ') : 'Current password was incorrect.');
+                    showToast(this.passwordError, 'Error', 'error');
+                }
+            } catch (e) {
+                this.passwordError = 'Network error while updating password.';
+                showToast('Network error while updating password.', 'Error', 'error');
+            } finally {
+                this.savingPassword = false;
+                this.$nextTick(() => lucide.createIcons());
+            }
+        }
+    };
+}
 
 // ---- Toast Notification Engine ----
 let toastTimeout = null;
@@ -374,7 +494,9 @@ const sections = document.querySelectorAll('.page-section');
 
 function showSection(target) {
     sections.forEach(s => s.classList.add('hidden'));
-    document.getElementById('section-' + target).classList.remove('hidden');
+    const targetSection = document.getElementById('section-' + target);
+    if (targetSection) targetSection.classList.remove('hidden');
+    
     navLinks.forEach(l => l.classList.remove('active'));
     document.querySelectorAll(`.nav-link[data-target="${target}"]`).forEach(l => l.classList.add('active'));
     
@@ -806,9 +928,6 @@ async function submitForm(formEl, url, onSuccess) {
     }
 }
 
-
-
-
 const staffEditContainer = document.getElementById('staff-edit-container');
 const staffEditForm = document.getElementById('staff-edit-form');
 const cancelStaffEditBtn = document.getElementById('cancel-edit-staff-btn');
@@ -903,8 +1022,6 @@ if (staffEditForm) {
     });
 }
 
-
-
 const productEditContainer = document.getElementById('product-edit-container');
 const productEditForm = document.getElementById('product-edit-form');
 const cancelProductEditBtn = document.getElementById('cancel-edit-product-btn');
@@ -917,7 +1034,6 @@ function openProductEditor(data) {
     document.getElementById('edit-product-description').value = data.description || '';
     document.getElementById('edit-product-available').checked = (data.isAvailable === '1');
     
-    // Set current thumbnail
     if (editImagePreviewThumb) {
         editImagePreviewThumb.src = `/storage/${data.image}`;
     }
@@ -1017,9 +1133,6 @@ if (productEditForm) {
     });
 }
 
-
-
-
 const extraEditContainer = document.getElementById('extra-edit-container');
 const extraEditForm = document.getElementById('extra-edit-form');
 const cancelExtraEditBtn = document.getElementById('cancel-edit-extra-btn');
@@ -1103,8 +1216,6 @@ if (extraEditForm) {
         });
     });
 }
-
-
 
 document.getElementById('product-form')?.addEventListener('submit', function (e) {
     e.preventDefault();

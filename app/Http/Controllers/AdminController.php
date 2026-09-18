@@ -39,7 +39,6 @@ class AdminController extends Controller
 
         $roles = Role::whereIn('name', ['staff', 'delivery'])->get();
 
-
         // 2. Real Customers Count
         $totalCustomers = User::whereHas(
             'role',
@@ -53,15 +52,7 @@ class AdminController extends Controller
             )->count();
         }
 
-
         // 3. Determine the actual revenue column used by the orders table
-        //
-        // Your database may use either:
-        //     total_price
-        // or:
-        //     total_amount
-        //
-        // We detect it once and use the SAME column everywhere below.
         $revenueColumn = null;
 
         if (class_exists(Order::class)) {
@@ -71,7 +62,6 @@ class AdminController extends Controller
                 $revenueColumn = 'total_amount';
             }
         }
-
 
         // 4. Real Total Orders & Revenue in ETB
         $totalOrders = class_exists(Order::class)
@@ -91,15 +81,12 @@ class AdminController extends Controller
             ])->sum($revenueColumn);
         }
 
-
         // 5. Real Week-over-Week Revenue Comparison
         $thisWeekRevenue = 0;
         $lastWeekRevenue = 0;
         $revenueGrowthPercent = 0;
 
         if (class_exists(Order::class) && $revenueColumn) {
-
-            // Current week
             $thisWeekRevenue = (float) Order::whereNotIn('status', [
                 'cancelled',
                 'failed'
@@ -111,8 +98,6 @@ class AdminController extends Controller
                 )
                 ->sum($revenueColumn);
 
-
-            // Previous week
             $lastWeekRevenue = (float) Order::whereNotIn('status', [
                 'cancelled',
                 'failed'
@@ -128,10 +113,7 @@ class AdminController extends Controller
                 ])
                 ->sum($revenueColumn);
 
-
-            // Calculate percentage change
             if ($lastWeekRevenue > 0) {
-
                 $revenueGrowthPercent = round(
                     (
                         ($thisWeekRevenue - $lastWeekRevenue)
@@ -139,53 +121,31 @@ class AdminController extends Controller
                     ) * 100,
                     1
                 );
-
             } elseif ($thisWeekRevenue > 0) {
-
-                // No revenue last week but revenue this week
                 $revenueGrowthPercent = 100;
-
             } else {
-
-                // Both weeks have no revenue
                 $revenueGrowthPercent = 0;
             }
         }
 
-
         // 6. Real 7-Day Revenue & Orders Data
-        //    Used by Chart.js
         $chartLabels = [];
         $chartRevenue = [];
         $chartOrders = [];
 
         for ($i = 6; $i >= 0; $i--) {
-
             $date = Carbon::today()->subDays($i);
-
             $chartLabels[] = $date->format('D, M j');
 
-
             if (class_exists(Order::class)) {
-
-                // All orders for this particular day
                 $dayOrders = Order::whereDate(
                     'created_at',
                     $date->toDateString()
                 );
 
-
-                // Orders line
                 $chartOrders[] = (clone $dayOrders)->count();
 
-
-                // Revenue line
-                //
-                // IMPORTANT:
-                // This now uses the exact same revenue column
-                // used by Total Revenue and the weekly calculation.
                 if ($revenueColumn) {
-
                     $dailyRevenue = (clone $dayOrders)
                         ->whereNotIn('status', [
                             'cancelled',
@@ -194,19 +154,14 @@ class AdminController extends Controller
                         ->sum($revenueColumn);
 
                     $chartRevenue[] = (float) $dailyRevenue;
-
                 } else {
-
                     $chartRevenue[] = 0.00;
                 }
-
             } else {
-
                 $chartOrders[] = 0;
                 $chartRevenue[] = 0.00;
             }
         }
-
 
         // 7. Real Category Distribution
         $categoryLabels = $categories
@@ -217,13 +172,11 @@ class AdminController extends Controller
             ->pluck('products_count')
             ->toArray();
 
-
         // 8. Recent Admin Activities Log
         $recentActions = AdminAction::with('admin')
             ->latest()
             ->take(6)
             ->get();
-
 
         return view('admin.dashboard', compact(
             'categories',
@@ -243,7 +196,6 @@ class AdminController extends Controller
             'recentActions'
         ));
     }
-
 
     public function storeProduct(Request $request)
     {
@@ -286,7 +238,6 @@ class AdminController extends Controller
             'product' => $product->load('category')
         ]);
     }
-
 
     public function updateProduct(Request $request, Product $product)
     {
@@ -331,7 +282,6 @@ class AdminController extends Controller
         ]);
     }
 
-
     public function storeStaff(Request $request)
     {
         $data = $request->validate([
@@ -365,7 +315,6 @@ class AdminController extends Controller
             'staff' => $user->load('role')
         ]);
     }
-
 
     public function updateStaff(Request $request, User $user)
     {
@@ -416,7 +365,6 @@ class AdminController extends Controller
         ]);
     }
 
-
     public function storeExtra(Request $request)
     {
         $data = $request->validate([
@@ -448,7 +396,6 @@ class AdminController extends Controller
         ]);
     }
 
-
     public function updateExtra(Request $request, Extra $extra)
     {
         $data = $request->validate([
@@ -475,6 +422,68 @@ class AdminController extends Controller
             'success' => true,
             'message' => 'Extra item updated successfully',
             'extra'   => $extra
+        ]);
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $user = $request->user();
+
+        $validated = $request->validate([
+            'name'  => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
+            'phone' => ['nullable', 'string', 'max:30', Rule::unique('users')->ignore($user->id)],
+        ]);
+
+        $user->fullname = $validated['name'];
+        if (Schema::hasColumn('users', 'name')) {
+            $user->name = $validated['name'];
+        }
+        $user->email = $validated['email'];
+        $user->phone = $validated['phone'] ?? null;
+        $user->save();
+
+        AdminAction::create([
+            'admin_id'    => $user->id,
+            'action'      => 'updated_profile',
+            'target_type' => 'User',
+            'target_id'   => $user->id,
+            'description' => "Updated admin personal profile details",
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Profile updated successfully!',
+            'user'    => [
+                'name'  => $user->fullname ?? $user->name,
+                'email' => $user->email,
+                'phone' => $user->phone
+            ]
+        ]);
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $validated = $request->validate([
+            'current_password' => ['required', 'current_password'],
+            'password'         => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        $request->user()->update([
+            'password' => Hash::make($validated['password']),
+        ]);
+
+        AdminAction::create([
+            'admin_id'    => $request->user()->id,
+            'action'      => 'updated_password',
+            'target_type' => 'User',
+            'target_id'   => $request->user()->id,
+            'description' => "Updated admin master password",
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Password updated successfully!',
         ]);
     }
 }

@@ -50,6 +50,14 @@
             </button>
         </div>
 
+        <!-- GROUP: Account -->
+        <div class="space-y-1">
+            <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-stone-500 block">Account</span>
+            <button data-target="profile" class="nav-link w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-3">
+                <i data-lucide="settings" class="w-4 h-4"></i><span>Settings</span>
+            </button>
+        </div>
+
     </nav>
 
     <form method="POST" action="{{ route('logout') }}" class="p-3 border-t border-[#1e1c25]">
