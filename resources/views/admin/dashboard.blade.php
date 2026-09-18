@@ -723,7 +723,6 @@ function setCustomSelectValue(wrapperId, value) {
     }
 }
 
-// ---- Reusable DataTable Filter & Buffer Engine ----
 function setupDataTable({ searchInputId, clearBtnClass, tableBodyId, emptyStateId, countBadgeId, getFilters, rowMatcher }) {
     const searchInput = document.getElementById(searchInputId);
     const tableBody = document.getElementById(tableBodyId);
