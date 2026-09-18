@@ -92,39 +92,32 @@ class DeliveryController extends Controller
 
     
     public function updateProfile(Request $request)
-    {
-        /** @var \App\Models\User $user */
-        $user = Auth::user();
+{
+    /** @var \App\Models\User $user */
+    $user = Auth::user();
 
-        $data = $request->validate([
-            'name'  => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
-            'phone' => ['nullable', 'string', 'max:25'],
-        ]);
+    $data = $request->validate([
+        'name'  => ['required', 'string', 'max:255'],
+        'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
+        'phone' => ['nullable', 'string', 'max:25', 'unique:users,phone,' . $user->id],
+    ]);
 
-        // Support both name or fullname column
-        if (Schema::hasColumn('users', 'fullname')) {
-            $user->fullname = $data['name'];
-        }
-        $user->name = $data['name'];
-        $user->email = $data['email'];
+    $user->fullname = $data['name'];
+    $user->email = $data['email'];
+    $user->phone = $data['phone'] ?? null;
 
-        if (Schema::hasColumn('users', 'phone')) {
-            $user->phone = $data['phone'] ?? null;
-        }
+    $user->save();
 
-        $user->save();
-
-        return response()->json([
-            'status'  => 'success',
-            'message' => 'Courier profile updated successfully.',
-            'user'    => [
-                'name'  => $user->fullname ?? $user->name,
-                'email' => $user->email,
-                'phone' => $user->phone ?? null,
-            ]
-        ]);
-    }
+    return response()->json([
+        'status'  => 'success',
+        'message' => 'Courier profile updated successfully.',
+        'user'    => [
+            'name'  => $user->fullname,
+            'email' => $user->email,
+            'phone' => $user->phone,
+        ]
+    ]);
+}
 
     
     public function updatePassword(Request $request)

@@ -533,63 +533,77 @@
      * Driver Profile & Security Component
      */
     function driverProfileApp() {
-        return {
-            savingProfile: false,
-            savingPassword: false,
-            showPasswords: false,
-            profileError: '',
-            passwordError: '',
+    return {
+        savingProfile: false,
+        savingPassword: false,
+        editingProfile: false,   // NEW
+        _profileSnapshot: null,  // NEW
+        profileError: '',
+        passwordError: '',
 
-            profileForm: {
-                name: @json(Auth::user()->fullname ?? Auth::user()->name ?? ''),
-                email: @json(Auth::user()->email ?? ''),
-                phone: @json(Auth::user()->phone ?? ''),
-            },
+        profileForm: {
+            name: @json(Auth::user()->fullname ?? Auth::user()->name ?? ''),
+            email: @json(Auth::user()->email ?? ''),
+            phone: @json(Auth::user()->phone ?? ''),
+        },
 
-            passwordForm: {
-                current_password: '',
-                password: '',
-                password_confirmation: ''
-            },
+        passwordForm: {
+            current_password: '',
+            password: '',
+            password_confirmation: ''
+        },
 
-            init() {
-                this.$nextTick(() => lucide.createIcons());
-            },
+        init() {
+            this.$nextTick(() => lucide.createIcons());
+        },
 
-            async saveProfile() {
-                this.savingProfile = true;
-                this.profileError = '';
+        enableEdit() {                              // NEW
+            this._profileSnapshot = { ...this.profileForm };
+            this.editingProfile = true;
+            this.$nextTick(() => lucide.createIcons());
+        },
 
-                try {
-                    const res = await fetch(PROFILE_UPDATE_URL, {
-                        method: 'PATCH',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': CSRF_TOKEN,
-                            'Accept': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            name: this.profileForm.name,
-                            email: this.profileForm.email,
-                            phone: this.profileForm.phone
-                        })
-                    });
+        cancelEdit() {                               // NEW
+            this.profileForm = { ...this._profileSnapshot };
+            this.profileError = '';
+            this.editingProfile = false;
+            this.$nextTick(() => lucide.createIcons());
+        },
 
-                    const data = await res.json();
+        async saveProfile() {
+            this.savingProfile = true;
+            this.profileError = '';
 
-                    if (res.ok) {
-                        alert('Courier profile updated successfully!');
-                    } else {
-                        this.profileError = data.message || (data.errors ? Object.values(data.errors).flat().join(' ') : 'Could not update profile.');
-                    }
-                } catch (e) {
-                    this.profileError = 'Network error while updating profile.';
-                } finally {
-                    this.savingProfile = false;
+            try {
+                const res = await fetch(PROFILE_UPDATE_URL, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': CSRF_TOKEN,
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: this.profileForm.name,
+                        email: this.profileForm.email,
+                        phone: this.profileForm.phone
+                    })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    this.editingProfile = false;      // NEW — drop back to view mode
                     this.$nextTick(() => lucide.createIcons());
+                } else {
+                    this.profileError = data.message || (data.errors ? Object.values(data.errors).flat().join(' ') : 'Could not update profile.');
                 }
-            },
-
+            } catch (e) {
+                this.profileError = 'Network error while updating profile.';
+            } finally {
+                this.savingProfile = false;
+                this.$nextTick(() => lucide.createIcons());
+            }
+        },
             async updatePassword() {
                 if (this.passwordForm.password !== this.passwordForm.password_confirmation) {
                     this.passwordError = 'New password and confirmation do not match.';
@@ -627,6 +641,7 @@
             }
         };
     }
+
 
     document.addEventListener('DOMContentLoaded', () => lucide.createIcons());
 </script>
