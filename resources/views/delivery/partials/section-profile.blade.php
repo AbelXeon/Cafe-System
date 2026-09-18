@@ -49,13 +49,15 @@
 
         <!-- Personal / Courier Details Card -->
         <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl p-5 sm:p-7 shadow-xl">
-            <div class="flex items-center gap-3 pb-5 border-b border-[#1e1c25]">
-                <div class="w-10 h-10 rounded-xl bg-[#b08d57]/20 border border-[#b08d57]/30 flex items-center justify-center text-[#b08d57]">
-                    <i data-lucide="user" class="w-5 h-5"></i>
-                </div>
-                <div>
-                    <h3 class="text-base sm:text-lg font-bold text-white">Courier Information</h3>
-                    <p class="text-xs text-stone-500">Your name and contact number shown to customers during delivery</p>
+            <div class="flex items-center justify-between pb-5 border-b border-[#1e1c25]">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-[#b08d57]/20 border border-[#b08d57]/30 flex items-center justify-center text-[#b08d57]">
+                        <i data-lucide="user" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base sm:text-lg font-bold text-white">Courier Information</h3>
+                        <p class="text-xs text-stone-500">Your name and contact number shown to customers during delivery</p>
+                    </div>
                 </div>
             </div>
 
@@ -104,33 +106,63 @@
 
         <!-- Security & Password Card -->
         <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl p-5 sm:p-7 shadow-xl">
-            <div class="flex items-center gap-3 pb-5 border-b border-[#1e1c25]">
-                <div class="w-10 h-10 rounded-xl bg-[#b08d57]/20 border border-[#b08d57]/30 flex items-center justify-center text-[#b08d57]">
-                    <i data-lucide="lock" class="w-5 h-5"></i>
-                </div>
-                <div>
-                    <h3 class="text-base sm:text-lg font-bold text-white">Password & Security</h3>
-                    <p class="text-xs text-stone-500">Update your account login password</p>
+            <div class="flex items-center justify-between pb-5 border-b border-[#1e1c25]">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-[#b08d57]/20 border border-[#b08d57]/30 flex items-center justify-center text-[#b08d57]">
+                        <i data-lucide="lock" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base sm:text-lg font-bold text-white">Password & Security</h3>
+                        <p class="text-xs text-stone-500">Update your account login password</p>
+                    </div>
                 </div>
             </div>
 
-            <form @submit.prevent="updatePassword()" class="mt-6 space-y-4">
+            <form @submit.prevent="updatePassword()" x-data="{ showCurrent: false, showNew: false, showConfirm: false }" class="mt-6 space-y-4">
+                <!-- Current Password -->
                 <div>
                     <label class="block text-xs font-semibold text-stone-400 mb-1.5">Current Password</label>
                     <div class="relative">
                         <i data-lucide="key-round" class="w-4 h-4 text-stone-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
-                        <input x-model="passwordForm.current_password" :type="showPasswords ? 'text' : 'password'" required placeholder="Enter current password"
-                            class="cd-input w-full bg-[#0f0e13] border border-[#2a2731] rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-stone-600 focus:outline-none transition">
+                        <input x-model="passwordForm.current_password" :type="showCurrent ? 'text' : 'password'" required placeholder="Enter current password"
+                            class="cd-input w-full bg-[#0f0e13] border border-[#2a2731] rounded-xl pl-10 pr-10 py-2.5 text-sm text-white placeholder-stone-600 focus:outline-none transition">
+
+                        <button type="button" @click="showCurrent = !showCurrent" tabindex="-1" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-500 hover:text-[#b08d57] transition focus:outline-none p-0.5">
+                            <svg x-show="!showCurrent" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                            <svg x-show="showCurrent" x-cloak xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[#b08d57]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/>
+                                <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/>
+                                <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/>
+                                <line x1="2" x2="22" y1="2" y2="22"/>
+                            </svg>
+                        </button>
                     </div>
                 </div>
 
+                <!-- New & Confirm Password -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-semibold text-stone-400 mb-1.5">New Password</label>
                         <div class="relative">
                             <i data-lucide="shield-check" class="w-4 h-4 text-stone-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
-                            <input x-model="passwordForm.password" :type="showPasswords ? 'text' : 'password'" required minlength="8" placeholder="Minimum 8 characters"
-                                class="cd-input w-full bg-[#0f0e13] border border-[#2a2731] rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-stone-600 focus:outline-none transition">
+                            <input x-model="passwordForm.password" :type="showNew ? 'text' : 'password'" required minlength="8" placeholder="Minimum 8 characters"
+                                class="cd-input w-full bg-[#0f0e13] border border-[#2a2731] rounded-xl pl-10 pr-10 py-2.5 text-sm text-white placeholder-stone-600 focus:outline-none transition">
+
+                            <button type="button" @click="showNew = !showNew" tabindex="-1" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-500 hover:text-[#b08d57] transition focus:outline-none p-0.5">
+                                <svg x-show="!showNew" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                                <svg x-show="showNew" x-cloak xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[#b08d57]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/>
+                                    <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/>
+                                    <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/>
+                                    <line x1="2" x2="22" y1="2" y2="22"/>
+                                </svg>
+                            </button>
                         </div>
                     </div>
 
@@ -138,18 +170,99 @@
                         <label class="block text-xs font-semibold text-stone-400 mb-1.5">Confirm New Password</label>
                         <div class="relative">
                             <i data-lucide="shield-check" class="w-4 h-4 text-stone-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
-                            <input x-model="passwordForm.password_confirmation" :type="showPasswords ? 'text' : 'password'" required minlength="8" placeholder="Re-type new password"
-                                class="cd-input w-full bg-[#0f0e13] border border-[#2a2731] rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-stone-600 focus:outline-none transition">
+                            <input x-model="passwordForm.password_confirmation" :type="showConfirm ? 'text' : 'password'" required minlength="8" placeholder="Re-type new password"
+                                class="cd-input w-full bg-[#0f0e13] border border-[#2a2731] rounded-xl pl-10 pr-10 py-2.5 text-sm text-white placeholder-stone-600 focus:outline-none transition">
+
+                            <button type="button" @click="showConfirm = !showConfirm" tabindex="-1" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-500 hover:text-[#b08d57] transition focus:outline-none p-0.5">
+                                <svg x-show="!showConfirm" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                                <svg x-show="showConfirm" x-cloak xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[#b08d57]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/>
+                                    <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/>
+                                    <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/>
+                                    <line x1="2" x2="22" y1="2" y2="22"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div x-show="passwordForm.password_confirmation" x-cloak class="mt-1.5 flex items-center gap-1.5 text-[11px]">
+                            <span x-show="passwordForm.password === passwordForm.password_confirmation" class="text-emerald-400 font-medium flex items-center gap-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                Passwords match
+                            </span>
+                            <span x-show="passwordForm.password !== passwordForm.password_confirmation" class="text-rose-400 font-medium flex items-center gap-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                Passwords do not match
+                            </span>
                         </div>
                     </div>
                 </div>
 
-                <div class="flex items-center justify-between pt-1">
-                    <label class="flex items-center gap-2 cursor-pointer select-none">
-                        <input type="checkbox" x-model="showPasswords" class="rounded bg-[#0f0e13] border-[#2a2731] text-[#b08d57] focus:ring-0 w-4 h-4">
-                        <span class="text-xs text-stone-400">Show passwords</span>
-                    </label>
+                <!-- Live Password Requirements & Strength Indicator -->
+                <div class="p-3.5 bg-[#0f0e13] border border-[#2a2731] rounded-xl space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold text-stone-400">Password Requirements</span>
+                        <span class="text-[11px] font-semibold transition-colors"
+                            :class="{
+                                'text-stone-500': !passwordForm.password,
+                                'text-rose-400': passwordForm.password && (((passwordForm.password.length >= 8) + (/[a-z]/.test(passwordForm.password) && /[A-Z]/.test(passwordForm.password)) + (/\d/.test(passwordForm.password)) + (/[^A-Za-z0-9]/.test(passwordForm.password))) <= 2),
+                                'text-amber-400': passwordForm.password && (((passwordForm.password.length >= 8) + (/[a-z]/.test(passwordForm.password) && /[A-Z]/.test(passwordForm.password)) + (/\d/.test(passwordForm.password)) + (/[^A-Za-z0-9]/.test(passwordForm.password))) === 3),
+                                'text-emerald-400': passwordForm.password && (((passwordForm.password.length >= 8) + (/[a-z]/.test(passwordForm.password) && /[A-Z]/.test(passwordForm.password)) + (/\d/.test(passwordForm.password)) + (/[^A-Za-z0-9]/.test(passwordForm.password))) === 4)
+                            }"
+                            x-text="!passwordForm.password ? 'Must meet requirements' :
+                                (((passwordForm.password.length >= 8) + (/[a-z]/.test(passwordForm.password) && /[A-Z]/.test(passwordForm.password)) + (/\d/.test(passwordForm.password)) + (/[^A-Za-z0-9]/.test(passwordForm.password))) <= 2 ? 'Weak' :
+                                (((passwordForm.password.length >= 8) + (/[a-z]/.test(passwordForm.password) && /[A-Z]/.test(passwordForm.password)) + (/\d/.test(passwordForm.password)) + (/[^A-Za-z0-9]/.test(passwordForm.password))) === 3 ? 'Medium' : 'Strong Password'))">
+                        </span>
+                    </div>
 
+                    <div class="grid grid-cols-4 gap-1.5 h-1 w-full">
+                        <div class="h-full rounded-full transition-all duration-300"
+                            :class="passwordForm.password ? (((passwordForm.password.length >= 8) + (/[a-z]/.test(passwordForm.password) && /[A-Z]/.test(passwordForm.password)) + (/\d/.test(passwordForm.password)) + (/[^A-Za-z0-9]/.test(passwordForm.password))) >= 1 ? 'bg-rose-500' : 'bg-[#1e1c25]') : 'bg-[#1e1c25]'"></div>
+                        <div class="h-full rounded-full transition-all duration-300"
+                            :class="passwordForm.password ? (((passwordForm.password.length >= 8) + (/[a-z]/.test(passwordForm.password) && /[A-Z]/.test(passwordForm.password)) + (/\d/.test(passwordForm.password)) + (/[^A-Za-z0-9]/.test(passwordForm.password))) >= 2 ? 'bg-amber-500' : 'bg-[#1e1c25]') : 'bg-[#1e1c25]'"></div>
+                        <div class="h-full rounded-full transition-all duration-300"
+                            :class="passwordForm.password ? (((passwordForm.password.length >= 8) + (/[a-z]/.test(passwordForm.password) && /[A-Z]/.test(passwordForm.password)) + (/\d/.test(passwordForm.password)) + (/[^A-Za-z0-9]/.test(passwordForm.password))) >= 3 ? 'bg-[#b08d57]' : 'bg-[#1e1c25]') : 'bg-[#1e1c25]'"></div>
+                        <div class="h-full rounded-full transition-all duration-300"
+                            :class="passwordForm.password ? (((passwordForm.password.length >= 8) + (/[a-z]/.test(passwordForm.password) && /[A-Z]/.test(passwordForm.password)) + (/\d/.test(passwordForm.password)) + (/[^A-Za-z0-9]/.test(passwordForm.password))) >= 4 ? 'bg-emerald-400' : 'bg-[#1e1c25]') : 'bg-[#1e1c25]'"></div>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs pt-1">
+                        <div class="flex items-center gap-1.5 transition-colors"
+                            :class="(passwordForm.password || '').length >= 8 ? 'text-emerald-400 font-medium' : 'text-stone-500'">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 shrink-0 transition-transform" :class="(passwordForm.password || '').length >= 8 ? 'text-emerald-400 scale-110' : 'text-stone-600'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            <span>8+ characters</span>
+                        </div>
+
+                        <div class="flex items-center gap-1.5 transition-colors"
+                            :class="(/[a-z]/.test(passwordForm.password || '') && /[A-Z]/.test(passwordForm.password || '')) ? 'text-emerald-400 font-medium' : 'text-stone-500'">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 shrink-0 transition-transform" :class="(/[a-z]/.test(passwordForm.password || '') && /[A-Z]/.test(passwordForm.password || '')) ? 'text-emerald-400 scale-110' : 'text-stone-600'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            <span>Letters (Aa)</span>
+                        </div>
+
+                        <div class="flex items-center gap-1.5 transition-colors"
+                            :class="/\d/.test(passwordForm.password || '') ? 'text-emerald-400 font-medium' : 'text-stone-500'">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 shrink-0 transition-transform" :class="/\d/.test(passwordForm.password || '') ? 'text-emerald-400 scale-110' : 'text-stone-600'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            <span>Number (0-9)</span>
+                        </div>
+
+                        <div class="flex items-center gap-1.5 transition-colors"
+                            :class="/[^A-Za-z0-9]/.test(passwordForm.password || '') ? 'text-emerald-400 font-medium' : 'text-stone-500'">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 shrink-0 transition-transform" :class="/[^A-Za-z0-9]/.test(passwordForm.password || '') ? 'text-emerald-400 scale-110' : 'text-stone-600'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            <span>Symbol (!@#$...)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end pt-2">
                     <button type="submit" :disabled="savingPassword"
                         class="bg-[#1e1c25] hover:bg-[#2a2731] border border-[#2a2731] hover:border-[#b08d57]/40 text-stone-200 font-bold text-xs sm:text-sm px-5 py-2.5 rounded-xl transition flex items-center gap-2 cursor-pointer active:scale-95">
                         <i x-show="savingPassword" data-lucide="loader-2" class="w-4 h-4 animate-spin"></i>
@@ -160,6 +273,24 @@
 
                 <div x-show="passwordError" x-cloak class="p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl text-xs text-rose-400" x-text="passwordError"></div>
             </form>
+        </div>
+
+        <!-- Danger Zone / Sign Out -->
+        <div class="bg-[#14131a] border border-rose-900/30 rounded-2xl p-5 sm:p-7 shadow-xl">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h3 class="text-base font-bold text-white">Session Management</h3>
+                    <p class="text-xs text-stone-500 mt-0.5">Log out of your CraveDash driver session securely from this browser</p>
+                </div>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit"
+                        class="w-full sm:w-auto bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-400 font-bold text-xs sm:text-sm px-5 py-2.5 rounded-xl transition flex items-center justify-center gap-2 cursor-pointer">
+                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                        <span>Sign Out</span>
+                    </button>
+                </form>
+            </div>
         </div>
 
     </div>
