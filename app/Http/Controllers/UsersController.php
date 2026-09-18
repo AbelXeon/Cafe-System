@@ -146,9 +146,7 @@ class UsersController extends Controller
         return response()->json(['success' => true, 'order' => $formatted]);
     }
 
-    /**
-     * Update customer profile info (Name, Email, Phone)
-     */
+    
     public function updateProfile(Request $request)
     {
         $user = $request->user();
@@ -179,9 +177,7 @@ class UsersController extends Controller
         ]);
     }
 
-    /**
-     * Update customer password
-     */
+    
     public function updatePassword(Request $request)
     {
         $validated = $request->validate([
