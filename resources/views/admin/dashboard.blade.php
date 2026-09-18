@@ -614,7 +614,6 @@ if (editImageDropzone && editProductImageInput) {
     });
 }
 
-// ---- Customized Dropdowns Management ----
 function initCustomSelects(container = document) {
     container.querySelectorAll('.custom-select-wrapper').forEach(wrapper => {
         if (wrapper.dataset.initialized) return;
