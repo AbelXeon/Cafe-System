@@ -25,14 +25,22 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $throttleKey = Str::lower($request->input('username', '')) . '|' . $request->ip();
+        $maxAttempts = 5;
 
-        if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
+        if (RateLimiter::tooManyAttempts($throttleKey, $maxAttempts)) {
             $seconds = RateLimiter::availableIn($throttleKey);
-            $minutes = ceil($seconds / 60);
+            $hours = floor($seconds / 3600);
+            $minutes = ceil(($seconds % 3600) / 60);
+
+            $timeString = $hours > 0
+                ? "{$hours}h {$minutes}m"
+                : "{$minutes}m";
 
             return back()
-                ->withErrors(['username' => "Too many failed login attempts. Try again in {$minutes} minute(s)."])
-                ->onlyInput('username');
+                ->withErrors(['username' => "Too many failed login attempts. Try again in {$timeString}."])
+                ->onlyInput('username')
+                ->with('locked_out', true)
+                ->with('lockout_time', $timeString);
         }
 
         $credentials = $request->validate([
@@ -43,7 +51,12 @@ class AuthController extends Controller
         if (!Auth::attempt($credentials, $request->boolean('remember'))) {
             RateLimiter::hit($throttleKey, 86400); // 24 hour decay
 
-            return back()->withErrors(['username' => 'Invalid username or password.'])->onlyInput('username');
+            $attemptsLeft = $maxAttempts - RateLimiter::attempts($throttleKey);
+
+            return back()
+                ->withErrors(['username' => 'Invalid username or password.'])
+                ->onlyInput('username')
+                ->with('attempts_left', max($attemptsLeft, 0));
         }
 
         RateLimiter::clear($throttleKey);

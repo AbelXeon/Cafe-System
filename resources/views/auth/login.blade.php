@@ -97,6 +97,22 @@
                     </div>
                 @endif
 
+                @if (session('attempts_left') !== null && !session('locked_out'))
+                    <div class="bg-amber-500/10 border border-amber-500/30 text-amber-400 text-sm rounded-xl px-4 py-3 mb-5 flex items-center gap-3">
+                        <i data-lucide="shield-alert" class="w-4 h-4 flex-shrink-0"></i>
+                        <span>
+                            {{ session('attempts_left') }} {{ Str::plural('attempt', session('attempts_left')) }} remaining before your account is temporarily locked.
+                        </span>
+                    </div>
+                @endif
+
+                @if (session('locked_out'))
+                    <div class="bg-rose-500/10 border border-rose-500/30 text-rose-400 text-sm rounded-xl px-4 py-3 mb-5 flex items-center gap-3">
+                        <i data-lucide="lock" class="w-4 h-4 flex-shrink-0"></i>
+                        <span>Account locked. Try again in {{ session('lockout_time') }}.</span>
+                    </div>
+                @endif
+
                 <!-- Login Form -->
                 <form method="POST" action="{{ route('login.submit') }}" class="space-y-5">
                     @csrf
