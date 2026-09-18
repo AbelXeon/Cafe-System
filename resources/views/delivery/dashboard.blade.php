@@ -90,7 +90,6 @@
     <!-- 3. Include Driver Chat Support -->
     @include('delivery.partials.section-chat')
 
-    <!-- 4. Include Driver Account Settings -->
     @include('delivery.partials.section-profile')
 
 </div>
