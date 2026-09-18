@@ -79,7 +79,6 @@
 
 <div class="flex h-[calc(100vh-57px)] lg:h-full w-full relative">
 
-    <!-- 1. Include Driver Sidebar -->
     @include('delivery.partials.sidebar')
 
     <div x-show="activeView === 'orders'" class="flex-1 flex min-h-0 h-full overflow-hidden">
