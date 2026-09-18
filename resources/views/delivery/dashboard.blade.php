@@ -536,7 +536,7 @@
     return {
         savingProfile: false,
         savingPassword: false,
-        editingProfile: false,   // NEW
+        editingProfile: false,   
         _profileSnapshot: null,  // NEW
         profileError: '',
         passwordError: '',
