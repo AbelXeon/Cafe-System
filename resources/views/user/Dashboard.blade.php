@@ -436,8 +436,7 @@
                 });
             },
 
-            // Only actual food items are allowed to have extras.
-            // Excludes: drink, soft drink, juice, bakery/beckery, and cake.
+         
             allowsExtras(product) {
                 if (!product) return false;
                 const cat = (product.category || '').toLowerCase().trim();
