@@ -117,7 +117,6 @@
 
 <div class="flex h-[calc(100vh-57px)] lg:h-full w-full relative">
 
-    <!-- 1. Include Sidebar -->
     @include('user.partials.sidebar')
 
     @include('user.partials.section-menu')
