@@ -24,14 +24,29 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
+        $throttleKey = Str::lower($request->input('username', '')) . '|' . $request->ip();
+
+        if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
+            $seconds = RateLimiter::availableIn($throttleKey);
+            $minutes = ceil($seconds / 60);
+
+            return back()
+                ->withErrors(['username' => "Too many failed login attempts. Try again in {$minutes} minute(s)."])
+                ->onlyInput('username');
+        }
+
         $credentials = $request->validate([
             'username' => 'required|string',
             'password' => 'required|string',
         ]);
 
         if (!Auth::attempt($credentials, $request->boolean('remember'))) {
+            RateLimiter::hit($throttleKey, 86400); // 24 hour decay
+
             return back()->withErrors(['username' => 'Invalid username or password.'])->onlyInput('username');
         }
+
+        RateLimiter::clear($throttleKey);
 
         $request->session()->regenerate();
 
