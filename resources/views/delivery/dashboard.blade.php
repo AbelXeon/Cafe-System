@@ -557,7 +557,7 @@
             this.$nextTick(() => lucide.createIcons());
         },
 
-        enableEdit() {                              // NEW
+        enableEdit() {                            
             this._profileSnapshot = { ...this.profileForm };
             this.editingProfile = true;
             this.$nextTick(() => lucide.createIcons());
