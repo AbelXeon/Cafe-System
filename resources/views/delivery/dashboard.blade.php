@@ -537,7 +537,7 @@
         savingProfile: false,
         savingPassword: false,
         editingProfile: false,   
-        _profileSnapshot: null,  // NEW
+        _profileSnapshot: null,  
         profileError: '',
         passwordError: '',
 
