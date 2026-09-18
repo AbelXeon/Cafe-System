@@ -87,7 +87,6 @@
         @include('delivery.partials.section-orders')
     </div>
 
-    <!-- 3. Include Driver Chat Support -->
     @include('delivery.partials.section-chat')
 
     @include('delivery.partials.section-profile')
