@@ -667,7 +667,8 @@ function initCustomSelects(container = document) {
 
                 options.forEach(o => {
                     const check = o.querySelector('.check-icon');
-                    const dot = o.querySelector('.dot-indicator');
+                    const dot = o.querySelector('.dot-indi
+                    tor');
                     if (o === opt) {
                         o.classList.add('bg-[#1e1c25]', 'text-white');
                         if (check) check.classList.remove('hidden');
