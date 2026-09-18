@@ -16,7 +16,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <!-- Lucide Icons: pinned version, deferred so it doesn't block initial paint -->
     <script src="https://unpkg.com/lucide@0.474.0/dist/umd/lucide.js" defer></script>
 
     <style>
