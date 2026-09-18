@@ -120,7 +120,6 @@
     <!-- 1. Include Sidebar -->
     @include('user.partials.sidebar')
 
-    <!-- 2. Include Main Sections -->
     @include('user.partials.section-menu')
     @include('user.partials.section-orders')
     @include('user.partials.section-chat')
