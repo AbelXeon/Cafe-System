@@ -43,7 +43,7 @@ Route::middleware(['auth', 'role:staff'])->prefix('staff')->name('staff.')->grou
     Route::get('/orders/live', [StaffController::class, 'getLiveOrders'])->name('orders.live');
     Route::patch('/orders/{order}/status', [StaffController::class, 'updateStatus'])->name('orders.status');
 
-    // Item Availability / Out-of-Stock (86) Toggles
+    // Item Availability 
     Route::patch('/products/{product}/toggle-availability', [StaffController::class, 'toggleProductAvailability'])->name('products.toggle');
     Route::patch('/extras/{extra}/toggle-availability', [StaffController::class, 'toggleExtraAvailability'])->name('extras.toggle');
 
