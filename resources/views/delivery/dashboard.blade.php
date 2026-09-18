@@ -82,7 +82,6 @@
     <!-- 1. Include Driver Sidebar -->
     @include('delivery.partials.sidebar')
 
-    <!-- 2. Include Dispatch Queue -->
     <div x-show="activeView === 'orders'" class="flex-1 flex min-h-0 h-full overflow-hidden">
         @include('delivery.partials.section-orders')
     </div>
