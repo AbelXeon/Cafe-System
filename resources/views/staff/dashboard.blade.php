@@ -6,7 +6,6 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>CraveDash | Kitchen & Staff Orders Dashboard</title>
 
-    <!-- Laravel Vite Bundled Tailwind CSS & JS -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <!-- Alpine.js -->
