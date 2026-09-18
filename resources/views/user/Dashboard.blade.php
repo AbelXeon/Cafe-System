@@ -1171,7 +1171,7 @@
         savingPassword: false,
         showPasswords: false,
         editingProfile: false,      // NEW
-        _profileSnapshot: null,     // NEW
+        _profileSnapshot: null,     
         profileError: '',
         passwordError: '',
 

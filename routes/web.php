@@ -85,9 +85,8 @@ Route::middleware(['auth', 'role:customer'])->prefix('user')->name('user.')->gro
     Route::delete('/addresses/{savedLocation}', [SavedLocationController::class, 'destroy'])->name('addresses.destroy');
 
 
-     Route::patch('/profile', [UsersController::class, 'updateProfile'])->name('profile.update');
+    Route::patch('/profile', [UsersController::class, 'updateProfile'])->name('profile.update');
     Route::put('/password', [UsersController::class, 'updatePassword'])->name('password.update');
-
 
     // Chat (customer side)
     Route::get('/chats', [ChatController::class, 'customerConversations'])->name('chats.index');
