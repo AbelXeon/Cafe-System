@@ -92,7 +92,7 @@
                 <button @click="showSection('chat'); mobileNavOpen = false" 
                         :class="activeView === 'chat' ? 'active' : ''" 
                         class="side-link w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-3 cursor-pointer">
-                    <i data-lucide="message-square" class="w-4 h-4"></i><span>Chat Support</span>
+                    <i data-lucide="message-square" class="w-4 h-4"></i><span>Chat</span>
                 </button>
             </div>
 

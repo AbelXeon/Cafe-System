@@ -50,8 +50,6 @@ Route::middleware(['auth', 'role:staff'])->prefix('staff')->name('staff.')->grou
 
 
 
-
-
 // Delivery Routes
 Route::middleware(['auth', 'role:delivery'])->prefix('delivery')->name('delivery.')->group(function () {
     Route::get('/dashboard', [DeliveryController::class, 'dashboard'])->name('dashboard');
