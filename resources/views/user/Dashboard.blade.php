@@ -316,7 +316,7 @@
         });
     });
 
-    // Navigation switching
+    
     const sideLinks = document.querySelectorAll('.side-link');
     const sections = document.querySelectorAll('.page-section');
 
