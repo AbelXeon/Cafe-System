@@ -83,4 +83,13 @@ class User extends Authenticatable
     {
         return $this->hasMany(AdminAction::class, 'admin_id');
     }
+
+
+    public function telegramAccount()
+{
+    return $this->hasOne(TelegramAccount::class);
+}
+
+
+
 }
