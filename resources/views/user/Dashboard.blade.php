@@ -1170,7 +1170,7 @@
         savingProfile: false,
         savingPassword: false,
         showPasswords: false,
-        editingProfile: false,      // NEW
+        editingProfile: false,    
         _profileSnapshot: null,     
         profileError: '',
         passwordError: '',
