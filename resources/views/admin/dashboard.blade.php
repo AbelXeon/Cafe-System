@@ -593,7 +593,6 @@ if (removeImageBtn) {
     });
 }
 
-// Edit Product Image Picker
 const editProductImageInput = document.getElementById('edit-product-image-input');
 const editImageDropzone = document.getElementById('edit-image-dropzone');
 const editImagePreviewThumb = document.getElementById('edit-image-preview-thumb');
