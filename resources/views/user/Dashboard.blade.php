@@ -19,7 +19,6 @@
 
     <script src="https://unpkg.com/lucide@0.474.0/dist/umd/lucide.js" defer></script>
 
-    <!-- Leaflet Maps CSS & JS: only used in the Address section, but deferred so it never blocks the initial render -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
 
