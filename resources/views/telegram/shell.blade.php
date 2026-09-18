@@ -6,6 +6,7 @@
     <title>CraveDash</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-[#0f0e13]">
 
@@ -23,20 +24,24 @@
         const initData = tg.initData;
 
         async function bootstrap() {
-            // Step 1: ask backend if this Telegram identity is already linked
-            const meRes = await fetch("{{ route('telegram.me') }}", {
-                headers: { 'X-Telegram-Init-Data': initData }
-            });
-            const me = await meRes.json();
+            try {
+                // Step 1: ask backend if this Telegram identity is already linked
+                const meRes = await fetch("{{ route('telegram.me') }}", {
+                    headers: { 'X-Telegram-Init-Data': initData }
+                });
+                const me = await meRes.json();
 
-            if (me.linked) {
-                // Already linked — send them straight to their real dashboard
-                window.location.href = roleToDashboardUrl(me.user.role);
-                return;
+                if (me.linked) {
+                    window.location.href = roleToDashboardUrl(me.user.role);
+                    return;
+                }
+
+                // Not linked yet — show the link form
+                renderLinkForm();
+            } catch (err) {
+                console.error(err);
+                renderLinkForm();
             }
-
-            // Not linked yet — show the link form
-            renderLinkForm();
         }
 
         function roleToDashboardUrl(role) {
@@ -55,12 +60,12 @@
                     <h1 class="text-white text-xl font-bold mb-1">Link your account</h1>
                     <p class="text-stone-400 text-sm mb-6">Enter your CraveDash username and password to connect Telegram.</p>
                     <input id="tg-username" placeholder="Username"
-                        class="w-full bg-[#14131a] border border-[#2a2731] rounded-xl px-4 py-2.5 text-white mb-3">
+                        class="w-full bg-[#14131a] border border-[#2a2731] rounded-xl px-4 py-2.5 text-white mb-3 outline-none">
                     <input id="tg-password" type="password" placeholder="Password"
-                        class="w-full bg-[#14131a] border border-[#2a2731] rounded-xl px-4 py-2.5 text-white mb-4">
+                        class="w-full bg-[#14131a] border border-[#2a2731] rounded-xl px-4 py-2.5 text-white mb-4 outline-none">
                     <div id="tg-link-error" class="text-rose-400 text-xs mb-3 hidden"></div>
                     <button id="tg-link-btn"
-                        class="w-full bg-[#b08d57] text-[#0f0e13] font-bold py-2.5 rounded-xl">
+                        class="w-full bg-[#b08d57] text-[#0f0e13] font-bold py-2.5 rounded-xl cursor-pointer">
                         Connect
                     </button>
                 </div>

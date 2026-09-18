@@ -98,6 +98,10 @@ Route::middleware(['auth', 'role:customer'])->prefix('user')->name('user.')->gro
 
 
 
+Route::get('/telegram/app', function () {
+    return view('telegram.shell');
+})->name('telegram.app');
+
 // routes/telegram.php
 Route::middleware('telegram.verify')->prefix('telegram')->name('telegram.')->group(function () {
     Route::post('/link', [TelegramAuthController::class, 'link'])->name('link');
