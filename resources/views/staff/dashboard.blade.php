@@ -119,7 +119,6 @@
                 stockFilter: 'all',
                 stockTogglingId: null,
 
-                // Profile form & edit toggle states
                 savingProfile: false,
                 editingProfile: false,
                 _profileSnapshot: null,
