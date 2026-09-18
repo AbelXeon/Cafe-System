@@ -592,7 +592,7 @@
                 const data = await res.json();
 
                 if (res.ok) {
-                    this.editingProfile = false;      // NEW — drop back to view mode
+                    this.editingProfile = false;    
                     this.$nextTick(() => lucide.createIcons());
                 } else {
                     this.profileError = data.message || (data.errors ? Object.values(data.errors).flat().join(' ') : 'Could not update profile.');
