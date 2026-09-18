@@ -59,9 +59,46 @@
                         <p class="text-xs text-stone-500">Update your public identity and contact information</p>
                     </div>
                 </div>
+
+                <!-- Edit button, view mode only -->
+                <button x-show="!editingProfile" x-cloak @click="enableEdit()"
+                    class="flex items-center gap-1.5 text-xs font-bold text-[#b08d57] hover:text-[#c9a36b] bg-[#b08d57]/10 hover:bg-[#b08d57]/15 border border-[#b08d57]/30 rounded-xl px-3.5 py-2 transition cursor-pointer active:scale-95">
+                    <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+                    <span>Edit</span>
+                </button>
             </div>
 
-            <form @submit.prevent="saveProfile()" class="mt-6 space-y-4 sm:space-y-5">
+            <!-- READ-ONLY VIEW -->
+            <div x-show="!editingProfile" x-cloak class="mt-6 space-y-4 sm:space-y-5">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-stone-400 mb-1.5">Full Name</label>
+                        <div class="relative">
+                            <i data-lucide="user" class="w-4 h-4 text-stone-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                            <div class="bg-[#0f0e13] border border-[#1e1c25] rounded-xl pl-10 pr-4 py-2.5 text-sm text-stone-200" x-text="profileForm.name || '—'"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-stone-400 mb-1.5">Phone Number</label>
+                        <div class="relative">
+                            <i data-lucide="phone" class="w-4 h-4 text-stone-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                            <div class="bg-[#0f0e13] border border-[#1e1c25] rounded-xl pl-10 pr-4 py-2.5 text-sm text-stone-200" x-text="profileForm.phone || '—'"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-stone-400 mb-1.5">Email Address</label>
+                    <div class="relative">
+                        <i data-lucide="mail" class="w-4 h-4 text-stone-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                        <div class="bg-[#0f0e13] border border-[#1e1c25] rounded-xl pl-10 pr-4 py-2.5 text-sm text-stone-200" x-text="profileForm.email || '—'"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EDIT MODE -->
+            <form x-show="editingProfile" x-cloak @submit.prevent="saveProfile()" class="mt-6 space-y-4 sm:space-y-5">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-semibold text-stone-400 mb-1.5">Full Name</label>
@@ -93,7 +130,11 @@
 
                 <div x-show="profileError" x-cloak class="p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl text-xs text-rose-400" x-text="profileError"></div>
 
-                <div class="flex justify-end pt-2">
+                <div class="flex justify-end gap-3 pt-2">
+                    <button type="button" @click="cancelEdit()"
+                        class="bg-[#1e1c25] hover:bg-[#2a2731] border border-[#2a2731] text-stone-300 font-bold text-xs sm:text-sm px-5 py-2.5 rounded-xl transition cursor-pointer active:scale-95">
+                        Cancel
+                    </button>
                     <button type="submit" :disabled="savingProfile"
                         class="bg-[#b08d57] hover:bg-[#c9a36b] disabled:opacity-50 text-[#0f0e13] font-bold text-xs sm:text-sm px-6 py-2.5 rounded-xl transition shadow-lg shadow-[#b08d57]/20 flex items-center gap-2 cursor-pointer active:scale-95">
                         <i x-show="savingProfile" data-lucide="loader-2" class="w-4 h-4 animate-spin"></i>

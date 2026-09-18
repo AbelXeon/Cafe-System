@@ -148,34 +148,30 @@ class UsersController extends Controller
 
     
     public function updateProfile(Request $request)
-    {
-        $user = $request->user();
+{
+    $user = $request->user();
 
-        $validated = $request->validate([
-            'name'  => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
-            'phone' => ['nullable', 'string', 'max:30'],
-        ]);
+    $validated = $request->validate([
+        'name'  => ['required', 'string', 'max:255'],
+        'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
+        'phone' => ['nullable', 'string', 'max:30', Rule::unique('users')->ignore($user->id)],
+    ]);
 
-        $user->name = $validated['name'];
-        // Also support fullname if your User model uses fullname
-        if (in_array('fullname', $user->getFillable()) || isset($user->fullname)) {
-            $user->fullname = $validated['name'];
-        }
-        $user->email = $validated['email'];
-        $user->phone = $validated['phone'] ?? null;
-        $user->save();
+    $user->fullname = $validated['name'];
+    $user->email = $validated['email'];
+    $user->phone = $validated['phone'] ?? null;
+    $user->save();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Profile updated successfully!',
-            'user'    => [
-                'name'  => $user->name,
-                'email' => $user->email,
-                'phone' => $user->phone,
-            ]
-        ]);
-    }
+    return response()->json([
+        'success' => true,
+        'message' => 'Profile updated successfully!',
+        'user'    => [
+            'name'  => $user->fullname,
+            'email' => $user->email,
+            'phone' => $user->phone,
+        ]
+    ]);
+}
 
     
     public function updatePassword(Request $request)
