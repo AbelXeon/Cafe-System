@@ -94,3 +94,10 @@ Route::middleware(['auth', 'role:customer'])->prefix('user')->name('user.')->gro
     Route::post('/chats/{order}/messages', [ChatController::class, 'send'])->name('chats.send');
 });
 
+
+
+// routes/telegram.php
+Route::middleware('telegram.verify')->prefix('telegram')->name('telegram.')->group(function () {
+    Route::post('/link', [TelegramAuthController::class, 'link'])->name('link');
+    Route::get('/me', [TelegramAuthController::class, 'me'])->name('me');
+});
