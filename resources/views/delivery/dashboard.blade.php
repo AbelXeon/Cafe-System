@@ -563,7 +563,7 @@
             this.$nextTick(() => lucide.createIcons());
         },
 
-        cancelEdit() {                               // NEW
+        cancelEdit() {                          
             this.profileForm = { ...this._profileSnapshot };
             this.profileError = '';
             this.editingProfile = false;
