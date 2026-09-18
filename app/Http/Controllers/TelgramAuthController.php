@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\TelegramAccount;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -15,19 +16,24 @@ class TelegramAuthController extends Controller
      */
     public function link(Request $request)
     {
-        // If VerifyTelegramInitData already authenticated them (returning user),
-        // there's nothing to link — they're already in.
+        // If already authenticated, nothing to link
         if (Auth::check()) {
+            $currentUser = Auth::user();
+            $role = is_object($currentUser->role) ? $currentUser->role->name : $currentUser->role;
+
             return response()->json([
                 'status'  => 'already_linked',
                 'message' => 'This Telegram account is already linked.',
+                'role'    => $role,
             ]);
         }
 
         $telegramProfile = $request->attributes->get('telegram_profile');
 
         if (!$telegramProfile || !isset($telegramProfile['id'])) {
-            return response()->json(['message' => 'No verified Telegram session found.'], 401);
+            return response()->json([
+                'message' => 'No verified Telegram session found.'
+            ], 401);
         }
 
         $credentials = $request->validate([
@@ -35,24 +41,33 @@ class TelegramAuthController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-        $user = \App\Models\User::where('username', $credentials['username'])->first();
+        // Find user by username or email (supports whichever your app uses)
+        $user = User::where('username', $credentials['username'])
+            ->orWhere('email', $credentials['username'])
+            ->first();
 
         if (!$user || !Hash::check($credentials['password'], $user->password)) {
-            return response()->json(['message' => 'Invalid username or password.'], 422);
+            return response()->json([
+                'message' => 'Invalid username/email or password.'
+            ], 422);
         }
 
-        // Guard against one Telegram account somehow getting linked twice
+        // Guard against one Telegram account being linked twice
         $existingLink = TelegramAccount::where('telegram_user_id', $telegramProfile['id'])->first();
         if ($existingLink) {
-            return response()->json(['message' => 'This Telegram account is already linked to a user.'], 422);
+            return response()->json([
+                'message' => 'This Telegram account is already linked to a user.'
+            ], 422);
         }
 
         // Guard against one Laravel user linking multiple Telegram accounts
-        if ($user->telegramAccount) {
-            return response()->json(['message' => 'This account is already linked to a different Telegram user.'], 422);
+        if (method_exists($user, 'telegramAccount') && $user->telegramAccount) {
+            return response()->json([
+                'message' => 'This account is already linked to a different Telegram user.'
+            ], 422);
         }
 
-        $account = TelegramAccount::create([
+        TelegramAccount::create([
             'user_id'              => $user->id,
             'telegram_user_id'     => $telegramProfile['id'],
             'telegram_username'    => $telegramProfile['username'] ?? null,
@@ -63,10 +78,13 @@ class TelegramAuthController extends Controller
 
         Auth::login($user);
 
+        // Safe extraction whether role is a string ('customer') or relationship model
+        $role = is_object($user->role) ? $user->role->name : $user->role;
+
         return response()->json([
             'status'  => 'linked',
             'message' => 'Telegram account linked successfully.',
-            'role'    => $user->role->name,
+            'role'    => $role,
         ]);
     }
 
@@ -81,13 +99,14 @@ class TelegramAuthController extends Controller
         }
 
         $user = Auth::user();
+        $role = is_object($user->role) ? $user->role->name : $user->role;
 
         return response()->json([
             'linked' => true,
             'user'   => [
                 'id'       => $user->id,
-                'fullname' => $user->fullname,
-                'role'     => $user->role->name,
+                'fullname' => $user->fullname ?? $user->name ?? 'User',
+                'role'     => $role,
             ],
         ]);
     }
