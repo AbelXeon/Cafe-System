@@ -119,8 +119,10 @@
                 stockFilter: 'all',
                 stockTogglingId: null,
 
-                // Profile form states
+                // Profile form & edit toggle states
                 savingProfile: false,
+                editingProfile: false,
+                _profileSnapshot: null,
                 profileError: null,
                 profileForm: {
                     name: AUTH_USER.name,
@@ -179,6 +181,19 @@
                     }, 6000);
 
                     setTimeout(() => lucide.createIcons(), 60);
+                },
+
+                enableEdit() {
+                    this._profileSnapshot = { ...this.profileForm };
+                    this.editingProfile = true;
+                    this.$nextTick(() => lucide.createIcons());
+                },
+
+                cancelEdit() {
+                    this.profileForm = { ...this._profileSnapshot };
+                    this.profileError = null;
+                    this.editingProfile = false;
+                    this.$nextTick(() => lucide.createIcons());
                 },
 
                 get outOfStockCount() {
@@ -273,6 +288,7 @@
 
                         const data = await res.json();
                         if (res.ok) {
+                            this.editingProfile = false;
                             this.showToast('Profile Updated', data.message || 'Your personal profile has been updated.');
                         } else {
                             this.profileError = data.message || (data.errors ? Object.values(data.errors).flat().join(', ') : 'Failed to update profile.');

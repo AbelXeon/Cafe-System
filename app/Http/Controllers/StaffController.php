@@ -9,7 +9,7 @@ use App\Models\Extra;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules\Password;
+use Illuminate\Validation\Rule;
 
 class StaffController extends Controller
 {
@@ -85,13 +85,12 @@ class StaffController extends Controller
 
     public function updateProfile(Request $request)
     {
-        /** @var \App\Models\User $user */
-        $user = Auth::user();
+        $user = $request->user();
 
         $validated = $request->validate([
-            'name'  => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:users,email,' . $user->id,
-            'phone' => 'nullable|string|max:30',
+            'name'  => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
+            'phone' => ['nullable', 'string', 'max:30', Rule::unique('users')->ignore($user->id)],
         ]);
 
         $user->fullname = $validated['name'];
@@ -99,12 +98,12 @@ class StaffController extends Controller
             $user->name = $validated['name'];
         }
         $user->email = $validated['email'];
-        $user->phone = $validated['phone'];
+        $user->phone = $validated['phone'] ?? null;
         $user->save();
 
         return response()->json([
             'success' => true,
-            'message' => 'Profile updated successfully.',
+            'message' => 'Profile updated successfully!',
             'user'    => [
                 'name'  => $user->fullname ?? $user->name,
                 'email' => $user->email,
@@ -115,20 +114,18 @@ class StaffController extends Controller
 
     public function updatePassword(Request $request)
     {
-        /** @var \App\Models\User $user */
-        $user = Auth::user();
-
-        $request->validate([
-            'current_password' => 'required|current_password',
-            'password'         => ['required', 'confirmed', Password::min(8)->letters()->mixedCase()->numbers()->symbols()],
+        $validated = $request->validate([
+            'current_password' => ['required', 'current_password'],
+            'password'         => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
-        $user->password = Hash::make($request->password);
-        $user->save();
+        $request->user()->update([
+            'password' => Hash::make($validated['password']),
+        ]);
 
         return response()->json([
             'success' => true,
-            'message' => 'Password changed successfully.'
+            'message' => 'Password updated successfully!',
         ]);
     }
 
