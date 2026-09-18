@@ -514,7 +514,6 @@ navLinks.forEach(link => {
 });
 showSection('overview');
 
-// ---- Image Picker & Preview Handling (Create Product) ----
 const imageInput = document.getElementById('product-image-input');
 const dropzone = document.getElementById('image-dropzone');
 const placeholder = document.getElementById('image-placeholder');
