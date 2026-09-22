@@ -55,7 +55,6 @@
                 <form method="POST" action="{{ route('register.submit') }}" class="space-y-4">
                     @csrf
 
-                    <!-- Row 1: Full name & Username -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Full name</label>
