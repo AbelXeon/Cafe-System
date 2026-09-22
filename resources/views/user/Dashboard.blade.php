@@ -1154,9 +1154,7 @@
         };
     }
 
-    /**
-     * Account Profile, Security & Preferences Manager
-     */
+
   function profileApp() {
     return {
         savingProfile: false,
