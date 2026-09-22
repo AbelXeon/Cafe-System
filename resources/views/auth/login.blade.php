@@ -61,7 +61,6 @@
 
     <main class="min-h-screen w-full grid grid-cols-1 lg:grid-cols-12">
 
-        <!-- ================= LEFT: FORM ================= -->
         <section class="lg:col-span-5 xl:col-span-4 bg-[#0f0e13] p-8 sm:p-12 lg:p-14 flex flex-col justify-between border-r border-[#1e1c25] z-10">
 
             <div class="flex items-center gap-3">
