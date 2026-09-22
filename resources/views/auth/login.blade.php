@@ -272,7 +272,6 @@
 
     </main>
 
-    <!-- Lucide: pinned version, deferred, loaded right before it's used -->
     <script src="https://unpkg.com/lucide@0.474.0/dist/umd/lucide.js" defer></script>
     <script defer>
         window.addEventListener('DOMContentLoaded', () => {
