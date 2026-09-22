@@ -90,7 +90,7 @@
                             </p>
                         </div>
                         <div class="text-right shrink-0">
-                            <span class="text-sm font-black text-[#b08d57]" x-text="'$' + (Number(order.total_amount) || 0).toFixed(2)"></span>
+                            <span class="text-sm font-black text-[#b08d57]" x-text="'ETB ' + (Number(order.total_amount) || 0).toFixed(2)"></span>
                             <span class="text-[10px] text-stone-500 block uppercase" x-text="order.order_type.replace('_', ' ')"></span>
                         </div>
                     </div>
@@ -175,7 +175,7 @@
                                         <span class="w-6 h-6 rounded-lg bg-[#b08d57] text-[#0f0e13] font-black text-xs flex items-center justify-center shrink-0" x-text="item.quantity + 'x'"></span>
                                         <span class="text-sm font-bold text-white truncate min-w-0" x-text="item.name"></span>
                                     </div>
-                                    <span class="text-xs font-bold text-stone-400 shrink-0" x-text="'$' + (Number(item.subtotal) || 0).toFixed(2)"></span>
+                                    <span class="text-xs font-bold text-stone-400 shrink-0" x-text="'ETB ' + (Number(item.subtotal) || 0).toFixed(2)"></span>
                                 </div>
 
                                 <!-- Add-on Extras -->

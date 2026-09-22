@@ -279,7 +279,7 @@
 
                         <div class="flex items-center gap-1.5 transition-colors"
                             :class="(/[a-z]/.test(passwordForm.password || '') && /[A-Z]/.test(passwordForm.password || '')) ? 'text-emerald-400 font-medium' : 'text-stone-500'">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 shrink-0 transition-transform" :class="(passwordForm.password || '').length >= 8 ? 'text-emerald-400 scale-110' : 'text-stone-600'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 shrink-0 transition-transform" :class="(/[a-z]/.test(passwordForm.password || '') && /[A-Z]/.test(passwordForm.password || '')) ? 'text-emerald-400 scale-110' : 'text-stone-600'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                 <polyline points="20 6 9 17 4 12"></polyline>
                             </svg>
                             <span>Letters (Aa)</span>
