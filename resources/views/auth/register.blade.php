@@ -38,7 +38,6 @@
                 </div>
             </div>
 
-            <!-- Form Block -->
             <div class="w-full my-auto py-8 max-w-xl mx-auto">
                 <div class="mb-7">
                     <h1 class="text-3xl font-extrabold text-white tracking-tight">Create account</h1>
