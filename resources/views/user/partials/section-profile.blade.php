@@ -2,7 +2,6 @@
 <div id="section-profile" class="page-section hidden flex-1 overflow-y-auto p-4 sm:p-8 lg:p-12 custom-scroll bg-[#14131a]/40 w-full" x-data="profileApp()" x-init="init()">
     <div class="max-w-4xl mx-auto pb-20 space-y-6 sm:space-y-8">
 
-        <!-- Page Header -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
                 <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Account Settings</h1>
