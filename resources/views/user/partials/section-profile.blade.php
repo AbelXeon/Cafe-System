@@ -184,7 +184,6 @@
                     </div>
                 </div>
 
-                <!-- New & Confirm Password -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-semibold text-stone-400 mb-1.5">New Password</label>
