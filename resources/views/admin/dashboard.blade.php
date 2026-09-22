@@ -938,6 +938,7 @@ function openStaffEditor(data) {
 
     setCustomSelectValue('staff-edit-role-wrapper', data.roleId);
 
+    staffEditContainer.classList.remove('hidden');   // <-- ADDED
     staffEditContainer.classList.remove('edit-drawer-closed');
     staffEditContainer.classList.add('edit-drawer-open');
     staffEditContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -948,6 +949,7 @@ function closeStaffEditor() {
     staffEditContainer.classList.remove('edit-drawer-open');
     staffEditContainer.classList.add('edit-drawer-closed');
     setTimeout(() => {
+        staffEditContainer.classList.add('hidden');   // <-- ADDED
         staffEditForm.reset();
         const err = staffEditForm.querySelector('.form-error');
         if (err) err.textContent = '';
