@@ -107,7 +107,6 @@
 
                     <!-- Row 3: Password & Confirm password -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <!-- Password -->
                         <div>
                             <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Password</label>
                             <div class="relative">
