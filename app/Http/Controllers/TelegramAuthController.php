@@ -149,7 +149,6 @@ class TelegramAuthController extends Controller
             'password' => Hash::make($data['password']),
         ]);
 
-        // Link Telegram account immediately
         TelegramAccount::create([
             'user_id'              => $user->id,
             'telegram_user_id'     => $telegramProfile['id'],
