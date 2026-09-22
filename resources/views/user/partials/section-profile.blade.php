@@ -60,7 +60,6 @@
                     </div>
                 </div>
 
-                <!-- Edit button, view mode only -->
                 <button x-show="!editingProfile" x-cloak @click="enableEdit()"
                     class="flex items-center gap-1.5 text-xs font-bold text-[#b08d57] hover:text-[#c9a36b] bg-[#b08d57]/10 hover:bg-[#b08d57]/15 border border-[#b08d57]/30 rounded-xl px-3.5 py-2 transition cursor-pointer active:scale-95">
                     <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
