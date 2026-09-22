@@ -21,7 +21,6 @@ class TelegramAuthController extends Controller
             return response()->json(['linked' => false]);
         }
 
-        // Check if this Telegram ID actually exists in the database
         $link = TelegramAccount::where('telegram_user_id', $telegramId)->first();
 
         // Not in database -> Clear any stale session cookie and return unlinked
