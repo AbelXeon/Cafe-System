@@ -33,7 +33,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/extras', [AdminController::class, 'storeExtra'])->name('extras.store');
     Route::put('/extras/{extra}', [AdminController::class, 'updateExtra'])->name('extras.update');
 
-    // Admin Profile & Password Settings
     Route::patch('/profile', [AdminController::class, 'updateProfile'])->name('profile.update');
     Route::put('/password', [AdminController::class, 'updatePassword'])->name('password.update');
 });
