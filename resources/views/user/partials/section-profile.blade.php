@@ -244,7 +244,6 @@
                     </div>
                 </div>
 
-                <!-- Live Password Requirements & Strength Indicator -->
                 <div class="p-3.5 bg-[#0f0e13] border border-[#2a2731] rounded-xl space-y-2.5">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-semibold text-stone-400">Password Requirements</span>
