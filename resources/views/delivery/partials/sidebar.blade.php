@@ -20,10 +20,10 @@
         <div class="p-5 sm:p-6 border-b border-[#1e1c25] flex items-center justify-between shrink-0">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-xl bg-[#b08d57] flex items-center justify-center text-[#0f0e13]">
-                    <i data-lucide="bike" class="w-5 h-5 stroke-[2.5]"></i>
+                    <i data-lucide="coffee" class="w-5 h-5 stroke-[2.5]"></i>
                 </div>
                 <div>
-                    <span class="text-lg font-black tracking-tight text-white block">Crave<span class="text-[#b08d57]">Dash</span></span>
+                    <span class="text-lg font-black tracking-tight text-white block">Neba Cafe <span class="text-[#b08d57]">Hawassa</span></span>
                     <span class="text-xs text-stone-500 font-medium">Delivery Portal</span>
                 </div>
             </div>
