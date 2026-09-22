@@ -33,7 +33,6 @@
             </button>
         </div>
 
-        <!-- Grouped Navigation Links -->
         <nav class="p-4 space-y-4 overflow-y-auto custom-scroll">
             <div class="space-y-1">
                 <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-stone-500 block">Menu</span>
