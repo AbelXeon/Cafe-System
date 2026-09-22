@@ -68,7 +68,6 @@
                             </div>
                         </div>
 
-                        <!-- Username -->
                         <div>
                             <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Username</label>
                             <div class="relative">
