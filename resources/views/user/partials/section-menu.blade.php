@@ -40,7 +40,7 @@
                         <div class="relative w-full h-40 sm:h-44 bg-[#0f0e13] overflow-hidden">
                             <img :src="product.image" :alt="product.name" loading="lazy" decoding="async" class="w-full h-full object-cover group-hover:scale-105 transition duration-300 ease-out">
                             <div class="absolute top-3 right-3 bg-[#0f0e13]/85 backdrop-blur-md px-2.5 py-1 rounded-lg border border-[#2a2731]">
-                                <span class="text-[#b08d57] font-extrabold text-sm" x-text="'$' + product.price.toFixed(2)"></span>
+                                <span class="text-[#b08d57] font-extrabold text-sm" x-text="'ETB ' + product.price.toFixed(2)"></span>
                             </div>
                         </div>
 
@@ -93,7 +93,7 @@
                                     <h3 class="text-lg sm:text-xl font-bold text-white tracking-tight" x-text="modalProduct.name"></h3>
                                     <span class="text-xs text-stone-500 font-medium" x-text="modalProduct.category"></span>
                                 </div>
-                                <span class="text-[#b08d57] font-black text-base sm:text-lg" x-text="'$' + modalProduct.price.toFixed(2)"></span>
+                                <span class="text-[#b08d57] font-black text-base sm:text-lg" x-text="'ETB ' + modalProduct.price.toFixed(2)"></span>
                             </div>
                             <p class="text-stone-400 text-xs sm:text-sm mt-2 leading-relaxed" x-text="modalProduct.description"></p>
 
@@ -112,7 +112,7 @@
                                         <div class="flex items-center justify-between p-3 rounded-xl bg-[#0f0e13] border border-[#2a2731] hover:border-[#b08d57]/40 transition">
                                             <div class="min-w-0 pr-2">
                                                 <p class="text-xs sm:text-sm font-semibold text-white truncate" x-text="extra.name"></p>
-                                                <p class="text-[11px] text-[#b08d57] font-bold mt-0.5" x-text="'+ $' + extra.price.toFixed(2) + ' each'"></p>
+                                                <p class="text-[11px] text-[#b08d57] font-bold mt-0.5" x-text="'+ ETB ' + extra.price.toFixed(2) + ' each'"></p>
                                             </div>
 
                                             <div class="flex items-center gap-2 bg-[#14131a] border border-[#2a2731] rounded-lg p-1 shrink-0">
@@ -156,7 +156,7 @@
                                     class="w-2/3 bg-[#b08d57] hover:bg-[#c9a36b] text-[#0f0e13] text-sm font-bold rounded-xl py-3 transition flex items-center justify-center gap-2 shadow-lg shadow-[#b08d57]/10">
                                     <span>Add to Cart</span>
                                     <span class="font-normal opacity-50">|</span>
-                                    <span x-text="'$' + modalTotalPrice.toFixed(2)"></span>
+                                    <span x-text="'ETB ' + modalTotalPrice.toFixed(2)"></span>
                                 </button>
                             </div>
                         </div>
@@ -186,14 +186,14 @@
                                 <span x-show="item.extrasText" class="text-[#b08d57] text-[11px] block mt-0.5" x-text="item.extrasText"></span>
                                 <span x-show="item.note" class="text-stone-500 text-[11px] truncate block" x-text="'Note: ' + item.note"></span>
                             </div>
-                            <span class="text-stone-300 font-bold whitespace-nowrap text-xs sm:text-sm" x-text="'$' + (item.price * item.qty).toFixed(2)"></span>
+                            <span class="text-stone-300 font-bold whitespace-nowrap text-xs sm:text-sm" x-text="'ETB ' + (item.price * item.qty).toFixed(2)"></span>
                         </div>
                     </template>
                 </div>
 
                 <div class="border-t border-[#2a2731] pt-3 flex justify-between items-center mb-5">
                     <span class="text-stone-400 font-semibold text-sm">Total Due</span>
-                    <span class="text-[#b08d57] font-black text-lg sm:text-xl" x-text="'$' + $store.cart.total.toFixed(2)"></span>
+                    <span class="text-[#b08d57] font-black text-lg sm:text-xl" x-text="'ETB ' + $store.cart.total.toFixed(2)"></span>
                 </div>
 
                 <div>
@@ -240,7 +240,7 @@
                     <span class="text-sm">View Cart</span>
                 </div>
                 <div class="flex items-center gap-2 text-sm">
-                    <span x-text="'$' + $store.cart.total.toFixed(2)"></span>
+                    <span x-text="'ETB ' + $store.cart.total.toFixed(2)"></span>
                     <i data-lucide="arrow-right" class="w-4 h-4"></i>
                 </div>
             </button>
@@ -299,7 +299,7 @@
                                 <span class="text-white text-xs font-bold px-1" x-text="item.qty"></span>
                                 <button @click="$store.cart.increment(item)" class="text-stone-400 hover:text-white text-xs px-1">+</button>
                             </div>
-                            <span class="text-[#b08d57] text-xs font-bold" x-text="'$' + (item.price * item.qty).toFixed(2)"></span>
+                            <span class="text-[#b08d57] text-xs font-bold" x-text="'ETB ' + (item.price * item.qty).toFixed(2)"></span>
                         </div>
                     </div>
                 </div>
@@ -318,15 +318,15 @@
             <div class="space-y-1.5 text-xs">
                 <div class="flex justify-between text-stone-400">
                     <span>Items Total</span>
-                    <span class="text-stone-200 font-medium" x-text="'$' + $store.cart.total.toFixed(2)"></span>
+                    <span class="text-stone-200 font-medium" x-text="'ETB ' + $store.cart.total.toFixed(2)"></span>
                 </div>
                 <div class="flex justify-between text-stone-400">
                     <span>Tax &amp; Fees</span>
-                    <span class="text-stone-200 font-medium">$0.00</span>
+                    <span class="text-stone-200 font-medium">ETB 0.00</span>
                 </div>
                 <div class="flex justify-between text-sm pt-2 border-t border-[#1e1c25] font-bold">
                     <span class="text-white">Estimated Total</span>
-                    <span class="text-[#b08d57] text-base" x-text="'$' + $store.cart.total.toFixed(2)"></span>
+                    <span class="text-[#b08d57] text-base" x-text="'ETB ' + $store.cart.total.toFixed(2)"></span>
                 </div>
             </div>
 

@@ -47,7 +47,7 @@
 
                         <div class="text-right">
                             <span class="text-xs text-stone-500 font-semibold uppercase tracking-wider block">Total Paid</span>
-                            <span class="text-xl sm:text-2xl font-black text-[#b08d57]" x-text="'$' + order.total_amount.toFixed(2)"></span>
+                            <span class="text-xl sm:text-2xl font-black text-[#b08d57]" x-text="'ETB ' + order.total_amount.toFixed(2)"></span>
                         </div>
                     </div>
 
@@ -173,7 +173,7 @@
                                                 <span class="text-white font-bold block" x-text="item.quantity + 'x ' + item.name"></span>
                                                 <span x-show="item.special_note" class="text-[#b08d57] text-[10px] block mt-0.5" x-text="item.special_note"></span>
                                             </div>
-                                            <span class="text-stone-300 font-bold whitespace-nowrap" x-text="'$' + item.subtotal.toFixed(2)"></span>
+                                            <span class="text-stone-300 font-bold whitespace-nowrap" x-text="'ETB ' + item.subtotal.toFixed(2)"></span>
                                         </div>
                                     </template>
                                 </div>
@@ -224,7 +224,7 @@
                         </div>
 
                         <div class="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center border-t sm:border-t-0 border-[#1e1c25] pt-3 sm:pt-0">
-                            <span class="text-stone-300 font-extrabold text-sm" x-text="'$' + past.total_amount.toFixed(2)"></span>
+                            <span class="text-stone-300 font-extrabold text-sm" x-text="'ETB ' + past.total_amount.toFixed(2)"></span>
                             <span class="text-[11px] text-stone-500 font-medium" x-text="past.delivery_address ? 'Delivered' : 'Dine-In'"></span>
                         </div>
                     </div>
