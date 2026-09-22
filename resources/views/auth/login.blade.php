@@ -177,7 +177,6 @@
                     </button>
                 </form>
 
-                <!-- Register Link -->
                 <p class="text-stone-500 text-sm mt-6 text-center">
                     Don't have an account?
                     <a href="{{ route('register') }}" class="text-[#b08d57] font-semibold hover:text-[#c9a36b] hover:underline transition">
