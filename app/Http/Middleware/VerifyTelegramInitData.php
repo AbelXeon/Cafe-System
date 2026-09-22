@@ -35,8 +35,7 @@ class VerifyTelegramInitData
         $account = TelegramAccount::where('telegram_user_id', $telegramUserId)->first();
 
         if (!$account) {
-            // Not linked yet — attach the raw Telegram profile to the request
-            // so the linking controller can use it, but do NOT authenticate.
+
             $request->attributes->set('telegram_profile', $parsed['user']);
             return $next($request);
         }
