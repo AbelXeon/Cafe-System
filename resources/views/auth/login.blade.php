@@ -168,7 +168,6 @@
                         </a>
                     </div>
 
-                    <!-- Submit -->
                     <button
                         type="submit"
                         class="w-full mt-2 bg-[#b08d57] hover:bg-[#c9a36b] active:bg-[#9a7a4c] text-[#0f0e13] font-bold rounded-xl py-3 transition duration-150 flex items-center justify-center gap-2">
