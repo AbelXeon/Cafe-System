@@ -160,7 +160,6 @@
             </div>
 
             <form @submit.prevent="updatePassword()" x-data="{ showCurrent: false, showNew: false, showConfirm: false }" class="mt-6 space-y-4">
-                <!-- Current Password -->
                 <div>
                     <label class="block text-xs font-semibold text-stone-400 mb-1.5">Current Password</label>
                     <div class="relative">
