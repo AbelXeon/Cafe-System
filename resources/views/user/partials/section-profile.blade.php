@@ -145,7 +145,6 @@
             </form>
         </div>
 
-        <!-- Security & Password Card -->
         <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl p-5 sm:p-7 shadow-xl">
             <div class="flex items-center justify-between pb-5 border-b border-[#1e1c25]">
                 <div class="flex items-center gap-3">
