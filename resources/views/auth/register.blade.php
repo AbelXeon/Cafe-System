@@ -80,7 +80,6 @@
                         </div>
                     </div>
 
-                    <!-- Row 2: Email & Phone -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Email</label>
