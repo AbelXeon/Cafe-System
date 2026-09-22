@@ -66,7 +66,7 @@
             const defaultUsername = tgUser.username || '';
 
             document.getElementById('telegram-app-root').innerHTML = `
-                <div class="max-w-sm mx-auto pt-8 pb-12 px-4">
+                <div class="max-w-sm mx-auto pt-6 pb-12 px-4">
                     <!-- Brand -->
                     <div class="text-center mb-6">
                         <span class="text-2xl font-black text-white">Crave<span class="text-[#b08d57]">Dash</span></span>
@@ -86,47 +86,120 @@
                     </div>
 
                     <!-- ERROR CONTAINER -->
-                    <div id="tg-auth-error" class="text-rose-400 text-xs mb-4 hidden p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl"></div>
+                    <div id="tg-auth-error" class="text-rose-400 text-xs mb-5 hidden p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl"></div>
 
                     <!-- 1. LINK FORM -->
-                    <div id="form-link-container" class="${activeTab === 'link' ? '' : 'hidden'}">
-                        <p class="text-stone-400 text-xs mb-4">Connect an existing CraveDash account (Admin, Staff, Driver, or Customer).</p>
+                    <div id="form-link-container" class="${activeTab === 'link' ? '' : 'hidden'} space-y-4">
+                        <p class="text-stone-400 text-xs mb-3">Connect an existing CraveDash account (Admin, Staff, Driver, or Customer).</p>
                         
-                        <input id="tg-link-username" placeholder="Username or Email" value="${defaultUsername}"
-                            class="w-full bg-[#14131a] border border-[#2a2731] rounded-xl px-4 py-2.5 text-sm text-white mb-3 outline-none focus:border-[#b08d57]">
-                        <input id="tg-link-password" type="password" placeholder="Password"
-                            class="w-full bg-[#14131a] border border-[#2a2731] rounded-xl px-4 py-2.5 text-sm text-white mb-4 outline-none focus:border-[#b08d57]">
+                        <!-- Floating Username -->
+                        <div class="relative">
+                            <input id="tg-link-username" type="text" placeholder=" " value="${defaultUsername}"
+                                class="peer w-full bg-[#14131a] border border-[#2a2731] rounded-xl px-4 py-3 text-sm text-white outline-none transition focus:border-[#b08d57]">
+                            <label for="tg-link-username"
+                                class="absolute left-3.5 -top-2.5 bg-[#0f0e13] px-1.5 text-xs text-stone-400 font-semibold transition-all pointer-events-none
+                                       peer-placeholder-shown:top-3 peer-placeholder-shown:text-sm peer-placeholder-shown:text-stone-500 peer-placeholder-shown:font-normal peer-placeholder-shown:bg-transparent
+                                       peer-focus:-top-2.5 peer-focus:text-xs peer-focus:text-[#b08d57] peer-focus:font-semibold peer-focus:bg-[#0f0e13]">
+                                Username or Email
+                            </label>
+                        </div>
+
+                        <!-- Floating Password -->
+                        <div class="relative">
+                            <input id="tg-link-password" type="password" placeholder=" "
+                                class="peer w-full bg-[#14131a] border border-[#2a2731] rounded-xl px-4 py-3 text-sm text-white outline-none transition focus:border-[#b08d57]">
+                            <label for="tg-link-password"
+                                class="absolute left-3.5 -top-2.5 bg-[#0f0e13] px-1.5 text-xs text-stone-400 font-semibold transition-all pointer-events-none
+                                       peer-placeholder-shown:top-3 peer-placeholder-shown:text-sm peer-placeholder-shown:text-stone-500 peer-placeholder-shown:font-normal peer-placeholder-shown:bg-transparent
+                                       peer-focus:-top-2.5 peer-focus:text-xs peer-focus:text-[#b08d57] peer-focus:font-semibold peer-focus:bg-[#0f0e13]">
+                                Password
+                            </label>
+                        </div>
                         
                         <button id="tg-link-btn" onclick="submitLink()"
-                            class="w-full bg-[#b08d57] text-[#0f0e13] font-bold py-2.5 rounded-xl text-sm transition hover:bg-[#c9a36b]">
+                            class="w-full mt-2 bg-[#b08d57] text-[#0f0e13] font-bold py-3 rounded-xl text-sm transition hover:bg-[#c9a36b] cursor-pointer">
                             Connect Account
                         </button>
                     </div>
 
                     <!-- 2. REGISTER FORM -->
-                    <div id="form-register-container" class="${activeTab === 'register' ? '' : 'hidden'}">
-                        <p class="text-stone-400 text-xs mb-4">New here? Create a customer account to start ordering.</p>
+                    <div id="form-register-container" class="${activeTab === 'register' ? '' : 'hidden'} space-y-4">
+                        <p class="text-stone-400 text-xs mb-3">New here? Create a customer account to start ordering.</p>
                         
-                        <input id="tg-reg-fullname" placeholder="Full Name" value="${defaultFullname}"
-                            class="w-full bg-[#14131a] border border-[#2a2731] rounded-xl px-4 py-2.5 text-sm text-white mb-3 outline-none focus:border-[#b08d57]">
+                        <!-- Floating Full Name -->
+                        <div class="relative">
+                            <input id="tg-reg-fullname" type="text" placeholder=" " value="${defaultFullname}"
+                                class="peer w-full bg-[#14131a] border border-[#2a2731] rounded-xl px-4 py-3 text-sm text-white outline-none transition focus:border-[#b08d57]">
+                            <label for="tg-reg-fullname"
+                                class="absolute left-3.5 -top-2.5 bg-[#0f0e13] px-1.5 text-xs text-stone-400 font-semibold transition-all pointer-events-none
+                                       peer-placeholder-shown:top-3 peer-placeholder-shown:text-sm peer-placeholder-shown:text-stone-500 peer-placeholder-shown:font-normal peer-placeholder-shown:bg-transparent
+                                       peer-focus:-top-2.5 peer-focus:text-xs peer-focus:text-[#b08d57] peer-focus:font-semibold peer-focus:bg-[#0f0e13]">
+                                Full Name
+                            </label>
+                        </div>
                         
-                        <input id="tg-reg-username" placeholder="Username" value="${defaultUsername}"
-                            class="w-full bg-[#14131a] border border-[#2a2731] rounded-xl px-4 py-2.5 text-sm text-white mb-3 outline-none focus:border-[#b08d57]">
+                        <!-- Floating Username -->
+                        <div class="relative">
+                            <input id="tg-reg-username" type="text" placeholder=" " value="${defaultUsername}"
+                                class="peer w-full bg-[#14131a] border border-[#2a2731] rounded-xl px-4 py-3 text-sm text-white outline-none transition focus:border-[#b08d57]">
+                            <label for="tg-reg-username"
+                                class="absolute left-3.5 -top-2.5 bg-[#0f0e13] px-1.5 text-xs text-stone-400 font-semibold transition-all pointer-events-none
+                                       peer-placeholder-shown:top-3 peer-placeholder-shown:text-sm peer-placeholder-shown:text-stone-500 peer-placeholder-shown:font-normal peer-placeholder-shown:bg-transparent
+                                       peer-focus:-top-2.5 peer-focus:text-xs peer-focus:text-[#b08d57] peer-focus:font-semibold peer-focus:bg-[#0f0e13]">
+                                Username
+                            </label>
+                        </div>
 
-                        <input id="tg-reg-email" type="email" placeholder="Email (optional)"
-                            class="w-full bg-[#14131a] border border-[#2a2731] rounded-xl px-4 py-2.5 text-sm text-white mb-3 outline-none focus:border-[#b08d57]">
+                        <!-- Floating Email -->
+                        <div class="relative">
+                            <input id="tg-reg-email" type="email" placeholder=" "
+                                class="peer w-full bg-[#14131a] border border-[#2a2731] rounded-xl px-4 py-3 text-sm text-white outline-none transition focus:border-[#b08d57]">
+                            <label for="tg-reg-email"
+                                class="absolute left-3.5 -top-2.5 bg-[#0f0e13] px-1.5 text-xs text-stone-400 font-semibold transition-all pointer-events-none
+                                       peer-placeholder-shown:top-3 peer-placeholder-shown:text-sm peer-placeholder-shown:text-stone-500 peer-placeholder-shown:font-normal peer-placeholder-shown:bg-transparent
+                                       peer-focus:-top-2.5 peer-focus:text-xs peer-focus:text-[#b08d57] peer-focus:font-semibold peer-focus:bg-[#0f0e13]">
+                                Email (optional)
+                            </label>
+                        </div>
 
-                        <input id="tg-reg-phone" type="text" placeholder="Phone"
-                            class="w-full bg-[#14131a] border border-[#2a2731] rounded-xl px-4 py-2.5 text-sm text-white mb-3 outline-none focus:border-[#b08d57]">
+                        <!-- Floating Phone -->
+                        <div class="relative">
+                            <input id="tg-reg-phone" type="text" placeholder=" "
+                                class="peer w-full bg-[#14131a] border border-[#2a2731] rounded-xl px-4 py-3 text-sm text-white outline-none transition focus:border-[#b08d57]">
+                            <label for="tg-reg-phone"
+                                class="absolute left-3.5 -top-2.5 bg-[#0f0e13] px-1.5 text-xs text-stone-400 font-semibold transition-all pointer-events-none
+                                       peer-placeholder-shown:top-3 peer-placeholder-shown:text-sm peer-placeholder-shown:text-stone-500 peer-placeholder-shown:font-normal peer-placeholder-shown:bg-transparent
+                                       peer-focus:-top-2.5 peer-focus:text-xs peer-focus:text-[#b08d57] peer-focus:font-semibold peer-focus:bg-[#0f0e13]">
+                                Phone (optional)
+                            </label>
+                        </div>
 
-                        <input id="tg-reg-password" type="password" placeholder="Password (min 6 characters)"
-                            class="w-full bg-[#14131a] border border-[#2a2731] rounded-xl px-4 py-2.5 text-sm text-white mb-3 outline-none focus:border-[#b08d57]">
+                        <!-- Floating Password -->
+                        <div class="relative">
+                            <input id="tg-reg-password" type="password" placeholder=" "
+                                class="peer w-full bg-[#14131a] border border-[#2a2731] rounded-xl px-4 py-3 text-sm text-white outline-none transition focus:border-[#b08d57]">
+                            <label for="tg-reg-password"
+                                class="absolute left-3.5 -top-2.5 bg-[#0f0e13] px-1.5 text-xs text-stone-400 font-semibold transition-all pointer-events-none
+                                       peer-placeholder-shown:top-3 peer-placeholder-shown:text-sm peer-placeholder-shown:text-stone-500 peer-placeholder-shown:font-normal peer-placeholder-shown:bg-transparent
+                                       peer-focus:-top-2.5 peer-focus:text-xs peer-focus:text-[#b08d57] peer-focus:font-semibold peer-focus:bg-[#0f0e13]">
+                                Password (min 6 characters)
+                            </label>
+                        </div>
 
-                        <input id="tg-reg-password-confirmation" type="password" placeholder="Confirm Password"
-                            class="w-full bg-[#14131a] border border-[#2a2731] rounded-xl px-4 py-2.5 text-sm text-white mb-4 outline-none focus:border-[#b08d57]">
+                        <!-- Floating Confirm Password -->
+                        <div class="relative">
+                            <input id="tg-reg-password-confirmation" type="password" placeholder=" "
+                                class="peer w-full bg-[#14131a] border border-[#2a2731] rounded-xl px-4 py-3 text-sm text-white outline-none transition focus:border-[#b08d57]">
+                            <label for="tg-reg-password-confirmation"
+                                class="absolute left-3.5 -top-2.5 bg-[#0f0e13] px-1.5 text-xs text-stone-400 font-semibold transition-all pointer-events-none
+                                       peer-placeholder-shown:top-3 peer-placeholder-shown:text-sm peer-placeholder-shown:text-stone-500 peer-placeholder-shown:font-normal peer-placeholder-shown:bg-transparent
+                                       peer-focus:-top-2.5 peer-focus:text-xs peer-focus:text-[#b08d57] peer-focus:font-semibold peer-focus:bg-[#0f0e13]">
+                                Confirm Password
+                            </label>
+                        </div>
 
                         <button id="tg-reg-btn" onclick="submitRegister()"
-                            class="w-full bg-[#b08d57] text-[#0f0e13] font-bold py-2.5 rounded-xl text-sm transition hover:bg-[#c9a36b]">
+                            class="w-full mt-2 bg-[#b08d57] text-[#0f0e13] font-bold py-3 rounded-xl text-sm transition hover:bg-[#c9a36b] cursor-pointer">
                             Create Account &amp; Order
                         </button>
                     </div>
@@ -212,7 +285,6 @@
                 if (res.ok) {
                     window.location.href = roleToDashboardUrl(data.role);
                 } else {
-                    // Extract first validation error if present
                     let errorMsg = data.message;
                     if (data.errors) {
                         const firstKey = Object.keys(data.errors)[0];
