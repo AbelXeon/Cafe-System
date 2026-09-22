@@ -116,7 +116,7 @@
                         <input id="tg-reg-email" type="email" placeholder="Email (optional)"
                             class="w-full bg-[#14131a] border border-[#2a2731] rounded-xl px-4 py-2.5 text-sm text-white mb-3 outline-none focus:border-[#b08d57]">
 
-                        <input id="tg-reg-phone" type="text" placeholder="Phone (optional)"
+                        <input id="tg-reg-phone" type="text" placeholder="Phone"
                             class="w-full bg-[#14131a] border border-[#2a2731] rounded-xl px-4 py-2.5 text-sm text-white mb-3 outline-none focus:border-[#b08d57]">
 
                         <input id="tg-reg-password" type="password" placeholder="Password (min 6 characters)"
