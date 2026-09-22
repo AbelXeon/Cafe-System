@@ -50,7 +50,6 @@
 </head>
 <body class="bg-[#0f0e13] text-stone-200 h-screen overflow-hidden selection:bg-[#b08d57] selection:text-[#0f0e13]" x-data="{ mobileNavOpen: false, mobileCartOpen: false }">
 
-<!-- Animated Success Toast Notification -->
 <div x-show="$store.toast.visible"
      x-cloak
      x-transition:enter="transform ease-out duration-300 transition"
