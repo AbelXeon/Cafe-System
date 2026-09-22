@@ -93,7 +93,6 @@
                             </div>
                         </div>
 
-                        <!-- Phone -->
                         <div>
                             <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Phone</label>
                             <div class="relative">
