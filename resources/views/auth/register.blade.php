@@ -162,7 +162,6 @@
             </div>
         </section>
 
-        <!-- ================= RIGHT: VISUAL ================= -->
         <section class="hidden lg:flex lg:col-span-6 xl:col-span-7 bg-[#14131a] p-10 xl:p-14 flex-col justify-between relative overflow-hidden">
 
             <div class="max-w-xl">
