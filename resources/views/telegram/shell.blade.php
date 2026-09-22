@@ -90,7 +90,6 @@
 
                     <!-- 1. LINK FORM -->
                     <div id="form-link-container" class="${activeTab === 'link' ? '' : 'hidden'} space-y-4">
-                        <p class="text-stone-400 text-xs mb-3">Connect an existing Neba Cafe account.</p>
                         
                         <!-- Floating Username -->
                         <div class="relative">
