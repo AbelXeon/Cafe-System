@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 class VerifyTelegramInitData
 {
-    protected int $maxAgeSeconds = 86400; // 24h
+    protected int $maxAgeSeconds = 86400; 
 
     public function handle(Request $request, Closure $next)
     {
