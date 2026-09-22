@@ -1,4 +1,3 @@
-<!-- Mobile Sidebar Backdrop -->
 <div x-show="mobileNavOpen"
      x-cloak
      x-transition:enter="transition-opacity ease-out duration-200"
