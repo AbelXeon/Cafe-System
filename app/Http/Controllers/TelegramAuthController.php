@@ -116,7 +116,6 @@ class TelegramAuthController extends Controller
             ], 401);
         }
 
-        // Ensure this Telegram ID isn't already attached
         $existingLink = TelegramAccount::where('telegram_user_id', $telegramProfile['id'])->first();
         if ($existingLink) {
             return response()->json([
