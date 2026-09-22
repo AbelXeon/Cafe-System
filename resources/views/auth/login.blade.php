@@ -186,7 +186,6 @@
                 </p>
             </div>
 
-            <!-- Copyright -->
             <div class="text-xs text-stone-600 text-center sm:text-left">
                 &copy; {{ date('Y') }} Neba Cafe Hawassa System. All rights reserved.
             </div>
