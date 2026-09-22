@@ -261,7 +261,6 @@
                         </span>
                     </div>
 
-                    <!-- 4-segment strength bar -->
                     <div class="grid grid-cols-4 gap-1.5 h-1 w-full">
                         <div class="h-full rounded-full transition-all duration-300"
                             :class="passwordForm.password ? (((passwordForm.password.length >= 8) + (/[a-z]/.test(passwordForm.password) && /[A-Z]/.test(passwordForm.password)) + (/\d/.test(passwordForm.password)) + (/[^A-Za-z0-9]/.test(passwordForm.password))) >= 1 ? 'bg-rose-500' : 'bg-[#1e1c25]') : 'bg-[#1e1c25]'"></div>
