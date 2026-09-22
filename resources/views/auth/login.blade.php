@@ -260,7 +260,6 @@
 
             </div>
 
-            <!-- Bottom Line -->
             <div class="flex items-center justify-between border-t border-[#1e1c25] pt-6 text-stone-500 text-xs font-medium">
                 <span>Real-Time Kitchen Dispatch</span>
                 <span class="flex items-center gap-1.5 text-stone-300">
