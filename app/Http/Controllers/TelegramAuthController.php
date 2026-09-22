@@ -61,7 +61,6 @@ class TelegramAuthController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-        // Find user by username or email
         $user = User::where('username', $credentials['username'])
             ->orWhere('email', $credentials['username'])
             ->first();
