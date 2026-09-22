@@ -75,7 +75,6 @@
                 </div>
             </div>
 
-            <!-- Form Block -->
             <div class="w-full my-auto py-8 max-w-sm mx-auto">
                 <div class="mb-8">
                     <h1 class="text-3xl font-extrabold text-white tracking-tight">Sign in</h1>
