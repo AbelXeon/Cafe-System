@@ -326,7 +326,6 @@
             </form>
         </div>
 
-        <!-- Danger Zone / Sign Out -->
         <div class="bg-[#14131a] border border-rose-900/30 rounded-2xl p-5 sm:p-7 shadow-xl">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
