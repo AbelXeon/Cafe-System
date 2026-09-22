@@ -29,11 +29,9 @@ class TelegramAuthController extends Controller
         $link = TelegramAccount::where('telegram_user_id', $telegramId)->first();
 
         // Not in database -> Clear any stale session cookie and return unlinked
+        // Not in database -> Clear any stale session cookie
         if (!$link) {
             Auth::logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-
             return response()->json(['linked' => false]);
         }
 
