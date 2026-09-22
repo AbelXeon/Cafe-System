@@ -74,7 +74,6 @@ class VerifyTelegramInitData
 
         $botToken = config('services.telegram.bot_token');
 
-        // Telegram's exact derivation: secret_key = HMAC_SHA256("WebAppData", bot_token)
         $secretKey = hash_hmac('sha256', $botToken, 'WebAppData', true);
         $computedHash = hash_hmac('sha256', $dataCheckString, $secretKey);
 
