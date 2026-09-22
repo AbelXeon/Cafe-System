@@ -275,7 +275,6 @@
 
                     <!-- Checklist items -->
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs pt-1">
-                        <!-- 8+ Chars -->
                         <div class="flex items-center gap-1.5 transition-colors"
                             :class="(passwordForm.password || '').length >= 8 ? 'text-emerald-400 font-medium' : 'text-stone-500'">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 shrink-0 transition-transform" :class="(passwordForm.password || '').length >= 8 ? 'text-emerald-400 scale-110' : 'text-stone-600'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
