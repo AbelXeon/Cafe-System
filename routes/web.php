@@ -49,7 +49,6 @@ Route::middleware(['auth', 'role:staff'])->prefix('staff')->name('staff.')->grou
     Route::patch('/products/{product}/toggle-availability', [StaffController::class, 'toggleProductAvailability'])->name('products.toggle');
     Route::patch('/extras/{extra}/toggle-availability', [StaffController::class, 'toggleExtraAvailability'])->name('extras.toggle');
 
-    // Profile & Password Settings
     Route::patch('/profile', [StaffController::class, 'updateProfile'])->name('profile.update');
     Route::put('/password', [StaffController::class, 'updatePassword'])->name('password.update');
 });
