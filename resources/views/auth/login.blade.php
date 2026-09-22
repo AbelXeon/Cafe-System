@@ -201,7 +201,6 @@
                 </h2>
             </div>
 
-            <!-- Food Grid -->
             <div class="grid grid-cols-3 gap-5 my-8">
 
                 <div class="group relative rounded-2xl overflow-hidden bg-[#0f0e13] border border-[#1e1c25] h-80 flex flex-col justify-end p-5">
