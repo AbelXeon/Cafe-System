@@ -71,7 +71,6 @@ class TelegramAuthController extends Controller
             ], 422);
         }
 
-        // Guard against one Telegram account being linked twice
         $existingLink = TelegramAccount::where('telegram_user_id', $telegramProfile['id'])->first();
         if ($existingLink) {
             return response()->json([
