@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>CraveDash | Kitchen & Staff Orders Dashboard</title>
+    <title>Neba Cafe Hawassa | Kitchen & Staff Orders Dashboard</title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -67,9 +67,9 @@
 
             <div class="flex items-center gap-2">
                 <div class="w-8 h-8 rounded-lg bg-[#b08d57] flex items-center justify-center text-[#0f0e13]">
-                    <i data-lucide="chef-hat" class="w-4 h-4 stroke-[2.5]"></i>
+                    <i data-lucide="coffee" class="w-4 h-4 stroke-[2.5]"></i>
                 </div>
-                <span class="text-base font-black tracking-tight text-white">Kitchen<span class="text-[#b08d57]">Hub</span></span>
+                <span class="text-base font-black tracking-tight text-white">Neba Cafe <span class="text-[#b08d57]">Hawassa</span></span>
             </div>
         </div>
 

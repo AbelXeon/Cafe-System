@@ -1,5 +1,4 @@
-
-    <!-- VIEW 2: Menu Stock & Availability Data Table (86 List) -->
+<!-- VIEW 2: Menu Stock & Availability Data Table (86 List) -->
     <main x-show="currentView === 'stock'" class="flex-1 flex flex-col min-h-0 bg-[#14131a]/40 w-full overflow-hidden">
         
         <!-- Header Bar -->
