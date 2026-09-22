@@ -157,7 +157,6 @@
                         </div>
                     </div>
 
-                    <!-- Remember Me -->
                     <div class="flex items-center justify-between pt-1">
                         <label class="flex items-center gap-2.5 text-sm text-stone-300 cursor-pointer select-none group">
                             <input type="checkbox" name="remember" class="cd-check">
