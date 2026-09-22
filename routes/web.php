@@ -69,7 +69,7 @@ Route::middleware(['auth', 'role:delivery'])->prefix('delivery')->name('delivery
     Route::patch('/profile', [DeliveryController::class, 'updateProfile'])->name('profile.update');
     Route::put('/password', [DeliveryController::class, 'updatePassword'])->name('password.update');
 
-    // Chat (driver side)
+    
     Route::get('/chats', [ChatController::class, 'driverConversations'])->name('chats.index');
     Route::get('/chats/{order}/messages', [ChatController::class, 'messages'])->name('chats.messages');
     Route::post('/chats/{order}/messages', [ChatController::class, 'send'])->name('chats.send');
