@@ -17,7 +17,6 @@
     <style>
         body { font-family: 'M PLUS 1p', sans-serif; }
 
-        /* Refined custom checkbox */
         .cd-check {
             appearance: none;
             -webkit-appearance: none;
