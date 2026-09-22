@@ -10,10 +10,7 @@ use Illuminate\Support\Facades\Hash;
 
 class TelegramAuthController extends Controller
 {
-    /**
-     * Check if the Telegram identity is linked.
-     * Checks the actual database record instead of just the session cookie.
-     */
+    
     public function me(Request $request)
     {
         $telegramProfile = $request->attributes->get('telegram_profile');
