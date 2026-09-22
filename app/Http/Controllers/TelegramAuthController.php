@@ -84,7 +84,6 @@ class TelegramAuthController extends Controller
             ], 422);
         }
 
-        // Create database link
         TelegramAccount::create([
             'user_id'              => $user->id,
             'telegram_user_id'     => $telegramProfile['id'],
