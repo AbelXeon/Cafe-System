@@ -90,7 +90,7 @@ Route::middleware(['auth', 'role:customer'])->prefix('user')->name('user.')->gro
     Route::patch('/profile', [UsersController::class, 'updateProfile'])->name('profile.update');
     Route::put('/password', [UsersController::class, 'updatePassword'])->name('password.update');
 
-    // Chat (customer side)
+    
     Route::get('/chats', [ChatController::class, 'customerConversations'])->name('chats.index');
     Route::get('/chats/{order}/messages', [ChatController::class, 'messages'])->name('chats.messages');
     Route::post('/chats/{order}/messages', [ChatController::class, 'send'])->name('chats.send');
