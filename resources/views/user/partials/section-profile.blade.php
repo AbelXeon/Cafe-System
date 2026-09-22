@@ -14,7 +14,6 @@
             </div>
         </div>
 
-        <!-- Overview Quick Stats Row -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-4">
             <div class="bg-[#14131a] border border-[#2a2731] rounded-2xl p-4 sm:p-5 flex items-center gap-4 shadow-lg">
                 <div class="w-12 h-12 rounded-xl bg-[#b08d57]/15 border border-[#b08d57]/30 flex items-center justify-center text-[#b08d57] shrink-0">
