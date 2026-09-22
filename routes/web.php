@@ -102,8 +102,9 @@ Route::get('/telegram/app', function () {
     return view('telegram.shell');
 })->name('telegram.app');
 
-// routes/telegram.php
+
 Route::middleware('telegram.verify')->prefix('telegram')->name('telegram.')->group(function () {
     Route::post('/link', [TelegramAuthController::class, 'link'])->name('link');
+    Route::post('/register', [TelegramAuthController::class, 'register'])->name('register');
     Route::get('/me', [TelegramAuthController::class, 'me'])->name('me');
 });
