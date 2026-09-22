@@ -11,23 +11,55 @@ use Illuminate\Support\Facades\Hash;
 class TelegramAuthController extends Controller
 {
     /**
-     * Link the verified Telegram identity (attached to the request by
-     * VerifyTelegramInitData) to an existing Laravel user account.
+     * Check if the Telegram identity is linked.
+     * Checks the actual database record instead of just the session cookie.
+     */
+    public function me(Request $request)
+    {
+        $telegramProfile = $request->attributes->get('telegram_profile');
+        $telegramId = $telegramProfile['id'] ?? null;
+
+        // If no Telegram identity found in the request header
+        if (!$telegramId) {
+            Auth::logout();
+            return response()->json(['linked' => false]);
+        }
+
+        // Check if this Telegram ID actually exists in the database
+        $link = TelegramAccount::where('telegram_user_id', $telegramId)->first();
+
+        // Not in database -> Clear any stale session cookie and return unlinked
+        if (!$link) {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return response()->json(['linked' => false]);
+        }
+
+        // Linked in database -> Ensure the user is logged into Laravel session
+        if (!Auth::check() || Auth::id() !== $link->user_id) {
+            Auth::login($link->user);
+        }
+
+        $user = $link->user;
+        $role = is_object($user->role) ? $user->role->name : $user->role;
+
+        return response()->json([
+            'linked' => true,
+            'user'   => [
+                'id'       => $user->id,
+                'fullname' => $user->fullname ?? $user->name ?? 'User',
+                'role'     => $role,
+            ],
+        ]);
+    }
+
+    /**
+     * Link the verified Telegram identity to an existing Laravel user account.
      */
     public function link(Request $request)
     {
-        // If already authenticated, nothing to link
-        if (Auth::check()) {
-            $currentUser = Auth::user();
-            $role = is_object($currentUser->role) ? $currentUser->role->name : $currentUser->role;
-
-            return response()->json([
-                'status'  => 'already_linked',
-                'message' => 'This Telegram account is already linked.',
-                'role'    => $role,
-            ]);
-        }
-
         $telegramProfile = $request->attributes->get('telegram_profile');
 
         if (!$telegramProfile || !isset($telegramProfile['id'])) {
@@ -41,7 +73,7 @@ class TelegramAuthController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-        // Find user by username or email (supports whichever your app uses)
+        // Find user by username or email
         $user = User::where('username', $credentials['username'])
             ->orWhere('email', $credentials['username'])
             ->first();
@@ -67,6 +99,7 @@ class TelegramAuthController extends Controller
             ], 422);
         }
 
+        // Create database link
         TelegramAccount::create([
             'user_id'              => $user->id,
             'telegram_user_id'     => $telegramProfile['id'],
@@ -78,36 +111,12 @@ class TelegramAuthController extends Controller
 
         Auth::login($user);
 
-        // Safe extraction whether role is a string ('customer') or relationship model
         $role = is_object($user->role) ? $user->role->name : $user->role;
 
         return response()->json([
             'status'  => 'linked',
             'message' => 'Telegram account linked successfully.',
             'role'    => $role,
-        ]);
-    }
-
-    /**
-     * Return the currently authenticated Telegram-linked user.
-     * Used by the Mini App shell on load to decide: show dashboard, or show link screen.
-     */
-    public function me(Request $request)
-    {
-        if (!Auth::check()) {
-            return response()->json(['linked' => false]);
-        }
-
-        $user = Auth::user();
-        $role = is_object($user->role) ? $user->role->name : $user->role;
-
-        return response()->json([
-            'linked' => true,
-            'user'   => [
-                'id'       => $user->id,
-                'fullname' => $user->fullname ?? $user->name ?? 'User',
-                'role'     => $role,
-            ],
         ]);
     }
 }
