@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Sign in | CraveDash Delivery</title>
+    <title>Sign in | Neba Cafe Hawassa</title>
 
     <!-- Laravel Vite Bundled Tailwind CSS & JS -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -67,10 +67,10 @@
             <!-- Brand -->
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-xl bg-[#b08d57] flex items-center justify-center text-[#0f0e13]">
-                    <i data-lucide="utensils" class="w-5 h-5 stroke-[2.5]"></i>
+                    <i data-lucide="coffee" class="w-5 h-5 stroke-[2.5]"></i>
                 </div>
                 <div>
-                    <span class="text-xl font-bold tracking-tight text-white block">Crave<span class="text-[#b08d57]">Dash</span></span>
+                    <span class="text-xl font-bold tracking-tight text-white block">Neba Cafe <span class="text-[#b08d57]">Hawassa</span></span>
                     <span class="text-xs text-stone-500 font-medium">Food &amp; Cafe Management</span>
                 </div>
             </div>
@@ -188,7 +188,7 @@
 
             <!-- Copyright -->
             <div class="text-xs text-stone-600 text-center sm:text-left">
-                &copy; {{ date('Y') }} CraveDash System. All rights reserved.
+                &copy; {{ date('Y') }} Neba Cafe Hawassa System. All rights reserved.
             </div>
         </section>
 
