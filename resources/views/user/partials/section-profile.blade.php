@@ -273,7 +273,6 @@
                             :class="passwordForm.password ? (((passwordForm.password.length >= 8) + (/[a-z]/.test(passwordForm.password) && /[A-Z]/.test(passwordForm.password)) + (/\d/.test(passwordForm.password)) + (/[^A-Za-z0-9]/.test(passwordForm.password))) >= 4 ? 'bg-emerald-400' : 'bg-[#1e1c25]') : 'bg-[#1e1c25]'"></div>
                     </div>
 
-                    <!-- Checklist items -->
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs pt-1">
                         <div class="flex items-center gap-1.5 transition-colors"
                             :class="(passwordForm.password || '').length >= 8 ? 'text-emerald-400 font-medium' : 'text-stone-500'">
