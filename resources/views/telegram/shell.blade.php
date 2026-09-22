@@ -90,7 +90,7 @@
 
                     <!-- 1. LINK FORM -->
                     <div id="form-link-container" class="${activeTab === 'link' ? '' : 'hidden'} space-y-4">
-                        <p class="text-stone-400 text-xs mb-3">Connect an existing CraveDash account (Admin, Staff, Driver, or Customer).</p>
+                        <p class="text-stone-400 text-xs mb-3">Connect an existing Neba Cafe account.</p>
                         
                         <!-- Floating Username -->
                         <div class="relative">
@@ -170,7 +170,7 @@
                                 class="absolute left-3.5 -top-2.5 bg-[#0f0e13] px-1.5 text-xs text-stone-400 font-semibold transition-all pointer-events-none
                                        peer-placeholder-shown:top-3 peer-placeholder-shown:text-sm peer-placeholder-shown:text-stone-500 peer-placeholder-shown:font-normal peer-placeholder-shown:bg-transparent
                                        peer-focus:-top-2.5 peer-focus:text-xs peer-focus:text-[#b08d57] peer-focus:font-semibold peer-focus:bg-[#0f0e13]">
-                                Phone (optional)
+                                Phone 
                             </label>
                         </div>
 
@@ -182,7 +182,7 @@
                                 class="absolute left-3.5 -top-2.5 bg-[#0f0e13] px-1.5 text-xs text-stone-400 font-semibold transition-all pointer-events-none
                                        peer-placeholder-shown:top-3 peer-placeholder-shown:text-sm peer-placeholder-shown:text-stone-500 peer-placeholder-shown:font-normal peer-placeholder-shown:bg-transparent
                                        peer-focus:-top-2.5 peer-focus:text-xs peer-focus:text-[#b08d57] peer-focus:font-semibold peer-focus:bg-[#0f0e13]">
-                                Password (min 6 characters)
+                                Password
                             </label>
                         </div>
 
