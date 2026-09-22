@@ -35,7 +35,6 @@
 
         <!-- Grouped Navigation Links -->
         <nav class="p-4 space-y-4 overflow-y-auto custom-scroll">
-            <!-- GROUP: Menu -->
             <div class="space-y-1">
                 <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-stone-500 block">Menu</span>
                 <button data-target="menu" @click="mobileNavOpen = false" class="side-link w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-3">
