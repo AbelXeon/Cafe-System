@@ -1,4 +1,3 @@
-<!-- SECTION 5: Account Settings -->
 <div id="section-profile" class="page-section hidden flex-1 overflow-y-auto p-4 sm:p-8 lg:p-12 custom-scroll bg-[#14131a]/40 w-full" x-data="profileApp()" x-init="init()">
     <div class="max-w-4xl mx-auto pb-20 space-y-6 sm:space-y-8">
 
