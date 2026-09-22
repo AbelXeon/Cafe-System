@@ -29,7 +29,6 @@ class TelegramAuthController extends Controller
             return response()->json(['linked' => false]);
         }
 
-        // Linked in database -> Ensure the user is logged into Laravel session
         if (!Auth::check() || Auth::id() !== $link->user_id) {
             Auth::login($link->user);
         }
