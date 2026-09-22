@@ -27,7 +27,6 @@
         <!-- ================= LEFT: FORM ================= -->
         <section class="lg:col-span-6 xl:col-span-5 bg-[#0f0e13] p-8 sm:p-12 lg:p-14 flex flex-col justify-between border-r border-[#1e1c25] z-10">
 
-            <!-- Brand -->
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-xl bg-[#b08d57] flex items-center justify-center text-[#0f0e13]">
                     <i data-lucide="coffee" class="w-5 h-5 stroke-[2.5]"></i>
