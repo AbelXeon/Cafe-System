@@ -78,7 +78,6 @@ class TelegramAuthController extends Controller
             ], 422);
         }
 
-        // Guard against one Laravel user linking multiple Telegram accounts
         if (method_exists($user, 'telegramAccount') && $user->telegramAccount) {
             return response()->json([
                 'message' => 'This account is already linked to a different Telegram user.'
