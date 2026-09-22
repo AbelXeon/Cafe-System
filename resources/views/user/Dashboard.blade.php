@@ -31,7 +31,6 @@
         .side-link.active { background: #b08d57; color: #0f0e13; font-weight: 700; }
         .cd-input:focus { border-color: #b08d57; box-shadow: 0 0 0 3px rgba(176, 141, 87, 0.18); }
         
-        /* High-speed Dark-Mode Map Filter */
         .leaflet-container { background: #0f0e13 !important; }
         .leaflet-tile {
             filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.75) !important;
