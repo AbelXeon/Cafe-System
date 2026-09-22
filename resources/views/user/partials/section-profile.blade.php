@@ -331,7 +331,7 @@
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                     <h3 class="text-base font-bold text-white">Session Management</h3>
-                    <p class="text-xs text-stone-500 mt-0.5">Log out of your CraveDash session securely from this browser</p>
+                    <p class="text-xs text-stone-500 mt-0.5">Log out of your Neba Cafe Hawassa session securely from this browser</p>
                 </div>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf

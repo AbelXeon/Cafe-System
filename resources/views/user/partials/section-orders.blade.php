@@ -74,7 +74,7 @@
                                     </div>
                                     <div class="min-w-0">
                                         <h4 class="text-sm font-bold" :class="order.status_step >= 1 ? 'text-white' : 'text-stone-500'">Order Placed</h4>
-                                        <p class="text-[11px] text-stone-400 mt-0.5">Received by CraveDash</p>
+                                        <p class="text-[11px] text-stone-400 mt-0.5">Received by Neba Cafe Hawassa</p>
                                     </div>
                                 </div>
 

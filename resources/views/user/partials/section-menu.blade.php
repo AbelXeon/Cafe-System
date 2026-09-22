@@ -1,4 +1,3 @@
-
 <!-- SECTION 1: Menu Catalog -->
 <div id="section-menu" class="page-section flex flex-1 min-h-0 bg-[#14131a]/40 w-full">
     <main class="flex-1 overflow-y-auto custom-scroll pb-24 lg:pb-8 relative" x-data="menuApp()" x-init="init()">
