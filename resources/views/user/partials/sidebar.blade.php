@@ -11,7 +11,6 @@
      class="fixed inset-0 bg-black/80 backdrop-blur-sm z-40 lg:hidden">
 </div>
 
-<!-- Sidebar Navigation -->
 <aside
     :class="mobileNavOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
     class="fixed lg:static top-0 left-0 bottom-0 w-72 lg:w-64 bg-[#0f0e13] border-r border-[#1e1c25] flex flex-col shrink-0 justify-between z-50 lg:z-20 transition-transform duration-300 ease-in-out">
