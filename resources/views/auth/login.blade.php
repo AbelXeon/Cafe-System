@@ -113,7 +113,6 @@
                     </div>
                 @endif
 
-                <!-- Login Form -->
                 <form method="POST" action="{{ route('login.submit') }}" class="space-y-5">
                     @csrf
 
