@@ -68,7 +68,6 @@
                 </button>
             </div>
 
-            <!-- READ-ONLY VIEW -->
             <div x-show="!editingProfile" x-cloak class="mt-6 space-y-4 sm:space-y-5">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
