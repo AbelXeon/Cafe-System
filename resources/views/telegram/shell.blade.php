@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CraveDash</title>
+    <title>Neba Cafe Hawassa</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css'])
 </head>
 <body class="bg-[#0f0e13] text-stone-200 min-h-screen">
 
@@ -69,7 +69,7 @@
                 <div class="max-w-sm mx-auto pt-6 pb-12 px-4">
                     <!-- Brand -->
                     <div class="text-center mb-6">
-                        <span class="text-2xl font-black text-white">Crave<span class="text-[#b08d57]">Dash</span></span>
+                        <span class="text-2xl font-black text-white">Neba Cafe <span class="text-[#b08d57]">Hawassa</span></span>
                         <p class="text-xs text-stone-400 mt-1">Food &amp; Cafe Delivery</p>
                     </div>
 
