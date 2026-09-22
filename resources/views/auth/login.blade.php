@@ -82,7 +82,6 @@
                     <p class="text-stone-500 text-sm mt-1.5">Enter your credentials to access your account</p>
                 </div>
 
-                <!-- Session Alert -->
                 @if (session('status'))
                     <div class="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm rounded-xl px-4 py-3 mb-5 flex items-center gap-3">
                         <i data-lucide="check-circle-2" class="w-4 h-4 flex-shrink-0"></i>
