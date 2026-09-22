@@ -127,7 +127,6 @@
                             </div>
                         </div>
 
-                        <!-- Confirm password -->
                         <div>
                             <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Confirm password</label>
                             <div class="relative">
