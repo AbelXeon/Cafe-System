@@ -315,7 +315,7 @@
                                 <button type="button" 
                                     class="edit-product-btn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-stone-300 bg-[#1e1c25] hover:bg-[#b08d57] hover:text-[#0f0e13] border border-[#2a2731] hover:border-[#b08d57] transition-all duration-200 active:scale-95"
                                     data-id="{{ $p->id }}"
-                                    data-name="{{ $p->name }}"
+                                    data-name="${p.name}"
                                     data-category-id="{{ $p->category_id }}"
                                     data-category-name="{{ $p->category->name }}"
                                     data-price="{{ $p->price }}"

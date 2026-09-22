@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Admin Dashboard | CraveDash</title>
+    <title>Admin Dashboard | Neba Cafe Hawassa</title>
 
     <!-- Laravel Vite Bundled Tailwind CSS & JS -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -100,10 +100,10 @@
         </button>
         <div class="flex items-center gap-2.5">
             <div class="w-8 h-8 rounded-lg bg-[#b08d57] flex items-center justify-center text-[#0f0e13]">
-                <i data-lucide="utensils" class="w-4 h-4 stroke-[2.5]"></i>
+                <i data-lucide="coffee" class="w-4 h-4 stroke-[2.5]"></i>
             </div>
             <div>
-                <span class="text-white font-bold text-sm block leading-tight">Crave<span class="text-[#b08d57]">Dash</span></span>
+                <span class="text-white font-bold text-sm block leading-tight">Neba Cafe <span class="text-[#b08d57]">Hawassa</span></span>
                 <span class="text-[10px] text-stone-500 font-medium">Admin Panel</span>
             </div>
         </div>
@@ -667,8 +667,7 @@ function initCustomSelects(container = document) {
 
                 options.forEach(o => {
                     const check = o.querySelector('.check-icon');
-                    const dot = o.querySelector('.dot-indi
-                    tor');
+                    const dot = o.querySelector('.dot-indicator');
                     if (o === opt) {
                         o.classList.add('bg-[#1e1c25]', 'text-white');
                         if (check) check.classList.remove('hidden');

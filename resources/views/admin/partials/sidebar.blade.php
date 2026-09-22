@@ -7,10 +7,10 @@
     <div class="px-5 py-4 sm:px-6 sm:py-5 border-b border-[#1e1c25] flex items-center justify-between">
         <div class="flex items-center gap-3">
             <div class="w-9 h-9 rounded-xl bg-[#b08d57] flex items-center justify-center text-[#0f0e13]">
-                <i data-lucide="utensils" class="w-4 h-4 stroke-[2.5]"></i>
+                <i data-lucide="coffee" class="w-4 h-4 stroke-[2.5]"></i>
             </div>
             <div>
-                <span class="text-white font-bold text-base block">Crave<span class="text-[#b08d57]">Dash</span></span>
+                <span class="text-white font-bold text-base block">Neba Cafe <span class="text-[#b08d57]">Hawassa</span></span>
                 <span class="text-xs text-stone-500 font-medium">Admin Panel</span>
             </div>
         </div>
