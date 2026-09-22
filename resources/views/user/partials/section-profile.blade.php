@@ -216,7 +216,6 @@
                             <input x-model="passwordForm.password_confirmation" :type="showConfirm ? 'text' : 'password'" required minlength="8" placeholder="Re-type new password"
                                 class="cd-input w-full bg-[#0f0e13] border border-[#2a2731] rounded-xl pl-10 pr-10 py-2.5 text-sm text-white placeholder-stone-600 focus:outline-none transition">
                             
-                            <!-- Eye Toggle Button -->
                             <button type="button" @click="showConfirm = !showConfirm" tabindex="-1" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-500 hover:text-[#b08d57] transition focus:outline-none p-0.5">
                                 <svg x-show="!showConfirm" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
