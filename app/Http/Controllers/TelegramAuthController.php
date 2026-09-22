@@ -103,9 +103,6 @@ class TelegramAuthController extends Controller
         ]);
     }
 
-    /**
-     * Create a brand new customer account from Telegram and link it immediately.
-     */
     public function register(Request $request)
     {
         $telegramProfile = $request->attributes->get('telegram_profile');
