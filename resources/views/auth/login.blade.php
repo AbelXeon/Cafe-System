@@ -52,7 +52,6 @@
             box-shadow: 0 0 0 3px rgba(176, 141, 87, 0.25);
         }
 
-        /* Smooth input focus */
         .cd-input:focus { border-color: #b08d57; box-shadow: 0 0 0 3px rgba(176, 141, 87, 0.18); }
         .cd-input:focus + .cd-icon { color: #b08d57; }
     </style>
