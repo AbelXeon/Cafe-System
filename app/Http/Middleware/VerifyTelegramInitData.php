@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Auth;
 
 class VerifyTelegramInitData
 {
-    // How old an initData payload can be before we reject it as stale/replayed
     protected int $maxAgeSeconds = 86400; // 24h
 
     public function handle(Request $request, Closure $next)
