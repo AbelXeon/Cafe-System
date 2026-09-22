@@ -61,7 +61,6 @@
                 </button>
             </div>
 
-            <!-- GROUP: Delivery -->
             <div class="space-y-1">
                 <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-stone-500 block">Delivery</span>
                 <button data-target="address" @click="mobileNavOpen = false" class="side-link w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-3">
