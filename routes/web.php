@@ -65,7 +65,6 @@ Route::middleware(['auth', 'role:delivery'])->prefix('delivery')->name('delivery
     Route::post('/orders/{order}/delivered', [DeliveryController::class, 'markDelivered'])->name('orders.delivered');
     Route::post('/online', [DeliveryController::class, 'toggleOnline'])->name('online.toggle');
 
-    // Driver Profile & Password Settings
     Route::patch('/profile', [DeliveryController::class, 'updateProfile'])->name('profile.update');
     Route::put('/password', [DeliveryController::class, 'updatePassword'])->name('password.update');
 
