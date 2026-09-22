@@ -16,7 +16,6 @@ class TelegramAuthController extends Controller
         $telegramProfile = $request->attributes->get('telegram_profile');
         $telegramId = $telegramProfile['id'] ?? null;
 
-        // If no Telegram identity found in the request header
         if (!$telegramId) {
             Auth::logout();
             return response()->json(['linked' => false]);
