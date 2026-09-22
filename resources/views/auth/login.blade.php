@@ -222,7 +222,6 @@
                     </div>
                 </div>
 
-                <!-- Pizza -->
                 <div class="group relative rounded-2xl overflow-hidden bg-[#0f0e13] border border-[#1e1c25] h-80 flex flex-col justify-end p-5">
                     <img
                         src="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=600&q=60&fm=webp"
