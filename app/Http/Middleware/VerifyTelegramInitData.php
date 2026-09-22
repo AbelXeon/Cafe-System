@@ -59,7 +59,6 @@ class VerifyTelegramInitData
         $receivedHash = $data['hash'];
         unset($data['hash']);
 
-        // Reject stale payloads
         if (isset($data['auth_date']) && (time() - (int) $data['auth_date']) > $this->maxAgeSeconds) {
             return null;
         }
