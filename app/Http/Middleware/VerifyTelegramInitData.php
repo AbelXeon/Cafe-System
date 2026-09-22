@@ -64,7 +64,6 @@ class VerifyTelegramInitData
             return null;
         }
 
-        // Build the data-check-string: sorted key=value pairs, joined by \n
         ksort($data);
         $pairs = [];
         foreach ($data as $key => $value) {
