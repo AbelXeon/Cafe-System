@@ -46,9 +46,6 @@ class TelegramAuthController extends Controller
         ]);
     }
 
-    /**
-     * Link the verified Telegram identity to an existing Laravel user account.
-     */
     public function link(Request $request)
     {
         $telegramProfile = $request->attributes->get('telegram_profile');
