@@ -134,7 +134,6 @@
                         </div>
                     </div>
 
-                    <!-- Password -->
                     <div>
                         <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Password</label>
                         <div class="relative">
