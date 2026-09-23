@@ -37,8 +37,9 @@ return [
 
     'telegram' => [
     'bot_token' => env('TELEGRAM_BOT_TOKEN'),
-    'admin_secret' => env('ADMIN_SECRET'),
 ],
+
+    'admin_secret' => env('ADMIN_SECRET'),
 
 
 ];
