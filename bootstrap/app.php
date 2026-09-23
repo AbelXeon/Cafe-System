@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Exclude Telegram routes from CSRF token checks
         $middleware->validateCsrfTokens(except: [
             'telegram/*',
+             'internal/*',
         ]);
 
         $middleware->alias([
