@@ -108,8 +108,6 @@ Route::middleware('telegram.verify')->prefix('telegram')->name('telegram.')->gro
 
 
 
-// Testing-only: wipes all linked Telegram accounts. Requires the X-Admin-Secret
-// header to match ADMIN_SECRET in .env / Render env vars. Remove before public launch.
 Route::post('/internal/reset-telegram-links', function (\Illuminate\Http\Request $request) {
     abort_unless($request->header('X-Admin-Secret') === config('services.admin_secret'), 403);
     \App\Models\TelegramAccount::truncate();
