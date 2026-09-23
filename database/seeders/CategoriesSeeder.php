@@ -23,11 +23,10 @@ class CategoriesSeeder extends Seeder
         ];
 
         foreach ($categories as $category) {
-            DB::table('categories')->insert([
-                'name' => $category,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-        }
+    DB::table('categories')->updateOrInsert(
+        ['name' => $category],
+        ['created_at' => now(), 'updated_at' => now()]
+    );
+}
     }
 }
